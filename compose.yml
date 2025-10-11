@@ -13,7 +13,6 @@ services:
     image: sonatype/nexus3:3.80.0
     env_file: .env
     environment:
-      #  - LDAP_BIND_DN=cn=${LDAP_BIND_CN_NEXUS},ou=service_accounts,${LDAP_BASE_DN}
        - LDAP_BIND_PASS=${LDAP_BIND_PASS_NEXUS}
     volumes:
       - ./nexus-data:/nexus-data
@@ -37,7 +36,7 @@ services:
       dockerfile: ./development.Dockerfile
     env_file: .env
     environment:
-      #  - LDAP_BIND_DN=cn=${LDAP_BIND_CN_GO},ou=service_accounts,${LDAP_BASE_DN}
+       - LDAP_BIND_CN=${LDAP_BIND_CN_GO}
        - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
     ports:
       - "8083:8080"  # 外部ユーザー向け公開ポート
@@ -55,6 +54,9 @@ services:
       context: ./golang
       dockerfile: ./runner.Dockerfile
     env_file: .env
+    environment:
+       - LDAP_BIND_CN=${LDAP_BIND_CN_GO}
+       - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
     ports:
       - "8082:8080" # 外部ユーザー向け公開ポート
     volumes:
@@ -71,6 +73,7 @@ services:
       - ./node:/app
       - ./golang/public:/app/dist
       - node_home:/root
+    command: ./build.sh
 
 volumes:
   go_home:
