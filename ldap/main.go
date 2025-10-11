@@ -48,10 +48,11 @@ func main()  {
 	savedEnvVarsBytes := loadJsonBytes()
 
 	if (!compareEnvVarsAndUpdateSaveData(currentEnvVarsBytes, savedEnvVarsBytes)) {
-		fmt.Fprintln(os.Stdout, "環境変数の変更が確認されたので、設定ファイルを更新します。") 
-		substituteSlapdConfFile(envVars)
-		makeSubstitutedFile(envVars, "init")
-		fmt.Fprintln(os.Stdout, "設定ファイルの更新が完了しました。") 
+		go func() {
+			fmt.Fprintln(os.Stdout, "環境変数の変更が確認されたので、設定ファイルを更新します。") 
+			makeSubstitutedFile(envVars, "init")
+			fmt.Fprintln(os.Stdout, "設定ファイルの更新が完了しました。") 
+		}()
 		go func() {
 			defer fmt.Fprintln(os.Stdout, "設定ファイルの更新をシステムに反映させました。") 
 			time.Sleep(time.Second * 3)
@@ -75,6 +76,8 @@ func main()  {
 		}()
 	}
 	
+	fmt.Fprintln(os.Stdout, "永続化されない設定ファイルを更新します。") 
+	substituteSlapdConfFile(envVars)
 	fmt.Fprintln(os.Stdout, "openldapサーバを起動します。") 
 	cmd := exec.Command("slapd", "-u", "root", "-g", "root", "-h", "ldap://0.0.0.0:" + os.Getenv("LDAP_PORT"), "-d", "320")
 	cmd.Stdout = os.Stdout
