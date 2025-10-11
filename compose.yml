@@ -1,0 +1,77 @@
+services:
+  ldap:
+    build:
+      context: ./ldap
+    env_file: .env
+    volumes:
+      - ./ldap/data/lib:/var/lib/openldap/openldap-data
+      - ./ldap/lloadd:/var/lib/openldap/openldap-lloadd
+      - ./ldap/templates:/customized/templates
+      - ./ldap/data/customized:/customized/saved-data
+
+  nexus:
+    image: sonatype/nexus3:3.80.0
+    env_file: .env
+    environment:
+      #  - LDAP_BIND_DN=cn=${LDAP_BIND_CN_NEXUS},ou=service_accounts,${LDAP_BASE_DN}
+       - LDAP_BIND_PASS=${LDAP_BIND_PASS_NEXUS}
+    volumes:
+      - ./nexus-data:/nexus-data
+    depends_on:
+      - ldap
+
+  nginx:
+    build: ./nginx
+    ports:
+      - "8080:80"  # 外部公開
+    env_file: .env
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - ./nginx/log:/var/log/nginx
+    depends_on:
+      - nexus
+
+  go-dev:
+    build: 
+      context: ./golang
+      dockerfile: ./development.Dockerfile
+    env_file: .env
+    environment:
+      #  - LDAP_BIND_DN=cn=${LDAP_BIND_CN_GO},ou=service_accounts,${LDAP_BASE_DN}
+       - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
+    ports:
+      - "8083:8080"  # 外部ユーザー向け公開ポート
+    working_dir: /app
+    volumes:
+      - ./golang:/app
+      - go_home:/root
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - nexus
+    command: sleep infinity
+
+  runner:
+    build: 
+      context: ./golang
+      dockerfile: ./runner.Dockerfile
+    env_file: .env
+    ports:
+      - "8082:8080" # 外部ユーザー向け公開ポート
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - nexus
+
+  node:
+    image: node:22
+    ports:
+      - "5173:5173"
+    working_dir: /app
+    volumes:
+      - ./node:/app
+      - ./golang/public:/app/dist
+      - node_home:/root
+
+volumes:
+  go_home:
+  node_home:
