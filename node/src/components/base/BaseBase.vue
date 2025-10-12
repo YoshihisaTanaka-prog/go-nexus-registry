@@ -1,29 +1,16 @@
 <script setup lang="ts">
   import { defineProps } from 'vue';
-  const { path } = defineProps({
-    path: {
-      type: String
+  import type { SelectionObj } from './types';
+  const { path, selections } = defineProps<{path?: string, selections: SelectionObj}>();
+
+  if ( path ) {
+    if (Object.keys(selections).includes(path) && selections[path]) {
+      selections[path].className = "menu-button selected-menu-button"
     }
-  });
-
-  type SelectionObj = {
-    className: string;
-    displayText: string
   }
 
-  const selections: {[key: string]: SelectionObj} = {
-    apply: {
-      className: "menu-button",
-      displayText: "申請",
-    },
-    allow: {
-      className: "menu-button",
-      displayText: "認可（要管理者権限）",
-    },
-  }
-
-  if (Object.keys(selections).includes(path)) {
-    selections[path].className = "menu-button selected-menu-button"
+  const onClickItem = (path: string) => {
+    location.href = import.meta.env.MODE === 'development' ? `/htmls/${path}.html` :  `/${path}`
   }
 </script>
 
@@ -36,15 +23,16 @@
       <ul class="menu-ul">
         <li
           v-for="[key, value] in Object.entries(selections)"
-          key="key"
+          :key="key"
           :class="value.className"
+          @click="()=>{if (path !== key) {onClickItem(key)}}"
         >
           {{ value.displayText }}
         </li>
       </ul>
     </div>
     <div class="contents">
-      <slot></slot>
+      <slot />
     </div>
   </div>
   <div id="footer">
@@ -75,6 +63,12 @@
 
   .selected-menu-button {
     background-color: #158654 !important;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  .selected-menu-button:hover {
+    background-color: #158654d0 !important;
     color: #fff;
     font-weight: bold;
   }
