@@ -1,14 +1,19 @@
 # ---------- ビルドフェーズ ----------
 FROM golang:1.25.1-trixie AS builder
 
-WORKDIR /app/web-app
-COPY web-app/ ./
+ARG TARGET_NAME
 
-RUN go mod init web-app && go build -o server main.go
+WORKDIR /app
+COPY build.sh /app
+COPY ${TARGET_NAME}/ ./${TARGET_NAME}/
+
+RUN ./build.sh ${TARGET_NAME}
 
 # ---------- 実行フェーズ ----------
 
 FROM docker:28.5.0
+
+ARG TARGET_NAME
 
 WORKDIR /app
 
@@ -16,7 +21,7 @@ WORKDIR /app
 RUN apk add --no-cache openldap-clients
 
 # ビルド成果物をコピー
-COPY --from=builder /app/web-app/server .
+COPY --from=builder /app/${TARGET_NAME}/server .
 
 # ポート公開
 EXPOSE 8082

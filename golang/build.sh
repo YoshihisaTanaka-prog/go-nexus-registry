@@ -5,6 +5,7 @@ if [ "$#" = "1" ]; then
   if [ ! -e go.mod ]; then
     go mod init ${1}
   fi
+  go mod tidy
   go build -o server main.go
 else
   echo "Please select target directory"

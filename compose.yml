@@ -1,4 +1,12 @@
 services:
+  postgres:
+    image: postgres:18
+    restart: always
+    volumes:
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      - postgresql_data:/var/lib/postgresql/data
+    env_file: .env
+
   ldap:
     build:
       context: ./ldap
@@ -53,6 +61,8 @@ services:
     build: 
       context: ./golang
       dockerfile: ./runner.Dockerfile
+      args:
+        - TARGET_NAME=web_app
     env_file: .env
     environment:
        - LDAP_BIND_CN=${LDAP_BIND_CN_GO}
@@ -60,9 +70,11 @@ services:
     ports:
       - "8082:8080" # 外部ユーザー向け公開ポート
     volumes:
+      - ./golang/public:/app/public
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - nexus
+      - postgres
 
   node:
     image: node:22
@@ -78,3 +90,4 @@ services:
 volumes:
   go_home:
   node_home:
+  postgresql_data:
