@@ -10,5 +10,9 @@
   ],
   "compilerOptions": {
     "types": ["vite/client"]
+  },
+  "vueCompilerOptions": {
+    "fallthroughAttributes": true,
+    "strictTemplates": true
   }
 }
