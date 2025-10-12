@@ -3,6 +3,7 @@
     "alphine",
     "appuser",
     "cleanstart",
+    "entgo",
     "envsubst",
     "GOARCH",
     "htmls",
@@ -15,6 +16,8 @@
     "rootpw",
     "sonatype",
     "SSHA",
-    "trixie"
+    "Tanaka",
+    "trixie",
+    "Yoshihisa"
   ]
 }
