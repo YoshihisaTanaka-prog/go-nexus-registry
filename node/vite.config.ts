@@ -23,6 +23,7 @@ export default defineConfig({
         "index": resolve(__dirname, 'htmls', 'index.html'),
         "apply": resolve(__dirname, 'htmls', 'apply.html'),
         "sign-up": resolve(__dirname, 'htmls', 'sign-up.html'),
+        "sign-in": resolve(__dirname, 'htmls', 'sign-in.html'),
       },
       output: {
        entryFileNames: 'assets/[name].js',
