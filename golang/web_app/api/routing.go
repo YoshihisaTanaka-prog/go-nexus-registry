@@ -1,8 +1,12 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
+	// "net/http"
+	"os"
+	"time"
+	"web_app/api/handler"
 )
 
 var pagePathes = []string{
@@ -12,6 +16,9 @@ var pagePathes = []string{
 }
 
 func Start() {
+	time.Sleep(time.Second * 1)
+	fmt.Fprintln(os.Stdout, "Webサーバを起動します。")
+
 	r := gin.Default()
 
 	// // TodoエンティティのCRUDエンドポイントを設定
@@ -24,12 +31,8 @@ func Start() {
 	// /api グループを作成
 	api := r.Group("/api/v1")
 	{
-		api.POST("/sign-up", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "POST /api/todos"})
-		})
-		api.POST("/sign-in", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{"message": "POST /api/todos"})
-		})
+		api.POST("/sign-up", handler.SignUp)
+		api.POST("/sign-in", handler.SignIn)
 	}
 
 	// 必要に応じて静的ファイルのルートを設定
