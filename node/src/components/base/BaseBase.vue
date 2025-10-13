@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { defineProps } from 'vue';
   import type { SelectionObj } from './types';
-  const { path, selections } = defineProps<{path?: string, selections: SelectionObj}>();
+  const { path, selections, urlSuffix = '' } = defineProps<{path?: string, selections: SelectionObj, urlSuffix?: string}>();
 
   if ( path ) {
     if (Object.keys(selections).includes(path) && selections[path]) {
@@ -10,7 +10,7 @@
   }
 
   const onClickItem = (path: string) => {
-    location.href = import.meta.env.MODE === 'development' ? `/htmls/${path}.html` :  `/${path}`
+    location.href = (import.meta.env.MODE === 'development' ? `/htmls/${path}.html` :  `/${path}`) + urlSuffix;
   }
 </script>
 

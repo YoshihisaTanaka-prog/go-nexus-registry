@@ -14,10 +14,14 @@
       displayText: "サインアップ",
     },
   };
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectTo = urlParams.get('redirect');
+  const urlSuffix = redirectTo ? `?redirect=${encodeURIComponent(redirectTo)}` : undefined;
 </script>
 
 <template>
-  <BaseBase :path="path" :selections="selections">
+  <BaseBase :path="path" :selections="selections" :url-suffix="urlSuffix" >
     <slot />
   </BaseBase>
 </template>
