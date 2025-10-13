@@ -40,7 +40,7 @@
     margin-inline: auto;
     margin-block: auto;
     font-size: 1rem;
-    border: 1px solid #000;
+    border: 1px solid #b6bfd2;
     background-color: #fff;
     border-radius: 0.5rem;
     padding-block: 1rem;

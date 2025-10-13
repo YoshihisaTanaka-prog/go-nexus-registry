@@ -27,6 +27,6 @@
     border-radius: 0.2rem;
     border: 1px solid #b6bfd2;
     box-sizing: border-box;
-    padding: 0.5rem;
+    padding-block: 0.5rem;
   }
 </style>
