@@ -6,9 +6,9 @@
 
   const confirmPasswordModel = ref('')
 
-  const onClickButton = (userId: string, password: string) => {
+  const onClickButton = (email: string, password: string) => {
     if ( password === confirmPasswordModel.value ) {
-      signUp(userId, password)
+      signUp(email, password)
     } else {
       alert('パスワードと確認用のパスワードが異なる値です。')
     }

@@ -4,7 +4,7 @@
 
   const emits = defineEmits<{onClickedButton: [string, string]}>()
 
-  const userId = ref<string|undefined>('yoshihisa-tanaka')
+  const userId = ref<string|undefined>('yoshihisa-tanaka@example.com')
   const password = ref<string>('')
 </script>
 
@@ -15,8 +15,8 @@
     <p>
       <label>
         ユーザーID<br />
-        <input type="hidden" name="email" value="yoshihisa-tanaka" />
-        <input type="text" name="email" value="yoshihisa-tanaka" autocomplete="username" readonly disabled />
+        <input type="hidden" name="email" :value="userId!" />
+        <input type="text" :value="userId!" autocomplete="email" readonly disabled />
       </label>
     </p>
     <p>

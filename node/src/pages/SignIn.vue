@@ -3,8 +3,8 @@
   import Form from '@/components/sign/Form.vue';
   import { signIn } from '@/utils/api';
 
-  const onClickButton = (userId: string, password: string) => {
-    signIn(userId, password)
+  const onClickButton = (email: string, password: string) => {
+    signIn(email, password)
   }
 </script>
 
