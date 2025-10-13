@@ -10,7 +10,7 @@ import (
 	"web_app/ldap"
 )
 
-var cookieSessonKey = "_session"
+var cookieSessionKey = "_session"
 
 var publicPaths = []string{
 	"/assets/api.js",
@@ -52,12 +52,12 @@ func SignUp(c *gin.Context) {
 	if code == 0 {
 		jwt, err := CreateJwt(body.Email, []string{})
 		if err == nil {
-			SetCookie(c, cookieSessonKey, jwt )
+			SetCookie(c, cookieSessionKey, jwt )
 			c.JSON(200, gin.H{})
 			return
 		}
 	}
-	DeleteCookie(c, cookieSessonKey)
+	DeleteCookie(c, cookieSessionKey)
 	c.JSON(code, gin.H{"message": message})
 }
 
@@ -83,12 +83,12 @@ func SignIn(c *gin.Context) {
 	if code == 0 {
 		jwt, err := CreateJwt(body.Email, []string{})
 		if err == nil {
-			SetCookie(c, cookieSessonKey, jwt )
+			SetCookie(c, cookieSessionKey, jwt )
 			c.JSON(200, gin.H{})
 			return
 		}
 	}
-	DeleteCookie(c, cookieSessonKey)
+	DeleteCookie(c, cookieSessionKey)
 	c.JSON(code, gin.H{"message": message})
 }
 
@@ -111,12 +111,12 @@ func AuthProxy(c *gin.Context) {
 	}
 
 	redirectPath := "/sign-in?redirect=" + url.PathEscape(path)
-	cookie, err := c.Cookie(cookieSessonKey)
+	cookie, err := c.Cookie(cookieSessionKey)
 	if err == nil {
 		if isNeedAuth {
 			roles := ParseJwt(cookie)
 			if slices.Contains(roles, "_401") {
-				DeleteCookie(c, cookieSessonKey)
+				DeleteCookie(c, cookieSessionKey)
 				c.Redirect(302, redirectPath)
 				c.Abort()
 			} else {
@@ -125,14 +125,14 @@ func AuthProxy(c *gin.Context) {
 			}
 			return
 		} else {
-			DeleteCookie(c, cookieSessonKey)
+			DeleteCookie(c, cookieSessionKey)
 			c.Redirect(302, "/")
 			c.Abort()
 			return
 		}
 	} else {
 		if isNeedAuth {
-			DeleteCookie(c, cookieSessonKey)
+			DeleteCookie(c, cookieSessionKey)
 			c.Redirect(302, redirectPath)
 			c.Abort()
 			return
