@@ -21,10 +21,12 @@
     right: 1rem;
   }
   .item {
-    margin-bottom: 1rem;
+    margin-top: 1rem;
     width: 15vw;
     background-color: #fff;
     border-radius: 0.2rem;
-    border: 1px solid #000;
+    border: 1px solid #b6bfd2;
+    box-sizing: border-box;
+    padding: 0.5rem;
   }
 </style>
