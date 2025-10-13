@@ -10,6 +10,7 @@ services:
   ldap:
     build:
       context: ./ldap
+    restart: always
     env_file: .env
     volumes:
       - ./ldap/data/lib:/var/lib/openldap/openldap-data
@@ -18,17 +19,19 @@ services:
       - ./ldap/data/customized:/customized/saved-data
 
   nexus:
-    image: sonatype/nexus3:3.80.0
+    build: ./nexus
+    restart: always
     env_file: .env
     environment:
-       - LDAP_BIND_PASS=${LDAP_BIND_PASS_NEXUS}
+      - LDAP_BIND_PASS=${LDAP_BIND_PASS_NEXUS}
     volumes:
-      - ./nexus-data:/nexus-data
+      - ./nexus/data:/nexus-data
     depends_on:
       - ldap
 
   nginx:
     build: ./nginx
+    restart: always
     ports:
       - "8080:80"  # 外部公開
     env_file: .env
@@ -44,8 +47,9 @@ services:
       dockerfile: ./development.Dockerfile
     env_file: .env
     environment:
-       - LDAP_BIND_CN=${LDAP_BIND_CN_GO}
-       - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
+      - LDAP_BIND_CN=${LDAP_BIND_CN_GO}
+      - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
+      - IS_DEBUG=true
     ports:
       - "8083:8080"  # 外部ユーザー向け公開ポート
     working_dir: /app
@@ -63,10 +67,11 @@ services:
       dockerfile: ./runner.Dockerfile
       args:
         - TARGET_NAME=web_app
+    restart: always
     env_file: .env
     environment:
-       - LDAP_BIND_CN=${LDAP_BIND_CN_GO}
-       - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
+      - LDAP_BIND_CN=${LDAP_BIND_CN_GO}
+      - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
     ports:
       - "8082:8080" # 外部ユーザー向け公開ポート
     volumes:
