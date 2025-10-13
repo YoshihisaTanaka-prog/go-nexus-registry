@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { defineProps } from 'vue';
+  import Toast from '@/components/Toast.vue';
   import type { SelectionObj } from './types';
   const { path, selections, urlSuffix = '' } = defineProps<{path?: string, selections: SelectionObj, urlSuffix?: string}>();
 
@@ -33,6 +34,7 @@
     </div>
     <div class="contents">
       <slot />
+      <Toast />
     </div>
   </div>
   <div id="footer">
@@ -59,6 +61,7 @@
     background-color: #f4f5f9;
     flex: 1;
     padding: 1.5rem;
+    position: relative;
   }
 
   .selected-menu-button {
