@@ -70,7 +70,7 @@ func main()  {
 			cmd.Stderr = os.Stderr
 
 			if err := cmd.Run(); err != nil {
-			fmt.Fprintf(os.Stderr, "OpenLDAP 設定反映エラー: %v\n", err)
+			fmt.Fprintf(os.Stderr, "OpenLDAP 設定反映エラー (%s) : %v\n", "init", err)
 				os.Exit(1)
 			}
 		}()
@@ -236,18 +236,56 @@ func substituteEnv(input string, vars map[string]string) string {
 }
 
 func substituteSlapdConfFile(envVars map[string]string) {
-	filePath := "/etc/openldap/slapd.conf"
+	keptFilePath := "/customized/saved-data/slapd.conf"
+	var readFilePath string
+	if _, err := os.Stat(keptFilePath); err == nil {
+		readFilePath = keptFilePath
+	} else {
+		readFilePath = "/etc/openldap/slapd.conf"
+	}
+	writeFilePath := "/etc/openldap/slapd.conf"
 
-	fmt.Fprintln(os.Stdout, filePath + " を読み込みます。") 
-	fileData, err := os.ReadFile(filePath)
+	fmt.Fprintln(os.Stdout, readFilePath + " を読み込みます。") 
+	fileData, err := os.ReadFile(readFilePath)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, filePath + " 読み込みエラー:", err)
+		fmt.Fprintln(os.Stderr, readFilePath + " 読み込みエラー:", err)
 		os.Exit(1)
 	}
 
-	fmt.Fprintln(os.Stdout, filePath + " を読み込みました。\n環境変数を注入します。")
-	contentsLines := strings.Split(string(fileData), "\n")
-	newContentsLines := make([]string, 0)
+	if readFilePath == writeFilePath {
+		// ファイルに書き込み
+		if err := os.WriteFile(keptFilePath, fileData, 0644); err != nil {
+			fmt.Fprintln(os.Stderr, keptFilePath + " 書き込みエラー:", err)
+			os.Exit(1)
+		}
+		fmt.Fprintln(os.Stdout, keptFilePath + " を更新しました。")
+	}
+
+	fmt.Fprintln(os.Stdout, readFilePath + " を読み込みました。\n環境変数を注入します。")
+
+	configDatabaseDefinitionsComment := "#######################################################################\n# config database definitions\n#######################################################################"
+
+	splitedContents := strings.Split(string(fileData), configDatabaseDefinitionsComment)
+	contents1 := splitedContents[0]
+	contents2 := splitedContents[1]
+
+	newContentsLines := []string{
+		contents1,
+		"# ============================",
+		fmt.Sprintf("# ACL: %s と %s に書き込み権限付与", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_BIND_CN_GO"]),
+		"# ============================\n",
+		fmt.Sprintf("access to dn.base=\"ou=users,%s\"", envVars["LDAP_ROOT"]),
+		fmt.Sprintf("    by dn.exact=\"cn=%s,%s\" write", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_ROOT"]),
+		fmt.Sprintf("    by dn.exact=\"cn=%s,ou=service_accounts,%s\" write", envVars["LDAP_BIND_CN_GO"], envVars["LDAP_ROOT"]),
+		"    by * read\n",
+		fmt.Sprintf("access to dn.subtree=\"ou=users,%s\"", envVars["LDAP_ROOT"]),
+		fmt.Sprintf("    by dn.exact=\"cn=%s,%s\" write", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_ROOT"]),
+		fmt.Sprintf("    by dn.exact=\"cn=%s,ou=service_accounts,%s\" write", envVars["LDAP_BIND_CN_GO"], envVars["LDAP_ROOT"]),
+		"    by * read\n\n",
+		configDatabaseDefinitionsComment,
+	}
+	
+	contentsLines := strings.Split(contents2, "\n")
 
 	for _, contentsLine := range contentsLines {
 		if (strings.HasPrefix(contentsLine, "suffix")) {
@@ -261,13 +299,11 @@ func substituteSlapdConfFile(envVars map[string]string) {
 		}
 	}
 
-	fmt.Fprintln(os.Stdout, "環境変数を注入しました。\n" + filePath + " を更新します。")
-
 	newContents := []byte(strings.Join(newContentsLines, "\n"))
 	// ファイルに書き込み
-	if err := os.WriteFile(filePath, []byte(newContents), 0644); err != nil {
-		fmt.Fprintln(os.Stderr, filePath + " 書き込みエラー:", err)
+	if err := os.WriteFile(writeFilePath, []byte(newContents), 0644); err != nil {
+		fmt.Fprintln(os.Stderr, writeFilePath + " 書き込みエラー:", err)
 		os.Exit(1)
 	}
-	fmt.Fprintln(os.Stdout, filePath + " を更新しました。")
+	fmt.Fprintln(os.Stdout, writeFilePath + " を更新しました。")
 }

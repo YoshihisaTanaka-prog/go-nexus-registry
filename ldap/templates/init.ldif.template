@@ -23,14 +23,14 @@ ou: groups
 # ==============================
 # Bind Accounts
 # ==============================
-dn: cn=nexus_bind,ou=service_accounts,${LDAP_ROOT}
+dn: cn=${LDAP_BIND_CN_NEXUS},ou=service_accounts,${LDAP_ROOT}
 objectClass: simpleSecurityObject
 objectClass: organizationalRole
 cn: ${LDAP_BIND_CN_NEXUS}
 description: Bind account for Nexus LDAP authentication
 userPassword: ${LDAP_BIND_PASS_NEXUS_HASH}
 
-dn: cn=go_bind,ou=service_accounts,${LDAP_ROOT}
+dn: cn=${LDAP_BIND_CN_GO},ou=service_accounts,${LDAP_ROOT}
 objectClass: simpleSecurityObject
 objectClass: organizationalRole
 cn: ${LDAP_BIND_CN_GO}
