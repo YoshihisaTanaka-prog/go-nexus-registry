@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { defineProps } from 'vue';
   import BaseBase from './BaseBase.vue';
+  import SSE from './SSE.vue';
+
   import type { SelectionObj } from './types';
   const { path } = defineProps<{path?: string}>();
 
@@ -20,4 +22,5 @@
   <BaseBase :path="path" :selections="selections">
     <slot />
   </BaseBase>
+  <SSE />
 </template>
