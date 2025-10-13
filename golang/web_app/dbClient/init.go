@@ -8,7 +8,6 @@ import (
 	"web_app/ent"
 	"web_app/customError"
 	_ "github.com/lib/pq" // PostgreSQLドライバ
-	// _ "github.com/mattn/go-sqlite3" // SQLiteドライバ
 )
 
 func InitDb() {
