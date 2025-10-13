@@ -9,7 +9,7 @@ import (
 	"web_app/api/handler"
 )
 
-var pagePathes = []string{
+var pagePaths = []string{
 	"sign-up",
 	"sign-in",
 	"apply",
@@ -39,9 +39,11 @@ func Start() {
 		api.POST("/sign-in", handler.SignIn)
 	}
 
+	r.GET("/sse", handler.SSE)
+
 	// 必要に応じて静的ファイルのルートを設定
 	r.Static("/assets", "/app/public/assets")
-	for _, path := range pagePathes {
+	for _, path := range pagePaths {
 		r.GET("/" + path, func(c *gin.Context) {
 			c.File("/app/public/htmls/" + path + ".html")
 		})
@@ -54,8 +56,6 @@ func Start() {
 
 	// / → index.html を返す
 	r.GET("/", func(c *gin.Context) {
-		roles := c.MustGet("roles").([]string)
-		fmt.Println(roles)
 		c.File("/app/public/htmls/index.html")
 	})
 
