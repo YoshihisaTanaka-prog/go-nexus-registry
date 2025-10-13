@@ -27,11 +27,15 @@ func SignUp(c *gin.Context) {
 	fmt.Println(message, code)
 
 	if code == 0 {
-		SetCookie(c, "test", "test")
-		c.JSON(200, gin.H{})
-	} else {
-		c.JSON(code, gin.H{"message": message})
+		jwt, err := CreateJWT(body.Email, []string{})
+		if err == nil {
+			SetCookie(c, "test", jwt )
+			c.JSON(200, gin.H{})
+			return
+		}
 	}
+	DeleteCookie(c, "test")
+	c.JSON(code, gin.H{"message": message})
 }
 
 func SignIn(c *gin.Context) {
@@ -54,9 +58,13 @@ func SignIn(c *gin.Context) {
 	fmt.Println(message, code)
 
 	if code == 0 {
-		SetCookie(c, "test", "test")
-		c.JSON(200, gin.H{})
-	} else {
-		c.JSON(code, gin.H{"message": message})
+		jwt, err := CreateJWT(body.Email, []string{})
+		if err == nil {
+			SetCookie(c, "test", jwt )
+			c.JSON(200, gin.H{})
+			return
+		}
 	}
+	DeleteCookie(c, "test")
+	c.JSON(code, gin.H{"message": message})
 }

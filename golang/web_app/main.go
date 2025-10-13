@@ -11,7 +11,6 @@ import (
 
 var envKeys = []string{
 	"GO_MANAGER_HOST_NAME",
-	"GO_MANAGER_JWT_SECRET",
 	"LDAP_BIND_CN_GO",
 	"LDAP_DOMAIN",
 }

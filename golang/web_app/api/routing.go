@@ -16,6 +16,8 @@ var pagePathes = []string{
 }
 
 func Start() {
+	handler.InitJwt()
+
 	time.Sleep(time.Second * 1)
 	fmt.Fprintln(os.Stdout, "Webサーバを起動します。")
 
