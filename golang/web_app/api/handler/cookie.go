@@ -13,7 +13,7 @@ import (
 
 var ONE_HOUR_SEC = 3600
 
-var hmacSecret []byte
+var hmacSecret = make([]byte, 64)
 
 func InitJwt()  {
 	_, err := rand.Read(hmacSecret)
@@ -37,7 +37,7 @@ func DeleteCookie(c *gin.Context, key string) {
 	if hostName == "localhost" {
 		secure = false
 	}
-	c.SetCookie(key, "", 1, "/", os.Getenv("GO_MANAGER_HOST_NAME"), secure, true)
+	c.SetCookie(key, "", -1, "/", os.Getenv("GO_MANAGER_HOST_NAME"), secure, true)
 }
 
 type MyClaims struct {
@@ -46,7 +46,7 @@ type MyClaims struct {
 	jwt.RegisteredClaims
 }
 
-func CreateJWT(userName string, groups []string) (string, error) {
+func CreateJwt(userName string, groups []string) (string, error) {
 	// ===== 発行 =====
 	now := time.Now()
 	uuidV4Arr, err := uuid.NewRandom()
@@ -63,7 +63,7 @@ func CreateJWT(userName string, groups []string) (string, error) {
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    os.Getenv("GO_MANAGER_HOST_NAME"),
 			Subject:   "auth",
-			Audience:  []string{os.Getenv("GO_MANAGER_HOST_NAME")},
+			Audience:  []string{os.Getenv("GO_MANAGER_HOST_NAME") + "/app"},
 			ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(ONE_HOUR_SEC) * time.Second)),
 			NotBefore: jwt.NewNumericDate(now.Add(-30 * time.Second)),
 			IssuedAt:  jwt.NewNumericDate(now),
@@ -72,4 +72,15 @@ func CreateJWT(userName string, groups []string) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(hmacSecret)
+}
+
+func ParseJwt(raw string) []string {
+	parsed, err := jwt.ParseWithClaims(raw, &MyClaims{}, func(t *jwt.Token) (any, error) {
+		if t.Method != jwt.SigningMethodHS256 { return nil, fmt.Errorf("bad alg") }
+		return hmacSecret, nil
+	}, jwt.WithIssuer(os.Getenv("GO_MANAGER_HOST_NAME")), jwt.WithAudience(os.Getenv("GO_MANAGER_HOST_NAME") + "/app"))
+	if err != nil || !parsed.Valid {
+		return []string{"_401"}
+	}
+	return parsed.Claims.(*MyClaims).Roles
 }

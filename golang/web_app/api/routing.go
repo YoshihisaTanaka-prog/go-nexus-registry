@@ -23,6 +23,8 @@ func Start() {
 
 	r := gin.Default()
 
+	r.Use(handler.AuthProxy)
+
 	// // TodoエンティティのCRUDエンドポイントを設定
 	// r.POST("/todos", func(c *gin.Context) { /* 作成処理 */ })
 	// r.GET("/todos", func(c *gin.Context) { /* 一覧取得処理 */ })
@@ -52,6 +54,8 @@ func Start() {
 
 	// / → index.html を返す
 	r.GET("/", func(c *gin.Context) {
+		roles := c.MustGet("roles").([]string)
+		fmt.Println(roles)
 		c.File("/app/public/htmls/index.html")
 	})
 
