@@ -1,22 +1,4 @@
-import Axios from 'axios';
-
-const axios = Axios.create({
-  baseURL: '/api/v1'
-});
-
-const convertError = (error: unknown) => {
-  if (Axios.isAxiosError(error) && error.response) {
-    const { response } = error;
-    const { status, data } = response;
-    return { status, data };
-  } else {
-    return { status: 500, data: 'Internal Server Error' };
-  }
-}
-
-const alertError = (statusCode: number, data: unknown) => {
-  alert(`Response Status ${statusCode}\n\n${typeof data === 'string' ? data : JSON.stringify(data)}`);
-}
+import { axios, convertError, alertError } from './_base'
 
 const urlParams = new URLSearchParams(window.location.search);
 const redirectTo = urlParams.get('redirect');
