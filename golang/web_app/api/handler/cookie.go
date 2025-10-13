@@ -22,7 +22,7 @@ func InitJwt()  {
 	}
 }
 
-func SetCookie(c *gin.Context, key string, value string) {
+func setCookie(c *gin.Context, key string, value string) {
 	secure := true
 	hostName := os.Getenv("GO_MANAGER_HOST_NAME")
 	if hostName == "localhost" {
@@ -31,7 +31,7 @@ func SetCookie(c *gin.Context, key string, value string) {
 	c.SetCookie(key, value, ONE_HOUR_SEC, "/", os.Getenv("GO_MANAGER_HOST_NAME"), secure, true)
 }
 
-func DeleteCookie(c *gin.Context, key string) {
+func deleteCookie(c *gin.Context, key string) {
 	secure := true
 	hostName := os.Getenv("GO_MANAGER_HOST_NAME")
 	if hostName == "localhost" {
@@ -46,7 +46,7 @@ type MyClaims struct {
 	jwt.RegisteredClaims
 }
 
-func CreateJwt(userName string, groups []string) (string, error) {
+func createJwt(userName string, groups []string) (string, error) {
 	// ===== 発行 =====
 	now := time.Now()
 	uuidV4Arr, err := uuid.NewRandom()
@@ -64,7 +64,7 @@ func CreateJwt(userName string, groups []string) (string, error) {
 			Issuer:    os.Getenv("GO_MANAGER_HOST_NAME"),
 			Subject:   "auth",
 			Audience:  []string{os.Getenv("GO_MANAGER_HOST_NAME") + "/app"},
-			ExpiresAt: jwt.NewNumericDate(now.Add(time.Duration(ONE_HOUR_SEC) * time.Second)),
+			ExpiresAt: jwt.NewNumericDate(now.Add(3600 * time.Second)),
 			NotBefore: jwt.NewNumericDate(now.Add(-30 * time.Second)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			ID:        uuidV4,
@@ -74,13 +74,13 @@ func CreateJwt(userName string, groups []string) (string, error) {
 	return token.SignedString(hmacSecret)
 }
 
-func ParseJwt(raw string) []string {
+func parseJwt(raw string) (userId string, roles []string) {
 	parsed, err := jwt.ParseWithClaims(raw, &MyClaims{}, func(t *jwt.Token) (any, error) {
 		if t.Method != jwt.SigningMethodHS256 { return nil, fmt.Errorf("bad alg") }
 		return hmacSecret, nil
 	}, jwt.WithIssuer(os.Getenv("GO_MANAGER_HOST_NAME")), jwt.WithAudience(os.Getenv("GO_MANAGER_HOST_NAME") + "/app"))
 	if err != nil || !parsed.Valid {
-		return []string{"_401"}
+		return "", []string{}
 	}
-	return parsed.Claims.(*MyClaims).Roles
+	return parsed.Claims.(*MyClaims).UserId, parsed.Claims.(*MyClaims).Roles
 }

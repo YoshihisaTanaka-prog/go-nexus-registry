@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/exp/slices"
 	"net/url"
 	"strings"
 	"web_app/ldap"
@@ -27,6 +26,8 @@ var guestOnlyPaths = []string{
 	"/api/v1/sign-up",
 	"/assets/sign-in.js",
 	"/assets/sign-up.js",
+	"/assets/sign.js",
+	"/assets/sign.css",
 	"/favicon.ico",
 }
 
@@ -50,14 +51,14 @@ func SignUp(c *gin.Context) {
 	fmt.Println(message, code)
 
 	if code == 0 {
-		jwt, err := CreateJwt(body.Email, []string{})
+		jwt, err := createJwt(body.Email, []string{})
 		if err == nil {
-			SetCookie(c, cookieSessionKey, jwt )
+			setCookie(c, cookieSessionKey, jwt )
 			c.JSON(200, gin.H{})
 			return
 		}
 	}
-	DeleteCookie(c, cookieSessionKey)
+	deleteCookie(c, cookieSessionKey)
 	c.JSON(code, gin.H{"message": message})
 }
 
@@ -81,14 +82,14 @@ func SignIn(c *gin.Context) {
 	fmt.Println(message, code)
 
 	if code == 0 {
-		jwt, err := CreateJwt(body.Email, []string{})
+		jwt, err := createJwt(body.Email, []string{})
 		if err == nil {
-			SetCookie(c, cookieSessionKey, jwt )
+			setCookie(c, cookieSessionKey, jwt )
 			c.JSON(200, gin.H{})
 			return
 		}
 	}
-	DeleteCookie(c, cookieSessionKey)
+	deleteCookie(c, cookieSessionKey)
 	c.JSON(code, gin.H{"message": message})
 }
 
@@ -114,25 +115,25 @@ func AuthProxy(c *gin.Context) {
 	cookie, err := c.Cookie(cookieSessionKey)
 	if err == nil {
 		if isNeedAuth {
-			roles := ParseJwt(cookie)
-			if slices.Contains(roles, "_401") {
-				DeleteCookie(c, cookieSessionKey)
+			userId, roles := parseJwt(cookie)
+			if userId == "" {
+				deleteCookie(c, cookieSessionKey)
 				c.Redirect(302, redirectPath)
 				c.Abort()
 			} else {
+				c.Set("userId", userId)
 				c.Set("roles", roles)
 				c.Next()
 			}
 			return
 		} else {
-			DeleteCookie(c, cookieSessionKey)
 			c.Redirect(302, "/")
 			c.Abort()
 			return
 		}
 	} else {
 		if isNeedAuth {
-			DeleteCookie(c, cookieSessionKey)
+			deleteCookie(c, cookieSessionKey)
 			c.Redirect(302, redirectPath)
 			c.Abort()
 			return
