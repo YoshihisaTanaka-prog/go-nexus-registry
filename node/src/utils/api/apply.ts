@@ -1,12 +1,11 @@
 import { axios, convertError, alertError } from './_base'
 
 export type ApplyProps = {
-  type: "npm";
+  type: string;
   name: string;
-  version: string;
-  v1: number;
-  v2: number;
-  v3: number;
+  v1?: number;
+  v2?: number;
+  v3?: number;
 }
 
 const onSuccessApply = () => {}
@@ -15,6 +14,7 @@ const onFailedApply = (statusCode: number, data: unknown) => {
 }
 
 const applyUnit = async (props: ApplyProps) => {
+  console.log(props)
   try {
     const result = await axios.post('apply', props);
     if (result.status < 400) {
