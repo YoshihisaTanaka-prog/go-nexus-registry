@@ -4,30 +4,67 @@
   import Field from './Apply/Field.vue';
   import * as api from '@/utils/api';
 
-  function createVModels() {
+  const libTypeOptions = ref(['npm']);
+  const libTypeModel = ref<string>();
+
+  type LibData = {
+    id: string;
+    name: string;
+    v1: number|undefined;
+    v2: number|undefined;
+    v3: number|undefined;
+  }
+
+  function createLibData(): LibData {
     return {
       id: `${Math.random()}`.slice(2),
-      name: ref(''),
-      v1: ref<number>(),
-      v2: ref<number>(),
-      v3: ref<number>(),
+      name: '',
+      v1: undefined,
+      v2: undefined,
+      v3: undefined,
     }
   }
 
-  const vModelsArray = ref([createVModels()])
+  const libDataArray = ref<LibData[]>([createLibData()])
 
-  const addVModel = () => {
-    vModelsArray.value.push(createVModels())
+  const addLibData = () => {
+    libDataArray.value.push(createLibData())
   }
 
-  const deleteVModel = (id: string) => {
-    if (vModelsArray.value.length > 1) {
-      vModelsArray.value = vModelsArray.value.filter(vm => vm.id != id)
+  const deleteLibData = (id: string) => {
+    if (libDataArray.value.length > 1) {
+      libDataArray.value = libDataArray.value.filter(libData => libData.id != id)
     }
+  }
+
+  const getLibData = (id: string) => {
+    return libDataArray.value.find(libData => libData.id === id);
+  }
+
+  const setLibName = (id: string, newName: string) => {
+    getLibData(id)!.name = newName;
+  }
+
+  const setLibV1 = (id: string, newV1: number|undefined) => {
+    getLibData(id)!.v1 = newV1;
+  }
+
+  const setLibV2 = (id: string, newV2: number|undefined) => {
+    getLibData(id)!.v2 = newV2;
+  }
+
+  const setLibV3 = (id: string, newV3: number|undefined) => {
+    getLibData(id)!.v3 = newV3;
   }
 
   const apply = () => {
-    api.apply(...vModelsArray.value.map(vm => {return {type: 'npm', name: vm.name, v1: vm.v1, v2: vm.v2, v3: vm.v3}}))
+    libDataArray.value = libDataArray.value.filter(libData => libData.name != '');
+    api.apply(libTypeModel.value, ...libDataArray.value.map(libData => {return {name: libData.name, v1: libData.v1, v2: libData.v2, v3: libData.v3}}));
+    if (libDataArray.value.length === 0) {
+      setTimeout(async () => {
+        libDataArray.value = [createLibData()];
+      }, 100);
+    }
   }
 </script>
 
@@ -35,23 +72,35 @@
   <Base :path="'apply'">
   <form>
     <h2>ライブラリの申請</h2>
+    <p style="text-align: center;">
+      ライブラリの種類：
+      <select v-model="libTypeModel">
+        <option v-if="libTypeModel === undefined" :value="undefined">選択してください。</option>
+        <option
+          v-for="(libTypeOption, index) in libTypeOptions"
+          :key="index"
+        >
+          {{ libTypeOption }}
+        </option>
+      </select>
+    </p>
     <table>
       <tbody>
         <Field
-          v-for="vm in vModelsArray"
-          :key="vm.id"
-          :length="vModelsArray.length"
-          :vm-id="vm.id"
-          v-model:name="vm.name"
-          v-model:v1="vm.v1"
-          v-model:v2="vm.v2"
-          v-model:v3="vm.v3"
-          @delete="deleteVModel"
+          v-for="libData in libDataArray"
+          :key="libData.id"
+          :length="libDataArray.length"
+          :lib-id="libData.id"
+          @delete="deleteLibData"
+          @set-lib-name="setLibName"
+          @set-lib-v1="setLibV1"
+          @set-lib-v2="setLibV2"
+          @set-lib-v3="setLibV3"
         />
       </tbody>
     </table>
     <p class="button-p">
-      <button type="button" @click="addVModel">
+      <button type="button" @click="addLibData">
         +
       </button>
     </p>
@@ -63,7 +112,6 @@
   </form>
   </Base>
 </template>
-
 
 <style scoped>
   h2 {
@@ -81,6 +129,11 @@
     padding-inline: 3rem;
     box-sizing: border-box;
   }
+  select {
+    border: 1px solid #b6bfd2;
+    border-radius: 0.2rem;
+  }
+
   .button-p {
     text-align: center;
   }

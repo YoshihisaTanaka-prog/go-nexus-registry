@@ -1,41 +1,38 @@
 <script setup lang="ts">
   import FieldUnit from './FieldUnit.vue';
-  import { defineEmits, defineModel, defineProps } from 'vue';
+  import { defineEmits, defineProps } from 'vue';
 
-  const { vmId, length } = defineProps<{vmId: string, length: number}>()
+  const { libId, length } = defineProps<{libId: string, length: number }>();
 
-  const emits = defineEmits<{'delete': [id: string]}>()
-
-  const nameModel = defineModel<string>('name', {default: ''});
-  const v1Model = defineModel<number>('v1');
-  const v2Model = defineModel<number>('v2');
-  const v3Model = defineModel<number>('v3');
+  const emits = defineEmits<{
+    'delete': [id: string];
+    'setLibName': [id: string, name: string];
+    'setLibV1': [id: string, v1: number|undefined];
+    'setLibV2': [id: string, v2: number|undefined];
+    'setLibV3': [id: string, v3: number|undefined];
+  }>();
 </script>
 
 <template>
   <tr>
     <FieldUnit
-      :input-name="'name'"
       :input-type="'text'"
-      v-model="nameModel"
+      @set="(newValue: string | number | undefined)=>{emits('setLibName', libId, newValue as string)}"
     />
     <td>@</td>
     <FieldUnit
-      :input-name="'v1'"
-      v-model="v1Model"
+      @set="(newValue: string | number | undefined)=>{emits('setLibV1', libId, newValue as number | undefined)}"
     />
     <td>.</td>
     <FieldUnit
-      :input-name="'v2'"
-      v-model="v2Model"
+      @set="(newValue: string | number | undefined)=>{emits('setLibV2', libId, newValue as number | undefined)}"
     />
     <td>.</td>
     <FieldUnit
-      :input-name="'v3'"
-      v-model="v3Model"
+      @set="(newValue: string | number | undefined)=>{emits('setLibV3', libId, newValue as number | undefined)}"
     />
     <td>
-      <button v-if="length > 1" type="button" @click="() => {emits('delete', vmId)}">X</button>
+      <button v-if="length > 1" type="button" @click="() => {emits('delete', libId)}">X</button>
     </td>
   </tr>
 </template>

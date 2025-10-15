@@ -1,7 +1,6 @@
 import { axios, convertError, alertError } from './_base'
 
 export type ApplyProps = {
-  type: string;
   name: string;
   v1?: number;
   v2?: number;
@@ -13,10 +12,10 @@ const onFailedApply = (statusCode: number, data: unknown) => {
   alertError(statusCode, data);
 }
 
-const applyUnit = async (props: ApplyProps) => {
+const applyUnit = async (libType: string, props: ApplyProps) => {
   console.log(props)
   try {
-    const result = await axios.post('apply', props);
+    const result = await axios.post('apply', {...props, type: libType});
     if (result.status < 400) {
       onSuccessApply();
     } else {
@@ -28,8 +27,13 @@ const applyUnit = async (props: ApplyProps) => {
   }
 }
 
-export const apply = (...propsArray: ApplyProps[]) => {
-  propsArray.map((props)=>{
-    void applyUnit(props);
-  })
+export const apply = (libType: string|undefined, ...propsArray: ApplyProps[]) => {
+  if (libType === undefined) {
+    alert('ライブラリの種類を選択してください。')
+  } else {
+    console.log(propsArray)
+    propsArray.map((props)=>{
+      void applyUnit(libType, props);
+    });
+  }
 }

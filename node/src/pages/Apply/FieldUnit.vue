@@ -1,18 +1,34 @@
 <script setup lang="ts">
-  import { defineProps, defineModel } from 'vue';
+  import { defineProps, defineEmits, ref } from 'vue';
 
-  const { inputName, inputType = 'number' } = defineProps<{ inputName: string, inputType?: 'text'|'number' }>()
+  const { inputType = 'number' } = defineProps<{ inputType?: 'text'|'number' }>()
 
-  const model = defineModel<string>({default: ''});
+  const model = inputType ==='number' ? ref<number|undefined>(): ref('');
+  const emits = defineEmits<{
+    'set': [value: string|number|undefined]
+  }>();
+
+  const setValue = () => {
+    emits('set', model.value);
+  }
 </script>
 
 <template>
   <td>
-    <input :type="inputType" :name="inputName" v-model="model" :class="inputType === 'number' ? 'num-field' : ''" />
+    <input
+      :class="inputType === 'number' ? 'num-field' : ''"
+      :type="inputType"
+      v-model="model"
+      @input="setValue"
+    />
   </td>
 </template>
 
 <style scoped>
+  input {
+    border: 1px solid #b6bfd2;
+    border-radius: 0.2rem;
+  }
   .num-field {
     width: 3em;
   }
