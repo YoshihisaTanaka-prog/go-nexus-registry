@@ -40,13 +40,21 @@ func AddUser(email string, password string) (mean string, responseCode int) {
 	userDN := getUserDn(userName)
 	ldif := fmt.Sprintf("dn: %s\nobjectClass: inetOrgPerson\nuid: %s\ncn: %s\nsn: %s\nmail: %s\nuserPassword: %s\n", userDN, userName, "New User", "New User", email, hashedPassword)
 	fmt.Fprintln(os.Stdout, "Adding user:", userName)
-	return runLDAP("Adding Ldap error", "ldapadd", []string{}, ldif)
+	txt, exitCode := runLDAP("Adding Ldap error", "ldapadd", []string{}, ldif)
+	if exitCode == 0 {
+		return userName, 0
+	}
+	return txt, exitCode
 }
 
 func SearchUser(email string) (mean string, responseCode int) {
 	userName := getUserName(email)
 	fmt.Fprintln(os.Stdout, "Searching user:", userName)
-	return runLDAP("Searching User error", "ldapsearch", []string{"-b", baseDn, fmt.Sprintf("\"(uid=%s\")", userName)})
+	txt, exitCode := runLDAP("Searching User error", "ldapsearch", []string{"-b", baseDn, fmt.Sprintf("\"(uid=%s\")", userName)})
+	if exitCode == 0 {
+		return userName, 0
+	}
+	return txt, exitCode
 }
 
 func ChangePassword(email string, password string) (mean string, responseCode int) {
@@ -59,14 +67,22 @@ func ChangePassword(email string, password string) (mean string, responseCode in
 	userDN := getUserDn(userName)
 	ldif := fmt.Sprintf("dn: %s\nchangetype: modify\nreplace: userPassword\nuserPassword: %s\n", userDN, hashedPassword)
 	fmt.Fprintln(os.Stdout, "Changing password for:", userName)
-	return runLDAP("Changing password error", "ldapmodify", []string{}, ldif)
+	txt, exitCode := runLDAP("Changing password error", "ldapmodify", []string{}, ldif)
+	if exitCode == 0 {
+		return userName, 0
+	}
+	return txt, exitCode
 }
 
 func DeleteUser(email string) (mean string, responseCode int) {
 	userName := getUserName(email)
 	userDN := getUserDn(userName)
 	fmt.Println("Deleting user:", userName)
-	return runLDAP("Deleting user error", "ldapdelete", []string{userDN})
+	txt, exitCode := runLDAP("Deleting user error", "ldapdelete", []string{userDN})
+	if exitCode == 0 {
+		return userName, 0
+	}
+	return txt, exitCode
 }
 
 func Authenticate(email string, password string) (mean string, responseCode int) {
@@ -77,5 +93,5 @@ func Authenticate(email string, password string) (mean string, responseCode int)
 	if err := cmd.Run(); err != nil {
 		return customError.GetLdapResult(err, "Authenticating error")
 	}
-	return "", 0
+	return userName, 0
 }
