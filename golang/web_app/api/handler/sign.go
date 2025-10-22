@@ -16,24 +16,24 @@ var publicPaths = []string{
 	"/assets/api.css",
 	"/assets/BaseBase.js",
 	"/assets/BaseBase.css",
+	"/assets/sign.js",
 	"/.well-known",
 }
 
 var guestOnlyPaths = []string{
-	"/sign-in",
-	"/sign-up",
 	"/api/v1/sign-in",
 	"/api/v1/sign-up",
+	"/assets/Form.css",
+	"/assets/Form.js",
 	"/assets/sign-in.js",
 	"/assets/sign-up.js",
-	"/assets/sign.js",
 	"/assets/sign.css",
 	"/favicon.ico",
+	"/sign-in",
+	"/sign-up",
 }
 
 func SignUp(c *gin.Context) {
-	// ctx = c.Request.Context()
-
 	var body struct {
 		Email  string `json:"email" binding:"required"`
 		Password  string `json:"password" binding:"required"`
@@ -51,7 +51,7 @@ func SignUp(c *gin.Context) {
 	fmt.Println(message, code)
 
 	if code == 0 {
-		jwt, err := createJwt(body.Email, []string{})
+		jwt, err := createJwt(message, []string{})
 		if err == nil {
 			setCookie(c, cookieSessionKey, jwt )
 			c.JSON(200, gin.H{})
@@ -76,13 +76,9 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	fmt.Fprintln(os.Stdout, "sign-in:", body)
-
 	message, code := ldap.Authenticate(body.Email, body.Password)
-	fmt.Println(message, code)
-
 	if code == 0 {
-		jwt, err := createJwt(body.Email, []string{})
+		jwt, err := createJwt(message, []string{})
 		if err == nil {
 			setCookie(c, cookieSessionKey, jwt )
 			c.JSON(200, gin.H{})
@@ -114,8 +110,8 @@ func AuthProxy(c *gin.Context) {
 	redirectPath := "/sign-in?redirect=" + url.PathEscape(path)
 	cookie, err := c.Cookie(cookieSessionKey)
 	if err == nil {
+		userId, roles := parseJwt(cookie)
 		if isNeedAuth {
-			userId, roles := parseJwt(cookie)
 			if userId == "" {
 				deleteCookie(c, cookieSessionKey)
 				c.Redirect(302, redirectPath)
@@ -128,6 +124,8 @@ func AuthProxy(c *gin.Context) {
 			return
 		} else {
 			c.Redirect(302, "/")
+			c.Set("userId", userId)
+			c.Set("roles", roles)
 			c.Abort()
 			return
 		}
