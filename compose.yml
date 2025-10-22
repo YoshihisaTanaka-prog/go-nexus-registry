@@ -50,6 +50,7 @@ services:
       - LDAP_BIND_CN=${LDAP_BIND_CN_GO}
       - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
       - IS_DEBUG=true
+      - ROOT_DIR_PATH=${PWD}/golang
     ports:
       - "8083:8080"  # 外部ユーザー向け公開ポート
     working_dir: /app
@@ -72,6 +73,7 @@ services:
     environment:
       - LDAP_BIND_CN=${LDAP_BIND_CN_GO}
       - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
+      - ROOT_DIR_PATH=${PWD}/golang
     ports:
       - "8082:8080" # 外部ユーザー向け公開ポート
     volumes:
