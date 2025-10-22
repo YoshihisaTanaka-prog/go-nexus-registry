@@ -1,2 +1,4 @@
 /public
 server
+/tmp/*
+!/tmp/templates
