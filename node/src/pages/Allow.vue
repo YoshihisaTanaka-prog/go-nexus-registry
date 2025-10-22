@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <Base :path="''" />
+  <Base :path="'allow'">
+    Allow
+  </Base>
 </template>
-
-<style scoped></style>
