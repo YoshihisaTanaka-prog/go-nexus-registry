@@ -26,21 +26,9 @@ func (_c *RequestedLibraryCreate) SetName(v string) *RequestedLibraryCreate {
 	return _c
 }
 
-// SetV1 sets the "v1" field.
-func (_c *RequestedLibraryCreate) SetV1(v int) *RequestedLibraryCreate {
-	_c.mutation.SetV1(v)
-	return _c
-}
-
-// SetV2 sets the "v2" field.
-func (_c *RequestedLibraryCreate) SetV2(v int) *RequestedLibraryCreate {
-	_c.mutation.SetV2(v)
-	return _c
-}
-
-// SetV3 sets the "v3" field.
-func (_c *RequestedLibraryCreate) SetV3(v int) *RequestedLibraryCreate {
-	_c.mutation.SetV3(v)
+// SetVersion sets the "version" field.
+func (_c *RequestedLibraryCreate) SetVersion(v string) *RequestedLibraryCreate {
+	_c.mutation.SetVersion(v)
 	return _c
 }
 
@@ -83,12 +71,6 @@ func (_c *RequestedLibraryCreate) SetNillableUpdatedAt(v *time.Time) *RequestedL
 	if v != nil {
 		_c.SetUpdatedAt(*v)
 	}
-	return _c
-}
-
-// SetVersion sets the "version" field.
-func (_c *RequestedLibraryCreate) SetVersion(v string) *RequestedLibraryCreate {
-	_c.mutation.SetVersion(v)
 	return _c
 }
 
@@ -163,28 +145,12 @@ func (_c *RequestedLibraryCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.name": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.V1(); !ok {
-		return &ValidationError{Name: "v1", err: errors.New(`ent: missing required field "RequestedLibrary.v1"`)}
+	if _, ok := _c.mutation.Version(); !ok {
+		return &ValidationError{Name: "version", err: errors.New(`ent: missing required field "RequestedLibrary.version"`)}
 	}
-	if v, ok := _c.mutation.V1(); ok {
-		if err := requestedlibrary.V1Validator(v); err != nil {
-			return &ValidationError{Name: "v1", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.v1": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.V2(); !ok {
-		return &ValidationError{Name: "v2", err: errors.New(`ent: missing required field "RequestedLibrary.v2"`)}
-	}
-	if v, ok := _c.mutation.V2(); ok {
-		if err := requestedlibrary.V2Validator(v); err != nil {
-			return &ValidationError{Name: "v2", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.v2": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.V3(); !ok {
-		return &ValidationError{Name: "v3", err: errors.New(`ent: missing required field "RequestedLibrary.v3"`)}
-	}
-	if v, ok := _c.mutation.V3(); ok {
-		if err := requestedlibrary.V3Validator(v); err != nil {
-			return &ValidationError{Name: "v3", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.v3": %w`, err)}
+	if v, ok := _c.mutation.Version(); ok {
+		if err := requestedlibrary.VersionValidator(v); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.version": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.Status(); !ok {
@@ -200,9 +166,6 @@ func (_c *RequestedLibraryCreate) check() error {
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "RequestedLibrary.updated_at"`)}
-	}
-	if _, ok := _c.mutation.Version(); !ok {
-		return &ValidationError{Name: "version", err: errors.New(`ent: missing required field "RequestedLibrary.version"`)}
 	}
 	if _, ok := _c.mutation.RequestedBy(); !ok {
 		return &ValidationError{Name: "requested_by", err: errors.New(`ent: missing required field "RequestedLibrary.requested_by"`)}
@@ -256,17 +219,9 @@ func (_c *RequestedLibraryCreate) createSpec() (*RequestedLibrary, *sqlgraph.Cre
 		_spec.SetField(requestedlibrary.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := _c.mutation.V1(); ok {
-		_spec.SetField(requestedlibrary.FieldV1, field.TypeInt, value)
-		_node.V1 = value
-	}
-	if value, ok := _c.mutation.V2(); ok {
-		_spec.SetField(requestedlibrary.FieldV2, field.TypeInt, value)
-		_node.V2 = value
-	}
-	if value, ok := _c.mutation.V3(); ok {
-		_spec.SetField(requestedlibrary.FieldV3, field.TypeInt, value)
-		_node.V3 = value
+	if value, ok := _c.mutation.Version(); ok {
+		_spec.SetField(requestedlibrary.FieldVersion, field.TypeString, value)
+		_node.Version = value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(requestedlibrary.FieldStatus, field.TypeString, value)
@@ -279,10 +234,6 @@ func (_c *RequestedLibraryCreate) createSpec() (*RequestedLibrary, *sqlgraph.Cre
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(requestedlibrary.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
-	}
-	if value, ok := _c.mutation.Version(); ok {
-		_spec.SetField(requestedlibrary.FieldVersion, field.TypeString, value)
-		_node.Version = value
 	}
 	if value, ok := _c.mutation.RequestedBy(); ok {
 		_spec.SetField(requestedlibrary.FieldRequestedBy, field.TypeString, value)

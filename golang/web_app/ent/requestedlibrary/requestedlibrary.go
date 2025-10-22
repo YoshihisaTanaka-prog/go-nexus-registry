@@ -15,20 +15,14 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldV1 holds the string denoting the v1 field in the database.
-	FieldV1 = "v1"
-	// FieldV2 holds the string denoting the v2 field in the database.
-	FieldV2 = "v2"
-	// FieldV3 holds the string denoting the v3 field in the database.
-	FieldV3 = "v3"
+	// FieldVersion holds the string denoting the version field in the database.
+	FieldVersion = "version"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldVersion holds the string denoting the version field in the database.
-	FieldVersion = "version"
 	// FieldRequestedBy holds the string denoting the requested_by field in the database.
 	FieldRequestedBy = "requested_by"
 	// Table holds the table name of the requestedlibrary in the database.
@@ -39,13 +33,10 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
-	FieldV1,
-	FieldV2,
-	FieldV3,
+	FieldVersion,
 	FieldStatus,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldVersion,
 	FieldRequestedBy,
 }
 
@@ -62,12 +53,8 @@ func ValidColumn(column string) bool {
 var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
-	// V1Validator is a validator for the "v1" field. It is called by the builders before save.
-	V1Validator func(int) error
-	// V2Validator is a validator for the "v2" field. It is called by the builders before save.
-	V2Validator func(int) error
-	// V3Validator is a validator for the "v3" field. It is called by the builders before save.
-	V3Validator func(int) error
+	// VersionValidator is a validator for the "version" field. It is called by the builders before save.
+	VersionValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus string
 	// StatusValidator is a validator for the "status" field. It is called by the builders before save.
@@ -97,19 +84,9 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
 }
 
-// ByV1 orders the results by the v1 field.
-func ByV1(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldV1, opts...).ToFunc()
-}
-
-// ByV2 orders the results by the v2 field.
-func ByV2(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldV2, opts...).ToFunc()
-}
-
-// ByV3 orders the results by the v3 field.
-func ByV3(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldV3, opts...).ToFunc()
+// ByVersion orders the results by the version field.
+func ByVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVersion, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.
@@ -125,11 +102,6 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
-}
-
-// ByVersion orders the results by the version field.
-func ByVersion(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldVersion, opts...).ToFunc()
 }
 
 // ByRequestedBy orders the results by the requested_by field.

@@ -19,20 +19,14 @@ type RequestedLibrary struct {
 	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// V1 holds the value of the "v1" field.
-	V1 int `json:"v1,omitempty"`
-	// V2 holds the value of the "v2" field.
-	V2 int `json:"v2,omitempty"`
-	// V3 holds the value of the "v3" field.
-	V3 int `json:"v3,omitempty"`
+	// Version holds the value of the "version" field.
+	Version string `json:"version,omitempty"`
 	// Status holds the value of the "status" field.
 	Status string `json:"status,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// Version holds the value of the "version" field.
-	Version string `json:"version,omitempty"`
 	// RequestedBy holds the value of the "requested_by" field.
 	RequestedBy  string `json:"requested_by,omitempty"`
 	selectValues sql.SelectValues
@@ -43,9 +37,7 @@ func (*RequestedLibrary) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case requestedlibrary.FieldV1, requestedlibrary.FieldV2, requestedlibrary.FieldV3:
-			values[i] = new(sql.NullInt64)
-		case requestedlibrary.FieldID, requestedlibrary.FieldName, requestedlibrary.FieldStatus, requestedlibrary.FieldVersion, requestedlibrary.FieldRequestedBy:
+		case requestedlibrary.FieldID, requestedlibrary.FieldName, requestedlibrary.FieldVersion, requestedlibrary.FieldStatus, requestedlibrary.FieldRequestedBy:
 			values[i] = new(sql.NullString)
 		case requestedlibrary.FieldCreatedAt, requestedlibrary.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -76,23 +68,11 @@ func (_m *RequestedLibrary) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Name = value.String
 			}
-		case requestedlibrary.FieldV1:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field v1", values[i])
+		case requestedlibrary.FieldVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field version", values[i])
 			} else if value.Valid {
-				_m.V1 = int(value.Int64)
-			}
-		case requestedlibrary.FieldV2:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field v2", values[i])
-			} else if value.Valid {
-				_m.V2 = int(value.Int64)
-			}
-		case requestedlibrary.FieldV3:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field v3", values[i])
-			} else if value.Valid {
-				_m.V3 = int(value.Int64)
+				_m.Version = value.String
 			}
 		case requestedlibrary.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -111,12 +91,6 @@ func (_m *RequestedLibrary) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
-			}
-		case requestedlibrary.FieldVersion:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field version", values[i])
-			} else if value.Valid {
-				_m.Version = value.String
 			}
 		case requestedlibrary.FieldRequestedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -163,14 +137,8 @@ func (_m *RequestedLibrary) String() string {
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
-	builder.WriteString("v1=")
-	builder.WriteString(fmt.Sprintf("%v", _m.V1))
-	builder.WriteString(", ")
-	builder.WriteString("v2=")
-	builder.WriteString(fmt.Sprintf("%v", _m.V2))
-	builder.WriteString(", ")
-	builder.WriteString("v3=")
-	builder.WriteString(fmt.Sprintf("%v", _m.V3))
+	builder.WriteString("version=")
+	builder.WriteString(_m.Version)
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(_m.Status)
@@ -180,9 +148,6 @@ func (_m *RequestedLibrary) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("version=")
-	builder.WriteString(_m.Version)
 	builder.WriteString(", ")
 	builder.WriteString("requested_by=")
 	builder.WriteString(_m.RequestedBy)

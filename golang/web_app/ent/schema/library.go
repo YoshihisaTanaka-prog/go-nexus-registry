@@ -3,6 +3,7 @@ package schema
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"fmt"
 	"time"
 )
@@ -11,9 +12,7 @@ func getBaseFields(defaultStatus string, allowedStatus []string) []ent.Field {
 	return []ent.Field{
 		field.String("id").NotEmpty().Unique(),
 		field.String("name").NotEmpty(),
-		field.Int("v1").NonNegative(),
-		field.Int("v2").NonNegative(),
-		field.Int("v3").NonNegative(),
+		field.String("version").NotEmpty(),
 		field.String("status").Default(defaultStatus).Validate(func(s string) error {
 			for _, v := range allowedStatus {
 				if s == v {
@@ -34,12 +33,19 @@ type RequestedLibrary struct {
 
 // Fields of the RequestedLibrary.
 func (RequestedLibrary) Fields() []ent.Field {
-	baseFields := getBaseFields("status1", []string{"status1", "status2", "status3"})
+	baseFields := getBaseFields("uploading", []string{"uploading", "uploaded"})
 	return append(
 		baseFields,
-		field.String("version"),
 		field.String("requested_by").NotEmpty(),
 	)
+}
+
+// Indexes of the RequestedLibrary.
+func (RequestedLibrary) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("name", "version").Unique().
+		StorageKey("requested_libraries_name_version_idx"),
+	}
 }
 
 // Edges of the RequestedLibrary.
@@ -52,13 +58,24 @@ type SavedLibrary struct {
 	ent.Schema
 }
 
-// Fields of the Library.
+// Fields of the SavedLibrary.
 func (SavedLibrary) Fields() []ent.Field {
-	baseFields := getBaseFields("status1", []string{"status1", "status2", "status3"})
+	baseFields := getBaseFields("uploading", []string{"uploading", "uploaded", "failed"})
 	return append(
 		baseFields,
-		field.String("version").NotEmpty(),
+		field.Int("v1").NonNegative(),
+		field.Int("v2").NonNegative(),
+		field.Int("v3").NonNegative(),
+		field.Bool("isPublished").Default(false),
 	)
+}
+
+// Indexes of the SavedLibrary.
+func (SavedLibrary) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("name", "version").Unique().
+		StorageKey("saved_libraries_name_version_idx"),
+	}
 }
 
 // Edges of the SavedLibrary.

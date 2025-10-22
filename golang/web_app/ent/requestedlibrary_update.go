@@ -42,66 +42,17 @@ func (_u *RequestedLibraryUpdate) SetNillableName(v *string) *RequestedLibraryUp
 	return _u
 }
 
-// SetV1 sets the "v1" field.
-func (_u *RequestedLibraryUpdate) SetV1(v int) *RequestedLibraryUpdate {
-	_u.mutation.ResetV1()
-	_u.mutation.SetV1(v)
+// SetVersion sets the "version" field.
+func (_u *RequestedLibraryUpdate) SetVersion(v string) *RequestedLibraryUpdate {
+	_u.mutation.SetVersion(v)
 	return _u
 }
 
-// SetNillableV1 sets the "v1" field if the given value is not nil.
-func (_u *RequestedLibraryUpdate) SetNillableV1(v *int) *RequestedLibraryUpdate {
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (_u *RequestedLibraryUpdate) SetNillableVersion(v *string) *RequestedLibraryUpdate {
 	if v != nil {
-		_u.SetV1(*v)
+		_u.SetVersion(*v)
 	}
-	return _u
-}
-
-// AddV1 adds value to the "v1" field.
-func (_u *RequestedLibraryUpdate) AddV1(v int) *RequestedLibraryUpdate {
-	_u.mutation.AddV1(v)
-	return _u
-}
-
-// SetV2 sets the "v2" field.
-func (_u *RequestedLibraryUpdate) SetV2(v int) *RequestedLibraryUpdate {
-	_u.mutation.ResetV2()
-	_u.mutation.SetV2(v)
-	return _u
-}
-
-// SetNillableV2 sets the "v2" field if the given value is not nil.
-func (_u *RequestedLibraryUpdate) SetNillableV2(v *int) *RequestedLibraryUpdate {
-	if v != nil {
-		_u.SetV2(*v)
-	}
-	return _u
-}
-
-// AddV2 adds value to the "v2" field.
-func (_u *RequestedLibraryUpdate) AddV2(v int) *RequestedLibraryUpdate {
-	_u.mutation.AddV2(v)
-	return _u
-}
-
-// SetV3 sets the "v3" field.
-func (_u *RequestedLibraryUpdate) SetV3(v int) *RequestedLibraryUpdate {
-	_u.mutation.ResetV3()
-	_u.mutation.SetV3(v)
-	return _u
-}
-
-// SetNillableV3 sets the "v3" field if the given value is not nil.
-func (_u *RequestedLibraryUpdate) SetNillableV3(v *int) *RequestedLibraryUpdate {
-	if v != nil {
-		_u.SetV3(*v)
-	}
-	return _u
-}
-
-// AddV3 adds value to the "v3" field.
-func (_u *RequestedLibraryUpdate) AddV3(v int) *RequestedLibraryUpdate {
-	_u.mutation.AddV3(v)
 	return _u
 }
 
@@ -122,20 +73,6 @@ func (_u *RequestedLibraryUpdate) SetNillableStatus(v *string) *RequestedLibrary
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *RequestedLibraryUpdate) SetUpdatedAt(v time.Time) *RequestedLibraryUpdate {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetVersion sets the "version" field.
-func (_u *RequestedLibraryUpdate) SetVersion(v string) *RequestedLibraryUpdate {
-	_u.mutation.SetVersion(v)
-	return _u
-}
-
-// SetNillableVersion sets the "version" field if the given value is not nil.
-func (_u *RequestedLibraryUpdate) SetNillableVersion(v *string) *RequestedLibraryUpdate {
-	if v != nil {
-		_u.SetVersion(*v)
-	}
 	return _u
 }
 
@@ -201,19 +138,9 @@ func (_u *RequestedLibraryUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.V1(); ok {
-		if err := requestedlibrary.V1Validator(v); err != nil {
-			return &ValidationError{Name: "v1", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.v1": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.V2(); ok {
-		if err := requestedlibrary.V2Validator(v); err != nil {
-			return &ValidationError{Name: "v2", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.v2": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.V3(); ok {
-		if err := requestedlibrary.V3Validator(v); err != nil {
-			return &ValidationError{Name: "v3", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.v3": %w`, err)}
+	if v, ok := _u.mutation.Version(); ok {
+		if err := requestedlibrary.VersionValidator(v); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.version": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.Status(); ok {
@@ -244,32 +171,14 @@ func (_u *RequestedLibraryUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(requestedlibrary.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.V1(); ok {
-		_spec.SetField(requestedlibrary.FieldV1, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedV1(); ok {
-		_spec.AddField(requestedlibrary.FieldV1, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.V2(); ok {
-		_spec.SetField(requestedlibrary.FieldV2, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedV2(); ok {
-		_spec.AddField(requestedlibrary.FieldV2, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.V3(); ok {
-		_spec.SetField(requestedlibrary.FieldV3, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedV3(); ok {
-		_spec.AddField(requestedlibrary.FieldV3, field.TypeInt, value)
+	if value, ok := _u.mutation.Version(); ok {
+		_spec.SetField(requestedlibrary.FieldVersion, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(requestedlibrary.FieldStatus, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(requestedlibrary.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.Version(); ok {
-		_spec.SetField(requestedlibrary.FieldVersion, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.RequestedBy(); ok {
 		_spec.SetField(requestedlibrary.FieldRequestedBy, field.TypeString, value)
@@ -308,66 +217,17 @@ func (_u *RequestedLibraryUpdateOne) SetNillableName(v *string) *RequestedLibrar
 	return _u
 }
 
-// SetV1 sets the "v1" field.
-func (_u *RequestedLibraryUpdateOne) SetV1(v int) *RequestedLibraryUpdateOne {
-	_u.mutation.ResetV1()
-	_u.mutation.SetV1(v)
+// SetVersion sets the "version" field.
+func (_u *RequestedLibraryUpdateOne) SetVersion(v string) *RequestedLibraryUpdateOne {
+	_u.mutation.SetVersion(v)
 	return _u
 }
 
-// SetNillableV1 sets the "v1" field if the given value is not nil.
-func (_u *RequestedLibraryUpdateOne) SetNillableV1(v *int) *RequestedLibraryUpdateOne {
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (_u *RequestedLibraryUpdateOne) SetNillableVersion(v *string) *RequestedLibraryUpdateOne {
 	if v != nil {
-		_u.SetV1(*v)
+		_u.SetVersion(*v)
 	}
-	return _u
-}
-
-// AddV1 adds value to the "v1" field.
-func (_u *RequestedLibraryUpdateOne) AddV1(v int) *RequestedLibraryUpdateOne {
-	_u.mutation.AddV1(v)
-	return _u
-}
-
-// SetV2 sets the "v2" field.
-func (_u *RequestedLibraryUpdateOne) SetV2(v int) *RequestedLibraryUpdateOne {
-	_u.mutation.ResetV2()
-	_u.mutation.SetV2(v)
-	return _u
-}
-
-// SetNillableV2 sets the "v2" field if the given value is not nil.
-func (_u *RequestedLibraryUpdateOne) SetNillableV2(v *int) *RequestedLibraryUpdateOne {
-	if v != nil {
-		_u.SetV2(*v)
-	}
-	return _u
-}
-
-// AddV2 adds value to the "v2" field.
-func (_u *RequestedLibraryUpdateOne) AddV2(v int) *RequestedLibraryUpdateOne {
-	_u.mutation.AddV2(v)
-	return _u
-}
-
-// SetV3 sets the "v3" field.
-func (_u *RequestedLibraryUpdateOne) SetV3(v int) *RequestedLibraryUpdateOne {
-	_u.mutation.ResetV3()
-	_u.mutation.SetV3(v)
-	return _u
-}
-
-// SetNillableV3 sets the "v3" field if the given value is not nil.
-func (_u *RequestedLibraryUpdateOne) SetNillableV3(v *int) *RequestedLibraryUpdateOne {
-	if v != nil {
-		_u.SetV3(*v)
-	}
-	return _u
-}
-
-// AddV3 adds value to the "v3" field.
-func (_u *RequestedLibraryUpdateOne) AddV3(v int) *RequestedLibraryUpdateOne {
-	_u.mutation.AddV3(v)
 	return _u
 }
 
@@ -388,20 +248,6 @@ func (_u *RequestedLibraryUpdateOne) SetNillableStatus(v *string) *RequestedLibr
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *RequestedLibraryUpdateOne) SetUpdatedAt(v time.Time) *RequestedLibraryUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetVersion sets the "version" field.
-func (_u *RequestedLibraryUpdateOne) SetVersion(v string) *RequestedLibraryUpdateOne {
-	_u.mutation.SetVersion(v)
-	return _u
-}
-
-// SetNillableVersion sets the "version" field if the given value is not nil.
-func (_u *RequestedLibraryUpdateOne) SetNillableVersion(v *string) *RequestedLibraryUpdateOne {
-	if v != nil {
-		_u.SetVersion(*v)
-	}
 	return _u
 }
 
@@ -480,19 +326,9 @@ func (_u *RequestedLibraryUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.name": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.V1(); ok {
-		if err := requestedlibrary.V1Validator(v); err != nil {
-			return &ValidationError{Name: "v1", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.v1": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.V2(); ok {
-		if err := requestedlibrary.V2Validator(v); err != nil {
-			return &ValidationError{Name: "v2", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.v2": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.V3(); ok {
-		if err := requestedlibrary.V3Validator(v); err != nil {
-			return &ValidationError{Name: "v3", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.v3": %w`, err)}
+	if v, ok := _u.mutation.Version(); ok {
+		if err := requestedlibrary.VersionValidator(v); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.version": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.Status(); ok {
@@ -540,32 +376,14 @@ func (_u *RequestedLibraryUpdateOne) sqlSave(ctx context.Context) (_node *Reques
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(requestedlibrary.FieldName, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.V1(); ok {
-		_spec.SetField(requestedlibrary.FieldV1, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedV1(); ok {
-		_spec.AddField(requestedlibrary.FieldV1, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.V2(); ok {
-		_spec.SetField(requestedlibrary.FieldV2, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedV2(); ok {
-		_spec.AddField(requestedlibrary.FieldV2, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.V3(); ok {
-		_spec.SetField(requestedlibrary.FieldV3, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedV3(); ok {
-		_spec.AddField(requestedlibrary.FieldV3, field.TypeInt, value)
+	if value, ok := _u.mutation.Version(); ok {
+		_spec.SetField(requestedlibrary.FieldVersion, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(requestedlibrary.FieldStatus, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(requestedlibrary.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.Version(); ok {
-		_spec.SetField(requestedlibrary.FieldVersion, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.RequestedBy(); ok {
 		_spec.SetField(requestedlibrary.FieldRequestedBy, field.TypeString, value)

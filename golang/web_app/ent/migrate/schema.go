@@ -12,13 +12,10 @@ var (
 	RequestedLibrariesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "v1", Type: field.TypeInt},
-		{Name: "v2", Type: field.TypeInt},
-		{Name: "v3", Type: field.TypeInt},
-		{Name: "status", Type: field.TypeString, Default: "status1"},
+		{Name: "version", Type: field.TypeString},
+		{Name: "status", Type: field.TypeString, Default: "uploading"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "version", Type: field.TypeString},
 		{Name: "requested_by", Type: field.TypeString},
 	}
 	// RequestedLibrariesTable holds the schema information for the "requested_libraries" table.
@@ -26,24 +23,39 @@ var (
 		Name:       "requested_libraries",
 		Columns:    RequestedLibrariesColumns,
 		PrimaryKey: []*schema.Column{RequestedLibrariesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "requested_libraries_name_version_idx",
+				Unique:  true,
+				Columns: []*schema.Column{RequestedLibrariesColumns[1], RequestedLibrariesColumns[2]},
+			},
+		},
 	}
 	// SavedLibrariesColumns holds the columns for the "saved_libraries" table.
 	SavedLibrariesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
+		{Name: "version", Type: field.TypeString},
+		{Name: "status", Type: field.TypeString, Default: "uploading"},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "v1", Type: field.TypeInt},
 		{Name: "v2", Type: field.TypeInt},
 		{Name: "v3", Type: field.TypeInt},
-		{Name: "status", Type: field.TypeString, Default: "status1"},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "version", Type: field.TypeString},
+		{Name: "is_published", Type: field.TypeBool, Default: false},
 	}
 	// SavedLibrariesTable holds the schema information for the "saved_libraries" table.
 	SavedLibrariesTable = &schema.Table{
 		Name:       "saved_libraries",
 		Columns:    SavedLibrariesColumns,
 		PrimaryKey: []*schema.Column{SavedLibrariesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "saved_libraries_name_version_idx",
+				Unique:  true,
+				Columns: []*schema.Column{SavedLibrariesColumns[1], SavedLibrariesColumns[2]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

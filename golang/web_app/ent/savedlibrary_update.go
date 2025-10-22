@@ -42,6 +42,40 @@ func (_u *SavedLibraryUpdate) SetNillableName(v *string) *SavedLibraryUpdate {
 	return _u
 }
 
+// SetVersion sets the "version" field.
+func (_u *SavedLibraryUpdate) SetVersion(v string) *SavedLibraryUpdate {
+	_u.mutation.SetVersion(v)
+	return _u
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (_u *SavedLibraryUpdate) SetNillableVersion(v *string) *SavedLibraryUpdate {
+	if v != nil {
+		_u.SetVersion(*v)
+	}
+	return _u
+}
+
+// SetStatus sets the "status" field.
+func (_u *SavedLibraryUpdate) SetStatus(v string) *SavedLibraryUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *SavedLibraryUpdate) SetNillableStatus(v *string) *SavedLibraryUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
+	}
+	return _u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *SavedLibraryUpdate) SetUpdatedAt(v time.Time) *SavedLibraryUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
 // SetV1 sets the "v1" field.
 func (_u *SavedLibraryUpdate) SetV1(v int) *SavedLibraryUpdate {
 	_u.mutation.ResetV1()
@@ -105,36 +139,16 @@ func (_u *SavedLibraryUpdate) AddV3(v int) *SavedLibraryUpdate {
 	return _u
 }
 
-// SetStatus sets the "status" field.
-func (_u *SavedLibraryUpdate) SetStatus(v string) *SavedLibraryUpdate {
-	_u.mutation.SetStatus(v)
+// SetIsPublished sets the "isPublished" field.
+func (_u *SavedLibraryUpdate) SetIsPublished(v bool) *SavedLibraryUpdate {
+	_u.mutation.SetIsPublished(v)
 	return _u
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *SavedLibraryUpdate) SetNillableStatus(v *string) *SavedLibraryUpdate {
+// SetNillableIsPublished sets the "isPublished" field if the given value is not nil.
+func (_u *SavedLibraryUpdate) SetNillableIsPublished(v *bool) *SavedLibraryUpdate {
 	if v != nil {
-		_u.SetStatus(*v)
-	}
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *SavedLibraryUpdate) SetUpdatedAt(v time.Time) *SavedLibraryUpdate {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetVersion sets the "version" field.
-func (_u *SavedLibraryUpdate) SetVersion(v string) *SavedLibraryUpdate {
-	_u.mutation.SetVersion(v)
-	return _u
-}
-
-// SetNillableVersion sets the "version" field if the given value is not nil.
-func (_u *SavedLibraryUpdate) SetNillableVersion(v *string) *SavedLibraryUpdate {
-	if v != nil {
-		_u.SetVersion(*v)
+		_u.SetIsPublished(*v)
 	}
 	return _u
 }
@@ -187,6 +201,16 @@ func (_u *SavedLibraryUpdate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Version(); ok {
+		if err := savedlibrary.VersionValidator(v); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.version": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Status(); ok {
+		if err := savedlibrary.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.status": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.V1(); ok {
 		if err := savedlibrary.V1Validator(v); err != nil {
 			return &ValidationError{Name: "v1", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.v1": %w`, err)}
@@ -200,16 +224,6 @@ func (_u *SavedLibraryUpdate) check() error {
 	if v, ok := _u.mutation.V3(); ok {
 		if err := savedlibrary.V3Validator(v); err != nil {
 			return &ValidationError{Name: "v3", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.v3": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Status(); ok {
-		if err := savedlibrary.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.status": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Version(); ok {
-		if err := savedlibrary.VersionValidator(v); err != nil {
-			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.version": %w`, err)}
 		}
 	}
 	return nil
@@ -230,6 +244,15 @@ func (_u *SavedLibraryUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(savedlibrary.FieldName, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.Version(); ok {
+		_spec.SetField(savedlibrary.FieldVersion, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(savedlibrary.FieldStatus, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(savedlibrary.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.V1(); ok {
 		_spec.SetField(savedlibrary.FieldV1, field.TypeInt, value)
 	}
@@ -248,14 +271,8 @@ func (_u *SavedLibraryUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if value, ok := _u.mutation.AddedV3(); ok {
 		_spec.AddField(savedlibrary.FieldV3, field.TypeInt, value)
 	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(savedlibrary.FieldStatus, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(savedlibrary.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.Version(); ok {
-		_spec.SetField(savedlibrary.FieldVersion, field.TypeString, value)
+	if value, ok := _u.mutation.IsPublished(); ok {
+		_spec.SetField(savedlibrary.FieldIsPublished, field.TypeBool, value)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -288,6 +305,40 @@ func (_u *SavedLibraryUpdateOne) SetNillableName(v *string) *SavedLibraryUpdateO
 	if v != nil {
 		_u.SetName(*v)
 	}
+	return _u
+}
+
+// SetVersion sets the "version" field.
+func (_u *SavedLibraryUpdateOne) SetVersion(v string) *SavedLibraryUpdateOne {
+	_u.mutation.SetVersion(v)
+	return _u
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (_u *SavedLibraryUpdateOne) SetNillableVersion(v *string) *SavedLibraryUpdateOne {
+	if v != nil {
+		_u.SetVersion(*v)
+	}
+	return _u
+}
+
+// SetStatus sets the "status" field.
+func (_u *SavedLibraryUpdateOne) SetStatus(v string) *SavedLibraryUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *SavedLibraryUpdateOne) SetNillableStatus(v *string) *SavedLibraryUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
+	}
+	return _u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (_u *SavedLibraryUpdateOne) SetUpdatedAt(v time.Time) *SavedLibraryUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
 	return _u
 }
 
@@ -354,36 +405,16 @@ func (_u *SavedLibraryUpdateOne) AddV3(v int) *SavedLibraryUpdateOne {
 	return _u
 }
 
-// SetStatus sets the "status" field.
-func (_u *SavedLibraryUpdateOne) SetStatus(v string) *SavedLibraryUpdateOne {
-	_u.mutation.SetStatus(v)
+// SetIsPublished sets the "isPublished" field.
+func (_u *SavedLibraryUpdateOne) SetIsPublished(v bool) *SavedLibraryUpdateOne {
+	_u.mutation.SetIsPublished(v)
 	return _u
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *SavedLibraryUpdateOne) SetNillableStatus(v *string) *SavedLibraryUpdateOne {
+// SetNillableIsPublished sets the "isPublished" field if the given value is not nil.
+func (_u *SavedLibraryUpdateOne) SetNillableIsPublished(v *bool) *SavedLibraryUpdateOne {
 	if v != nil {
-		_u.SetStatus(*v)
-	}
-	return _u
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (_u *SavedLibraryUpdateOne) SetUpdatedAt(v time.Time) *SavedLibraryUpdateOne {
-	_u.mutation.SetUpdatedAt(v)
-	return _u
-}
-
-// SetVersion sets the "version" field.
-func (_u *SavedLibraryUpdateOne) SetVersion(v string) *SavedLibraryUpdateOne {
-	_u.mutation.SetVersion(v)
-	return _u
-}
-
-// SetNillableVersion sets the "version" field if the given value is not nil.
-func (_u *SavedLibraryUpdateOne) SetNillableVersion(v *string) *SavedLibraryUpdateOne {
-	if v != nil {
-		_u.SetVersion(*v)
+		_u.SetIsPublished(*v)
 	}
 	return _u
 }
@@ -449,6 +480,16 @@ func (_u *SavedLibraryUpdateOne) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.name": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.Version(); ok {
+		if err := savedlibrary.VersionValidator(v); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.version": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Status(); ok {
+		if err := savedlibrary.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.status": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.V1(); ok {
 		if err := savedlibrary.V1Validator(v); err != nil {
 			return &ValidationError{Name: "v1", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.v1": %w`, err)}
@@ -462,16 +503,6 @@ func (_u *SavedLibraryUpdateOne) check() error {
 	if v, ok := _u.mutation.V3(); ok {
 		if err := savedlibrary.V3Validator(v); err != nil {
 			return &ValidationError{Name: "v3", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.v3": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Status(); ok {
-		if err := savedlibrary.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.status": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Version(); ok {
-		if err := savedlibrary.VersionValidator(v); err != nil {
-			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.version": %w`, err)}
 		}
 	}
 	return nil
@@ -509,6 +540,15 @@ func (_u *SavedLibraryUpdateOne) sqlSave(ctx context.Context) (_node *SavedLibra
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(savedlibrary.FieldName, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.Version(); ok {
+		_spec.SetField(savedlibrary.FieldVersion, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(savedlibrary.FieldStatus, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.UpdatedAt(); ok {
+		_spec.SetField(savedlibrary.FieldUpdatedAt, field.TypeTime, value)
+	}
 	if value, ok := _u.mutation.V1(); ok {
 		_spec.SetField(savedlibrary.FieldV1, field.TypeInt, value)
 	}
@@ -527,14 +567,8 @@ func (_u *SavedLibraryUpdateOne) sqlSave(ctx context.Context) (_node *SavedLibra
 	if value, ok := _u.mutation.AddedV3(); ok {
 		_spec.AddField(savedlibrary.FieldV3, field.TypeInt, value)
 	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(savedlibrary.FieldStatus, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.UpdatedAt(); ok {
-		_spec.SetField(savedlibrary.FieldUpdatedAt, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.Version(); ok {
-		_spec.SetField(savedlibrary.FieldVersion, field.TypeString, value)
+	if value, ok := _u.mutation.IsPublished(); ok {
+		_spec.SetField(savedlibrary.FieldIsPublished, field.TypeBool, value)
 	}
 	_node = &SavedLibrary{config: _u.config}
 	_spec.Assign = _node.assignValues

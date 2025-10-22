@@ -69,19 +69,9 @@ func Name(v string) predicate.RequestedLibrary {
 	return predicate.RequestedLibrary(sql.FieldEQ(FieldName, v))
 }
 
-// V1 applies equality check predicate on the "v1" field. It's identical to V1EQ.
-func V1(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldEQ(FieldV1, v))
-}
-
-// V2 applies equality check predicate on the "v2" field. It's identical to V2EQ.
-func V2(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldEQ(FieldV2, v))
-}
-
-// V3 applies equality check predicate on the "v3" field. It's identical to V3EQ.
-func V3(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldEQ(FieldV3, v))
+// Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
+func Version(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldEQ(FieldVersion, v))
 }
 
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
@@ -97,11 +87,6 @@ func CreatedAt(v time.Time) predicate.RequestedLibrary {
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.RequestedLibrary {
 	return predicate.RequestedLibrary(sql.FieldEQ(FieldUpdatedAt, v))
-}
-
-// Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
-func Version(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldEQ(FieldVersion, v))
 }
 
 // RequestedBy applies equality check predicate on the "requested_by" field. It's identical to RequestedByEQ.
@@ -174,124 +159,69 @@ func NameContainsFold(v string) predicate.RequestedLibrary {
 	return predicate.RequestedLibrary(sql.FieldContainsFold(FieldName, v))
 }
 
-// V1EQ applies the EQ predicate on the "v1" field.
-func V1EQ(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldEQ(FieldV1, v))
+// VersionEQ applies the EQ predicate on the "version" field.
+func VersionEQ(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldEQ(FieldVersion, v))
 }
 
-// V1NEQ applies the NEQ predicate on the "v1" field.
-func V1NEQ(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldNEQ(FieldV1, v))
+// VersionNEQ applies the NEQ predicate on the "version" field.
+func VersionNEQ(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldNEQ(FieldVersion, v))
 }
 
-// V1In applies the In predicate on the "v1" field.
-func V1In(vs ...int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldIn(FieldV1, vs...))
+// VersionIn applies the In predicate on the "version" field.
+func VersionIn(vs ...string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldIn(FieldVersion, vs...))
 }
 
-// V1NotIn applies the NotIn predicate on the "v1" field.
-func V1NotIn(vs ...int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldNotIn(FieldV1, vs...))
+// VersionNotIn applies the NotIn predicate on the "version" field.
+func VersionNotIn(vs ...string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldNotIn(FieldVersion, vs...))
 }
 
-// V1GT applies the GT predicate on the "v1" field.
-func V1GT(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldGT(FieldV1, v))
+// VersionGT applies the GT predicate on the "version" field.
+func VersionGT(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldGT(FieldVersion, v))
 }
 
-// V1GTE applies the GTE predicate on the "v1" field.
-func V1GTE(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldGTE(FieldV1, v))
+// VersionGTE applies the GTE predicate on the "version" field.
+func VersionGTE(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldGTE(FieldVersion, v))
 }
 
-// V1LT applies the LT predicate on the "v1" field.
-func V1LT(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldLT(FieldV1, v))
+// VersionLT applies the LT predicate on the "version" field.
+func VersionLT(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldLT(FieldVersion, v))
 }
 
-// V1LTE applies the LTE predicate on the "v1" field.
-func V1LTE(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldLTE(FieldV1, v))
+// VersionLTE applies the LTE predicate on the "version" field.
+func VersionLTE(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldLTE(FieldVersion, v))
 }
 
-// V2EQ applies the EQ predicate on the "v2" field.
-func V2EQ(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldEQ(FieldV2, v))
+// VersionContains applies the Contains predicate on the "version" field.
+func VersionContains(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldContains(FieldVersion, v))
 }
 
-// V2NEQ applies the NEQ predicate on the "v2" field.
-func V2NEQ(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldNEQ(FieldV2, v))
+// VersionHasPrefix applies the HasPrefix predicate on the "version" field.
+func VersionHasPrefix(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldHasPrefix(FieldVersion, v))
 }
 
-// V2In applies the In predicate on the "v2" field.
-func V2In(vs ...int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldIn(FieldV2, vs...))
+// VersionHasSuffix applies the HasSuffix predicate on the "version" field.
+func VersionHasSuffix(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldHasSuffix(FieldVersion, v))
 }
 
-// V2NotIn applies the NotIn predicate on the "v2" field.
-func V2NotIn(vs ...int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldNotIn(FieldV2, vs...))
+// VersionEqualFold applies the EqualFold predicate on the "version" field.
+func VersionEqualFold(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldEqualFold(FieldVersion, v))
 }
 
-// V2GT applies the GT predicate on the "v2" field.
-func V2GT(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldGT(FieldV2, v))
-}
-
-// V2GTE applies the GTE predicate on the "v2" field.
-func V2GTE(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldGTE(FieldV2, v))
-}
-
-// V2LT applies the LT predicate on the "v2" field.
-func V2LT(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldLT(FieldV2, v))
-}
-
-// V2LTE applies the LTE predicate on the "v2" field.
-func V2LTE(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldLTE(FieldV2, v))
-}
-
-// V3EQ applies the EQ predicate on the "v3" field.
-func V3EQ(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldEQ(FieldV3, v))
-}
-
-// V3NEQ applies the NEQ predicate on the "v3" field.
-func V3NEQ(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldNEQ(FieldV3, v))
-}
-
-// V3In applies the In predicate on the "v3" field.
-func V3In(vs ...int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldIn(FieldV3, vs...))
-}
-
-// V3NotIn applies the NotIn predicate on the "v3" field.
-func V3NotIn(vs ...int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldNotIn(FieldV3, vs...))
-}
-
-// V3GT applies the GT predicate on the "v3" field.
-func V3GT(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldGT(FieldV3, v))
-}
-
-// V3GTE applies the GTE predicate on the "v3" field.
-func V3GTE(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldGTE(FieldV3, v))
-}
-
-// V3LT applies the LT predicate on the "v3" field.
-func V3LT(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldLT(FieldV3, v))
-}
-
-// V3LTE applies the LTE predicate on the "v3" field.
-func V3LTE(v int) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldLTE(FieldV3, v))
+// VersionContainsFold applies the ContainsFold predicate on the "version" field.
+func VersionContainsFold(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldContainsFold(FieldVersion, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.
@@ -437,71 +367,6 @@ func UpdatedAtLT(v time.Time) predicate.RequestedLibrary {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.RequestedLibrary {
 	return predicate.RequestedLibrary(sql.FieldLTE(FieldUpdatedAt, v))
-}
-
-// VersionEQ applies the EQ predicate on the "version" field.
-func VersionEQ(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldEQ(FieldVersion, v))
-}
-
-// VersionNEQ applies the NEQ predicate on the "version" field.
-func VersionNEQ(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldNEQ(FieldVersion, v))
-}
-
-// VersionIn applies the In predicate on the "version" field.
-func VersionIn(vs ...string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldIn(FieldVersion, vs...))
-}
-
-// VersionNotIn applies the NotIn predicate on the "version" field.
-func VersionNotIn(vs ...string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldNotIn(FieldVersion, vs...))
-}
-
-// VersionGT applies the GT predicate on the "version" field.
-func VersionGT(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldGT(FieldVersion, v))
-}
-
-// VersionGTE applies the GTE predicate on the "version" field.
-func VersionGTE(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldGTE(FieldVersion, v))
-}
-
-// VersionLT applies the LT predicate on the "version" field.
-func VersionLT(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldLT(FieldVersion, v))
-}
-
-// VersionLTE applies the LTE predicate on the "version" field.
-func VersionLTE(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldLTE(FieldVersion, v))
-}
-
-// VersionContains applies the Contains predicate on the "version" field.
-func VersionContains(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldContains(FieldVersion, v))
-}
-
-// VersionHasPrefix applies the HasPrefix predicate on the "version" field.
-func VersionHasPrefix(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldHasPrefix(FieldVersion, v))
-}
-
-// VersionHasSuffix applies the HasSuffix predicate on the "version" field.
-func VersionHasSuffix(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldHasSuffix(FieldVersion, v))
-}
-
-// VersionEqualFold applies the EqualFold predicate on the "version" field.
-func VersionEqualFold(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldEqualFold(FieldVersion, v))
-}
-
-// VersionContainsFold applies the ContainsFold predicate on the "version" field.
-func VersionContainsFold(v string) predicate.RequestedLibrary {
-	return predicate.RequestedLibrary(sql.FieldContainsFold(FieldVersion, v))
 }
 
 // RequestedByEQ applies the EQ predicate on the "requested_by" field.

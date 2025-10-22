@@ -26,21 +26,9 @@ func (_c *SavedLibraryCreate) SetName(v string) *SavedLibraryCreate {
 	return _c
 }
 
-// SetV1 sets the "v1" field.
-func (_c *SavedLibraryCreate) SetV1(v int) *SavedLibraryCreate {
-	_c.mutation.SetV1(v)
-	return _c
-}
-
-// SetV2 sets the "v2" field.
-func (_c *SavedLibraryCreate) SetV2(v int) *SavedLibraryCreate {
-	_c.mutation.SetV2(v)
-	return _c
-}
-
-// SetV3 sets the "v3" field.
-func (_c *SavedLibraryCreate) SetV3(v int) *SavedLibraryCreate {
-	_c.mutation.SetV3(v)
+// SetVersion sets the "version" field.
+func (_c *SavedLibraryCreate) SetVersion(v string) *SavedLibraryCreate {
+	_c.mutation.SetVersion(v)
 	return _c
 }
 
@@ -86,9 +74,35 @@ func (_c *SavedLibraryCreate) SetNillableUpdatedAt(v *time.Time) *SavedLibraryCr
 	return _c
 }
 
-// SetVersion sets the "version" field.
-func (_c *SavedLibraryCreate) SetVersion(v string) *SavedLibraryCreate {
-	_c.mutation.SetVersion(v)
+// SetV1 sets the "v1" field.
+func (_c *SavedLibraryCreate) SetV1(v int) *SavedLibraryCreate {
+	_c.mutation.SetV1(v)
+	return _c
+}
+
+// SetV2 sets the "v2" field.
+func (_c *SavedLibraryCreate) SetV2(v int) *SavedLibraryCreate {
+	_c.mutation.SetV2(v)
+	return _c
+}
+
+// SetV3 sets the "v3" field.
+func (_c *SavedLibraryCreate) SetV3(v int) *SavedLibraryCreate {
+	_c.mutation.SetV3(v)
+	return _c
+}
+
+// SetIsPublished sets the "isPublished" field.
+func (_c *SavedLibraryCreate) SetIsPublished(v bool) *SavedLibraryCreate {
+	_c.mutation.SetIsPublished(v)
+	return _c
+}
+
+// SetNillableIsPublished sets the "isPublished" field if the given value is not nil.
+func (_c *SavedLibraryCreate) SetNillableIsPublished(v *bool) *SavedLibraryCreate {
+	if v != nil {
+		_c.SetIsPublished(*v)
+	}
 	return _c
 }
 
@@ -145,6 +159,10 @@ func (_c *SavedLibraryCreate) defaults() {
 		v := savedlibrary.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := _c.mutation.IsPublished(); !ok {
+		v := savedlibrary.DefaultIsPublished
+		_c.mutation.SetIsPublished(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -156,6 +174,28 @@ func (_c *SavedLibraryCreate) check() error {
 		if err := savedlibrary.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.name": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.Version(); !ok {
+		return &ValidationError{Name: "version", err: errors.New(`ent: missing required field "SavedLibrary.version"`)}
+	}
+	if v, ok := _c.mutation.Version(); ok {
+		if err := savedlibrary.VersionValidator(v); err != nil {
+			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.version": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "SavedLibrary.status"`)}
+	}
+	if v, ok := _c.mutation.Status(); ok {
+		if err := savedlibrary.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.status": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "SavedLibrary.created_at"`)}
+	}
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "SavedLibrary.updated_at"`)}
 	}
 	if _, ok := _c.mutation.V1(); !ok {
 		return &ValidationError{Name: "v1", err: errors.New(`ent: missing required field "SavedLibrary.v1"`)}
@@ -181,27 +221,8 @@ func (_c *SavedLibraryCreate) check() error {
 			return &ValidationError{Name: "v3", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.v3": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "SavedLibrary.status"`)}
-	}
-	if v, ok := _c.mutation.Status(); ok {
-		if err := savedlibrary.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.status": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "SavedLibrary.created_at"`)}
-	}
-	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "SavedLibrary.updated_at"`)}
-	}
-	if _, ok := _c.mutation.Version(); !ok {
-		return &ValidationError{Name: "version", err: errors.New(`ent: missing required field "SavedLibrary.version"`)}
-	}
-	if v, ok := _c.mutation.Version(); ok {
-		if err := savedlibrary.VersionValidator(v); err != nil {
-			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.version": %w`, err)}
-		}
+	if _, ok := _c.mutation.IsPublished(); !ok {
+		return &ValidationError{Name: "isPublished", err: errors.New(`ent: missing required field "SavedLibrary.isPublished"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := savedlibrary.IDValidator(v); err != nil {
@@ -247,17 +268,9 @@ func (_c *SavedLibraryCreate) createSpec() (*SavedLibrary, *sqlgraph.CreateSpec)
 		_spec.SetField(savedlibrary.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := _c.mutation.V1(); ok {
-		_spec.SetField(savedlibrary.FieldV1, field.TypeInt, value)
-		_node.V1 = value
-	}
-	if value, ok := _c.mutation.V2(); ok {
-		_spec.SetField(savedlibrary.FieldV2, field.TypeInt, value)
-		_node.V2 = value
-	}
-	if value, ok := _c.mutation.V3(); ok {
-		_spec.SetField(savedlibrary.FieldV3, field.TypeInt, value)
-		_node.V3 = value
+	if value, ok := _c.mutation.Version(); ok {
+		_spec.SetField(savedlibrary.FieldVersion, field.TypeString, value)
+		_node.Version = value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(savedlibrary.FieldStatus, field.TypeString, value)
@@ -271,9 +284,21 @@ func (_c *SavedLibraryCreate) createSpec() (*SavedLibrary, *sqlgraph.CreateSpec)
 		_spec.SetField(savedlibrary.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := _c.mutation.Version(); ok {
-		_spec.SetField(savedlibrary.FieldVersion, field.TypeString, value)
-		_node.Version = value
+	if value, ok := _c.mutation.V1(); ok {
+		_spec.SetField(savedlibrary.FieldV1, field.TypeInt, value)
+		_node.V1 = value
+	}
+	if value, ok := _c.mutation.V2(); ok {
+		_spec.SetField(savedlibrary.FieldV2, field.TypeInt, value)
+		_node.V2 = value
+	}
+	if value, ok := _c.mutation.V3(); ok {
+		_spec.SetField(savedlibrary.FieldV3, field.TypeInt, value)
+		_node.V3 = value
+	}
+	if value, ok := _c.mutation.IsPublished(); ok {
+		_spec.SetField(savedlibrary.FieldIsPublished, field.TypeBool, value)
+		_node.IsPublished = value
 	}
 	return _node, _spec
 }
