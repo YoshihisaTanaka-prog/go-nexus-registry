@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"web_app/api"
@@ -13,6 +14,8 @@ var envKeys = []string{
 	"GO_MANAGER_HOST_NAME",
 	"LDAP_BIND_CN_GO",
 	"LDAP_DOMAIN",
+	"NEXUS_EXPOSED_URL",
+	"ROOT_DIR_PATH",
 }
 
 func main() {
@@ -22,7 +25,8 @@ func main() {
 
 	ldap.InitLdap()
 	
-	dbClient.InitDb()
+	ctx := context.Background()
+	dbClient.InitDb(&ctx)
 	api.Start()
 }
 
