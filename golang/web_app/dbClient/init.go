@@ -8,20 +8,30 @@ import (
 	"web_app/ent"
 	"web_app/customError"
 	_ "github.com/lib/pq" // PostgreSQLドライバ
+	_ "github.com/mattn/go-sqlite3" // SQLiteドライバ
 )
 
-func InitDb() {
-	time.Sleep(time.Second * 1)
-	fmt.Fprintln(os.Stdout, "DBのスキーマを設定します。")
+func initDbUnit(client **ent.Client, dbType string, dsn string) {
 	var err error
-	client, err = ent.Open("postgres", dsn)
+	// DBに接続
+	*client, err = ent.Open(dbType, dsn)
 	if err != nil {
-		customError.Exit1("PostgreSQLへの接続失敗: ", err)
+		customError.Exit1(dbType, "への接続失敗: ", err)
 	}
 
 	// スキーマの自動マイグレーション（テーブルが無ければ作成）
-	if err := client.Schema.Create(context.Background()); err != nil {
-		customError.Exit1("スキーマ作成中のエラー: ", err)
+	if err := (*client).Schema.Create(*ctx); err != nil {
+		customError.Exit1(dbType, "スキーマ作成中のエラー: ", err)
 	}
+}
+
+func InitDb(c *context.Context) {
+	ctx = c
+	time.Sleep(time.Second * 1)
+	fmt.Fprintln(os.Stdout, "DBのスキーマを設定します。")
+
+	initDbUnit(&psqlClient, "postgres", psqlDsn)
+	initDbUnit(&ramClient, "sqlite3", ramDsn)
+
 	fmt.Fprintln(os.Stdout, "DBのスキーマを設定しました。")
 }
