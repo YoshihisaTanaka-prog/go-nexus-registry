@@ -34,7 +34,8 @@ async function getLibrariesUnit(params: Params): Promise<PaginatedLibrariesRespo
       const { name, v1, v2, v3 } = params.cursor;
       url += `&name=${encodeURI(name)}&v1=${v1}&v2=${v2}&v3=${v3}`
     }
-    return await axios.get(url);
+    const result = await axios.get(url);
+    return result.data;
   } catch (error) {
     const { status, data } = convertError(error);
     alertError(status, data);

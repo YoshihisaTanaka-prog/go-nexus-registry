@@ -33,7 +33,7 @@ func Start() {
 		api.POST("/sign-up", handler.SignUp)
 		api.POST("/sign-in", handler.SignIn)
 		api.POST("/apply", handler.Apply)
-		api.POST("/get-libraries", handler.GetLibraries)
+		api.GET("/get-libraries", handler.GetLibraries)
 	}
 
 	// r.GET("/sse", handler.SSE)

@@ -17,8 +17,8 @@ func GetLibraries(c *gin.Context) {
 	if v1Str != "" {
 		v1, err = strconv.Atoi(v1Str)
 		if err != nil {
-			fmt.Fprintln(os.StdErr, err)
-			c.JSON(500, , gin.H{})
+			fmt.Fprintln(os.Stderr, err)
+			c.JSON(500, gin.H{})
 			return
 		}
 	}
@@ -27,8 +27,8 @@ func GetLibraries(c *gin.Context) {
 	if v2Str != "" {
 		v2, err = strconv.Atoi(v2Str)
 		if err != nil {
-			fmt.Fprintln(os.StdErr, err)
-			c.JSON(500, , gin.H{})
+			fmt.Fprintln(os.Stderr, err)
+			c.JSON(500, gin.H{})
 			return
 		}
 	}
@@ -37,8 +37,8 @@ func GetLibraries(c *gin.Context) {
 	if v3Str != "" {
 		v3, err = strconv.Atoi(v3Str)
 		if err != nil {
-			fmt.Fprintln(os.StdErr, err)
-			c.JSON(500, , gin.H{})
+			fmt.Fprintln(os.Stderr, err)
+			c.JSON(500, gin.H{})
 			return
 		}
 	}
@@ -47,10 +47,10 @@ func GetLibraries(c *gin.Context) {
 	if limitStr != "" {
 		limit, err = strconv.Atoi(limitStr)
 		if err != nil {
-			fmt.Fprintln(os.StdErr, err)
-			c.JSON(500, , gin.H{})
+			fmt.Fprintln(os.Stderr, err)
+			c.JSON(500, gin.H{})
 			return
 		}
 	}
-	nexus.Npm.GetLibraries(c, kind, name, v1, v2, v3)
+	nexus.Npm.GetLibraries(c, kind, name, v1, v2, v3, limit)
 }

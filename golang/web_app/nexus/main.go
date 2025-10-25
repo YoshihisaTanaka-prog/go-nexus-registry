@@ -67,7 +67,7 @@ func (npmNameSpace)Apply(c *gin.Context, body ApplyProps, userId string, uuId uu
 }
 
 func (npmNameSpace)GetLibraries(c *gin.Context, kind string, name string, v1 int, v2 int, v3 int, limit int) {
-	npm.GetLibraries(c *gin.Context, kind, name, v1, v2, v3, limit)
+	npm.GetLibraries(c, kind, name, v1, v2, v3, limit)
 }
 
 var Npm = npmNS
