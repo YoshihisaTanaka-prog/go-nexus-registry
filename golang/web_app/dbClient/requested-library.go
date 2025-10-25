@@ -15,12 +15,14 @@ var requestedLibraryNS = requestedLibraryNameSpace{}
 func createRequestedLibraryUnit(
 	client *ent.Client,
 	id string,
+	kind string,
 	name string,
 	version string,
 	requestedBy string,
 ) (ok bool) {
 	_, err := client.RequestedLibrary.Create().SetID(id).
 		SetName(name).
+		SetKind(kind).
 		SetVersion(version).
 		SetRequestedBy(requestedBy).
 		Save(*ctx)
@@ -32,12 +34,12 @@ func createRequestedLibraryUnit(
 	return false
 }
 
-func (requestedLibraryNameSpace)Create(id uuid.UUID, name string, version string, requestedBy string) (ok bool) {
+func (requestedLibraryNameSpace)Create(id uuid.UUID, kind string, name string, version string, requestedBy string) (ok bool) {
 	localId := fmt.Sprintf("%s", id)
 
 	if ok := createRequestedLibraryUnit(
 		psqlClient,
-		localId, name, version,
+		localId, kind, name, version,
 		requestedBy,
 	); !ok {
 		return false
@@ -45,7 +47,7 @@ func (requestedLibraryNameSpace)Create(id uuid.UUID, name string, version string
 
 	return createRequestedLibraryUnit(
 		ramClient,
-		localId, name, version,
+		localId, kind, name, version,
 		requestedBy,
 	)
 }
@@ -60,10 +62,11 @@ func (requestedLibraryNameSpace)FindById(id uuid.UUID) (ok bool) {
 	return false
 }
 
-func (requestedLibraryNameSpace)FindByNameAndVersion(name string, version string) (uuId uuid.UUID, status string, err error) {
+func (requestedLibraryNameSpace)FindByKindAndNameAndVersion(kind string, name string, version string) (uuId uuid.UUID, status string, err error) {
 	library, err := psqlClient.RequestedLibrary.Query().
 		Where(
 			requestedlibrary.Name(name),
+			requestedlibrary.Kind(kind),
 			requestedlibrary.Version(version),
 		).
 		Only(*ctx)

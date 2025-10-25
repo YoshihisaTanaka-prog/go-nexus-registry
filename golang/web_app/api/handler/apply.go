@@ -19,7 +19,7 @@ func Apply(c *gin.Context) {
 	userId := c.MustGet("userId").(string)
 
 	var body struct {
-		Type   string `json:"type"  binding:"required"`
+		Kind   string `json:"kind"  binding:"required"`
 		Name   string `json:"name"  binding:"required"`
 		Index *int    `json:"index" binding:"required"`
 		V1    *int    `json:"v1"`

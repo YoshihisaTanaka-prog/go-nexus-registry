@@ -17,7 +17,7 @@ import (
 )
 
 type ApplyProps struct {
-	Type   string `json:"type"  binding:"required"`
+	Kind   string `json:"kind"  binding:"required"`
 	Name   string `json:"name"  binding:"required"`
 	Index *int    `json:"index" binding:"required"`
 	V1    *int    `json:"v1"`
@@ -54,7 +54,7 @@ func InstallLibraries(body ApplyProps, userId string, uuid uuid.UUID, dockerImag
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
-		fmt.Fprintln(os.Stderr, "ライブラリ", body.Type, "のインストールに失敗しました。\n", err)
+		fmt.Fprintln(os.Stderr, "ライブラリ", body.Kind, "のインストールに失敗しました。\n", err)
 		pubsub.Publish(userId, uuid, -1, 1)
 		return false
 	}
@@ -62,7 +62,7 @@ func InstallLibraries(body ApplyProps, userId string, uuid uuid.UUID, dockerImag
 	go func(){
 		// node_modulesを削除
 		if err := os.RemoveAll(fmt.Sprintf("/app/tmp/npm/%s/node_modules", uuid)); err != nil {
-			fmt.Fprintln(os.Stderr, body.Type, "の node_modules フォルダの削除に失敗しました。\n", err)
+			fmt.Fprintln(os.Stderr, body.Kind, "の node_modules フォルダの削除に失敗しました。\n", err)
 			pubsub.Publish(userId, uuid, -2, 1)
 		}
 	}()
@@ -139,7 +139,7 @@ func ParseLibraries(libName string, userId string, uuid uuid.UUID, dockerImageNa
 	return &libraryInfo.MainLibrary, libraryInfo.SubLibraries, nil
 }
 
-func UploadLibraries(subLibraries []ParsedSubLibrary) {
+func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 	var wg sync.WaitGroup
 	var nexusConfig = struct {
 		URL        string
@@ -167,8 +167,8 @@ func UploadLibraries(subLibraries []ParsedSubLibrary) {
 			name, version, resolvedUrl := subLibrary.Name, subLibrary.Version, subLibrary.Resolved
 			fmt.Fprintln(os.Stdout, "Processing:", name, "version", version)
 
-			if ok := dbClient.SavedLibrary.Create(uuidV4, name, version); !ok {
-				if id, status, err := dbClient.SavedLibrary.FindByNameAndVersion(name, version); err != nil {
+			if ok := dbClient.SavedLibrary.Create(uuidV4, libKind, name, version); !ok {
+				if id, status, err := dbClient.SavedLibrary.FindByKindAndNameAndVersion(libKind, name, version); err != nil {
 					fmt.Fprintln(os.Stderr, "  ", err)
 					return
 				} else if (status == "uploading") {
@@ -242,7 +242,7 @@ func UploadLibraries(subLibraries []ParsedSubLibrary) {
 
 			uploadReq.SetBasicAuth(nexusConfig.Username, nexusConfig.Password)
 
-			// Content-Typeヘッダーをmultipart writerが生成したものに設定 (境界情報が含まれる)
+			// Content-Kindヘッダーをmultipart writerが生成したものに設定 (境界情報が含まれる)
 			uploadReq.Header.Set("Content-Type", writer.FormDataContentType())
 
 			fmt.Fprintln(os.Stdout, "   -> Uploading to", nexusURL)
