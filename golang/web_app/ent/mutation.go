@@ -35,6 +35,7 @@ type RequestedLibraryMutation struct {
 	op            Op
 	typ           string
 	id            *string
+	kind          *string
 	name          *string
 	version       *string
 	status        *string
@@ -149,6 +150,42 @@ func (m *RequestedLibraryMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetKind sets the "kind" field.
+func (m *RequestedLibraryMutation) SetKind(s string) {
+	m.kind = &s
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *RequestedLibraryMutation) Kind() (r string, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the RequestedLibrary entity.
+// If the RequestedLibrary object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RequestedLibraryMutation) OldKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *RequestedLibraryMutation) ResetKind() {
+	m.kind = nil
 }
 
 // SetName sets the "name" field.
@@ -401,7 +438,10 @@ func (m *RequestedLibraryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RequestedLibraryMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
+	if m.kind != nil {
+		fields = append(fields, requestedlibrary.FieldKind)
+	}
 	if m.name != nil {
 		fields = append(fields, requestedlibrary.FieldName)
 	}
@@ -428,6 +468,8 @@ func (m *RequestedLibraryMutation) Fields() []string {
 // schema.
 func (m *RequestedLibraryMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case requestedlibrary.FieldKind:
+		return m.Kind()
 	case requestedlibrary.FieldName:
 		return m.Name()
 	case requestedlibrary.FieldVersion:
@@ -449,6 +491,8 @@ func (m *RequestedLibraryMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *RequestedLibraryMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case requestedlibrary.FieldKind:
+		return m.OldKind(ctx)
 	case requestedlibrary.FieldName:
 		return m.OldName(ctx)
 	case requestedlibrary.FieldVersion:
@@ -470,6 +514,13 @@ func (m *RequestedLibraryMutation) OldField(ctx context.Context, name string) (e
 // type.
 func (m *RequestedLibraryMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case requestedlibrary.FieldKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
+		return nil
 	case requestedlibrary.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -561,6 +612,9 @@ func (m *RequestedLibraryMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *RequestedLibraryMutation) ResetField(name string) error {
 	switch name {
+	case requestedlibrary.FieldKind:
+		m.ResetKind()
+		return nil
 	case requestedlibrary.FieldName:
 		m.ResetName()
 		return nil
@@ -637,6 +691,7 @@ type SavedLibraryMutation struct {
 	op            Op
 	typ           string
 	id            *string
+	kind          *string
 	name          *string
 	version       *string
 	status        *string
@@ -757,6 +812,42 @@ func (m *SavedLibraryMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetKind sets the "kind" field.
+func (m *SavedLibraryMutation) SetKind(s string) {
+	m.kind = &s
+}
+
+// Kind returns the value of the "kind" field in the mutation.
+func (m *SavedLibraryMutation) Kind() (r string, exists bool) {
+	v := m.kind
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKind returns the old "kind" field's value of the SavedLibrary entity.
+// If the SavedLibrary object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SavedLibraryMutation) OldKind(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKind is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKind requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKind: %w", err)
+	}
+	return oldValue.Kind, nil
+}
+
+// ResetKind resets all changes to the "kind" field.
+func (m *SavedLibraryMutation) ResetKind() {
+	m.kind = nil
 }
 
 // SetName sets the "name" field.
@@ -1177,7 +1268,10 @@ func (m *SavedLibraryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SavedLibraryMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
+	if m.kind != nil {
+		fields = append(fields, savedlibrary.FieldKind)
+	}
 	if m.name != nil {
 		fields = append(fields, savedlibrary.FieldName)
 	}
@@ -1213,6 +1307,8 @@ func (m *SavedLibraryMutation) Fields() []string {
 // schema.
 func (m *SavedLibraryMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case savedlibrary.FieldKind:
+		return m.Kind()
 	case savedlibrary.FieldName:
 		return m.Name()
 	case savedlibrary.FieldVersion:
@@ -1240,6 +1336,8 @@ func (m *SavedLibraryMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *SavedLibraryMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case savedlibrary.FieldKind:
+		return m.OldKind(ctx)
 	case savedlibrary.FieldName:
 		return m.OldName(ctx)
 	case savedlibrary.FieldVersion:
@@ -1267,6 +1365,13 @@ func (m *SavedLibraryMutation) OldField(ctx context.Context, name string) (ent.V
 // type.
 func (m *SavedLibraryMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case savedlibrary.FieldKind:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKind(v)
+		return nil
 	case savedlibrary.FieldName:
 		v, ok := value.(string)
 		if !ok {
@@ -1418,6 +1523,9 @@ func (m *SavedLibraryMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *SavedLibraryMutation) ResetField(name string) error {
 	switch name {
+	case savedlibrary.FieldKind:
+		m.ResetKind()
+		return nil
 	case savedlibrary.FieldName:
 		m.ResetName()
 		return nil

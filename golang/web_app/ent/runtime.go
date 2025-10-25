@@ -15,32 +15,36 @@ import (
 func init() {
 	requestedlibraryFields := schema.RequestedLibrary{}.Fields()
 	_ = requestedlibraryFields
+	// requestedlibraryDescKind is the schema descriptor for kind field.
+	requestedlibraryDescKind := requestedlibraryFields[1].Descriptor()
+	// requestedlibrary.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	requestedlibrary.KindValidator = requestedlibraryDescKind.Validators[0].(func(string) error)
 	// requestedlibraryDescName is the schema descriptor for name field.
-	requestedlibraryDescName := requestedlibraryFields[1].Descriptor()
+	requestedlibraryDescName := requestedlibraryFields[2].Descriptor()
 	// requestedlibrary.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	requestedlibrary.NameValidator = requestedlibraryDescName.Validators[0].(func(string) error)
 	// requestedlibraryDescVersion is the schema descriptor for version field.
-	requestedlibraryDescVersion := requestedlibraryFields[2].Descriptor()
+	requestedlibraryDescVersion := requestedlibraryFields[3].Descriptor()
 	// requestedlibrary.VersionValidator is a validator for the "version" field. It is called by the builders before save.
 	requestedlibrary.VersionValidator = requestedlibraryDescVersion.Validators[0].(func(string) error)
 	// requestedlibraryDescStatus is the schema descriptor for status field.
-	requestedlibraryDescStatus := requestedlibraryFields[3].Descriptor()
+	requestedlibraryDescStatus := requestedlibraryFields[4].Descriptor()
 	// requestedlibrary.DefaultStatus holds the default value on creation for the status field.
 	requestedlibrary.DefaultStatus = requestedlibraryDescStatus.Default.(string)
 	// requestedlibrary.StatusValidator is a validator for the "status" field. It is called by the builders before save.
 	requestedlibrary.StatusValidator = requestedlibraryDescStatus.Validators[0].(func(string) error)
 	// requestedlibraryDescCreatedAt is the schema descriptor for created_at field.
-	requestedlibraryDescCreatedAt := requestedlibraryFields[4].Descriptor()
+	requestedlibraryDescCreatedAt := requestedlibraryFields[5].Descriptor()
 	// requestedlibrary.DefaultCreatedAt holds the default value on creation for the created_at field.
 	requestedlibrary.DefaultCreatedAt = requestedlibraryDescCreatedAt.Default.(func() time.Time)
 	// requestedlibraryDescUpdatedAt is the schema descriptor for updated_at field.
-	requestedlibraryDescUpdatedAt := requestedlibraryFields[5].Descriptor()
+	requestedlibraryDescUpdatedAt := requestedlibraryFields[6].Descriptor()
 	// requestedlibrary.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	requestedlibrary.DefaultUpdatedAt = requestedlibraryDescUpdatedAt.Default.(func() time.Time)
 	// requestedlibrary.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	requestedlibrary.UpdateDefaultUpdatedAt = requestedlibraryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// requestedlibraryDescRequestedBy is the schema descriptor for requested_by field.
-	requestedlibraryDescRequestedBy := requestedlibraryFields[6].Descriptor()
+	requestedlibraryDescRequestedBy := requestedlibraryFields[7].Descriptor()
 	// requestedlibrary.RequestedByValidator is a validator for the "requested_by" field. It is called by the builders before save.
 	requestedlibrary.RequestedByValidator = requestedlibraryDescRequestedBy.Validators[0].(func(string) error)
 	// requestedlibraryDescID is the schema descriptor for id field.
@@ -49,44 +53,48 @@ func init() {
 	requestedlibrary.IDValidator = requestedlibraryDescID.Validators[0].(func(string) error)
 	savedlibraryFields := schema.SavedLibrary{}.Fields()
 	_ = savedlibraryFields
+	// savedlibraryDescKind is the schema descriptor for kind field.
+	savedlibraryDescKind := savedlibraryFields[1].Descriptor()
+	// savedlibrary.KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	savedlibrary.KindValidator = savedlibraryDescKind.Validators[0].(func(string) error)
 	// savedlibraryDescName is the schema descriptor for name field.
-	savedlibraryDescName := savedlibraryFields[1].Descriptor()
+	savedlibraryDescName := savedlibraryFields[2].Descriptor()
 	// savedlibrary.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	savedlibrary.NameValidator = savedlibraryDescName.Validators[0].(func(string) error)
 	// savedlibraryDescVersion is the schema descriptor for version field.
-	savedlibraryDescVersion := savedlibraryFields[2].Descriptor()
+	savedlibraryDescVersion := savedlibraryFields[3].Descriptor()
 	// savedlibrary.VersionValidator is a validator for the "version" field. It is called by the builders before save.
 	savedlibrary.VersionValidator = savedlibraryDescVersion.Validators[0].(func(string) error)
 	// savedlibraryDescStatus is the schema descriptor for status field.
-	savedlibraryDescStatus := savedlibraryFields[3].Descriptor()
+	savedlibraryDescStatus := savedlibraryFields[4].Descriptor()
 	// savedlibrary.DefaultStatus holds the default value on creation for the status field.
 	savedlibrary.DefaultStatus = savedlibraryDescStatus.Default.(string)
 	// savedlibrary.StatusValidator is a validator for the "status" field. It is called by the builders before save.
 	savedlibrary.StatusValidator = savedlibraryDescStatus.Validators[0].(func(string) error)
 	// savedlibraryDescCreatedAt is the schema descriptor for created_at field.
-	savedlibraryDescCreatedAt := savedlibraryFields[4].Descriptor()
+	savedlibraryDescCreatedAt := savedlibraryFields[5].Descriptor()
 	// savedlibrary.DefaultCreatedAt holds the default value on creation for the created_at field.
 	savedlibrary.DefaultCreatedAt = savedlibraryDescCreatedAt.Default.(func() time.Time)
 	// savedlibraryDescUpdatedAt is the schema descriptor for updated_at field.
-	savedlibraryDescUpdatedAt := savedlibraryFields[5].Descriptor()
+	savedlibraryDescUpdatedAt := savedlibraryFields[6].Descriptor()
 	// savedlibrary.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	savedlibrary.DefaultUpdatedAt = savedlibraryDescUpdatedAt.Default.(func() time.Time)
 	// savedlibrary.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	savedlibrary.UpdateDefaultUpdatedAt = savedlibraryDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// savedlibraryDescV1 is the schema descriptor for v1 field.
-	savedlibraryDescV1 := savedlibraryFields[6].Descriptor()
+	savedlibraryDescV1 := savedlibraryFields[7].Descriptor()
 	// savedlibrary.V1Validator is a validator for the "v1" field. It is called by the builders before save.
 	savedlibrary.V1Validator = savedlibraryDescV1.Validators[0].(func(int) error)
 	// savedlibraryDescV2 is the schema descriptor for v2 field.
-	savedlibraryDescV2 := savedlibraryFields[7].Descriptor()
+	savedlibraryDescV2 := savedlibraryFields[8].Descriptor()
 	// savedlibrary.V2Validator is a validator for the "v2" field. It is called by the builders before save.
 	savedlibrary.V2Validator = savedlibraryDescV2.Validators[0].(func(int) error)
 	// savedlibraryDescV3 is the schema descriptor for v3 field.
-	savedlibraryDescV3 := savedlibraryFields[8].Descriptor()
+	savedlibraryDescV3 := savedlibraryFields[9].Descriptor()
 	// savedlibrary.V3Validator is a validator for the "v3" field. It is called by the builders before save.
 	savedlibrary.V3Validator = savedlibraryDescV3.Validators[0].(func(int) error)
 	// savedlibraryDescIsPublished is the schema descriptor for isPublished field.
-	savedlibraryDescIsPublished := savedlibraryFields[9].Descriptor()
+	savedlibraryDescIsPublished := savedlibraryFields[10].Descriptor()
 	// savedlibrary.DefaultIsPublished holds the default value on creation for the isPublished field.
 	savedlibrary.DefaultIsPublished = savedlibraryDescIsPublished.Default.(bool)
 	// savedlibraryDescID is the schema descriptor for id field.

@@ -28,6 +28,20 @@ func (_u *RequestedLibraryUpdate) Where(ps ...predicate.RequestedLibrary) *Reque
 	return _u
 }
 
+// SetKind sets the "kind" field.
+func (_u *RequestedLibraryUpdate) SetKind(v string) *RequestedLibraryUpdate {
+	_u.mutation.SetKind(v)
+	return _u
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (_u *RequestedLibraryUpdate) SetNillableKind(v *string) *RequestedLibraryUpdate {
+	if v != nil {
+		_u.SetKind(*v)
+	}
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *RequestedLibraryUpdate) SetName(v string) *RequestedLibraryUpdate {
 	_u.mutation.SetName(v)
@@ -133,6 +147,11 @@ func (_u *RequestedLibraryUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *RequestedLibraryUpdate) check() error {
+	if v, ok := _u.mutation.Kind(); ok {
+		if err := requestedlibrary.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.kind": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := requestedlibrary.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.name": %w`, err)}
@@ -168,6 +187,9 @@ func (_u *RequestedLibraryUpdate) sqlSave(ctx context.Context) (_node int, err e
 			}
 		}
 	}
+	if value, ok := _u.mutation.Kind(); ok {
+		_spec.SetField(requestedlibrary.FieldKind, field.TypeString, value)
+	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(requestedlibrary.FieldName, field.TypeString, value)
 	}
@@ -201,6 +223,20 @@ type RequestedLibraryUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *RequestedLibraryMutation
+}
+
+// SetKind sets the "kind" field.
+func (_u *RequestedLibraryUpdateOne) SetKind(v string) *RequestedLibraryUpdateOne {
+	_u.mutation.SetKind(v)
+	return _u
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (_u *RequestedLibraryUpdateOne) SetNillableKind(v *string) *RequestedLibraryUpdateOne {
+	if v != nil {
+		_u.SetKind(*v)
+	}
+	return _u
 }
 
 // SetName sets the "name" field.
@@ -321,6 +357,11 @@ func (_u *RequestedLibraryUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *RequestedLibraryUpdateOne) check() error {
+	if v, ok := _u.mutation.Kind(); ok {
+		if err := requestedlibrary.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.kind": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := requestedlibrary.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.name": %w`, err)}
@@ -372,6 +413,9 @@ func (_u *RequestedLibraryUpdateOne) sqlSave(ctx context.Context) (_node *Reques
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.Kind(); ok {
+		_spec.SetField(requestedlibrary.FieldKind, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(requestedlibrary.FieldName, field.TypeString, value)

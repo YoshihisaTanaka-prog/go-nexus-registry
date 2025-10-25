@@ -13,6 +13,8 @@ const (
 	Label = "requested_library"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldKind holds the string denoting the kind field in the database.
+	FieldKind = "kind"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldVersion holds the string denoting the version field in the database.
@@ -32,6 +34,7 @@ const (
 // Columns holds all SQL columns for requestedlibrary fields.
 var Columns = []string{
 	FieldID,
+	FieldKind,
 	FieldName,
 	FieldVersion,
 	FieldStatus,
@@ -51,6 +54,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// KindValidator is a validator for the "kind" field. It is called by the builders before save.
+	KindValidator func(string) error
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// VersionValidator is a validator for the "version" field. It is called by the builders before save.
@@ -77,6 +82,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByKind orders the results by the kind field.
+func ByKind(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldKind, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

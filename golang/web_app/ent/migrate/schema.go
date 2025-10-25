@@ -11,6 +11,7 @@ var (
 	// RequestedLibrariesColumns holds the columns for the "requested_libraries" table.
 	RequestedLibrariesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "kind", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "version", Type: field.TypeString},
 		{Name: "status", Type: field.TypeString, Default: "uploading"},
@@ -27,13 +28,14 @@ var (
 			{
 				Name:    "requested_libraries_name_version_idx",
 				Unique:  true,
-				Columns: []*schema.Column{RequestedLibrariesColumns[1], RequestedLibrariesColumns[2]},
+				Columns: []*schema.Column{RequestedLibrariesColumns[2], RequestedLibrariesColumns[3]},
 			},
 		},
 	}
 	// SavedLibrariesColumns holds the columns for the "saved_libraries" table.
 	SavedLibrariesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "kind", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString},
 		{Name: "version", Type: field.TypeString},
 		{Name: "status", Type: field.TypeString, Default: "uploading"},
@@ -53,7 +55,7 @@ var (
 			{
 				Name:    "saved_libraries_name_version_idx",
 				Unique:  true,
-				Columns: []*schema.Column{SavedLibrariesColumns[1], SavedLibrariesColumns[2]},
+				Columns: []*schema.Column{SavedLibrariesColumns[2], SavedLibrariesColumns[3]},
 			},
 		},
 	}

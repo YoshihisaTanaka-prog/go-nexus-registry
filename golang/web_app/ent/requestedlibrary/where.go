@@ -64,6 +64,11 @@ func IDContainsFold(id string) predicate.RequestedLibrary {
 	return predicate.RequestedLibrary(sql.FieldContainsFold(FieldID, id))
 }
 
+// Kind applies equality check predicate on the "kind" field. It's identical to KindEQ.
+func Kind(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldEQ(FieldKind, v))
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.RequestedLibrary {
 	return predicate.RequestedLibrary(sql.FieldEQ(FieldName, v))
@@ -92,6 +97,71 @@ func UpdatedAt(v time.Time) predicate.RequestedLibrary {
 // RequestedBy applies equality check predicate on the "requested_by" field. It's identical to RequestedByEQ.
 func RequestedBy(v string) predicate.RequestedLibrary {
 	return predicate.RequestedLibrary(sql.FieldEQ(FieldRequestedBy, v))
+}
+
+// KindEQ applies the EQ predicate on the "kind" field.
+func KindEQ(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldEQ(FieldKind, v))
+}
+
+// KindNEQ applies the NEQ predicate on the "kind" field.
+func KindNEQ(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldNEQ(FieldKind, v))
+}
+
+// KindIn applies the In predicate on the "kind" field.
+func KindIn(vs ...string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldIn(FieldKind, vs...))
+}
+
+// KindNotIn applies the NotIn predicate on the "kind" field.
+func KindNotIn(vs ...string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldNotIn(FieldKind, vs...))
+}
+
+// KindGT applies the GT predicate on the "kind" field.
+func KindGT(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldGT(FieldKind, v))
+}
+
+// KindGTE applies the GTE predicate on the "kind" field.
+func KindGTE(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldGTE(FieldKind, v))
+}
+
+// KindLT applies the LT predicate on the "kind" field.
+func KindLT(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldLT(FieldKind, v))
+}
+
+// KindLTE applies the LTE predicate on the "kind" field.
+func KindLTE(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldLTE(FieldKind, v))
+}
+
+// KindContains applies the Contains predicate on the "kind" field.
+func KindContains(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldContains(FieldKind, v))
+}
+
+// KindHasPrefix applies the HasPrefix predicate on the "kind" field.
+func KindHasPrefix(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldHasPrefix(FieldKind, v))
+}
+
+// KindHasSuffix applies the HasSuffix predicate on the "kind" field.
+func KindHasSuffix(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldHasSuffix(FieldKind, v))
+}
+
+// KindEqualFold applies the EqualFold predicate on the "kind" field.
+func KindEqualFold(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldEqualFold(FieldKind, v))
+}
+
+// KindContainsFold applies the ContainsFold predicate on the "kind" field.
+func KindContainsFold(v string) predicate.RequestedLibrary {
+	return predicate.RequestedLibrary(sql.FieldContainsFold(FieldKind, v))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.

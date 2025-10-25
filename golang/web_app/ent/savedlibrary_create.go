@@ -20,6 +20,12 @@ type SavedLibraryCreate struct {
 	hooks    []Hook
 }
 
+// SetKind sets the "kind" field.
+func (_c *SavedLibraryCreate) SetKind(v string) *SavedLibraryCreate {
+	_c.mutation.SetKind(v)
+	return _c
+}
+
 // SetName sets the "name" field.
 func (_c *SavedLibraryCreate) SetName(v string) *SavedLibraryCreate {
 	_c.mutation.SetName(v)
@@ -167,6 +173,14 @@ func (_c *SavedLibraryCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *SavedLibraryCreate) check() error {
+	if _, ok := _c.mutation.Kind(); !ok {
+		return &ValidationError{Name: "kind", err: errors.New(`ent: missing required field "SavedLibrary.kind"`)}
+	}
+	if v, ok := _c.mutation.Kind(); ok {
+		if err := savedlibrary.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.kind": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "SavedLibrary.name"`)}
 	}
@@ -263,6 +277,10 @@ func (_c *SavedLibraryCreate) createSpec() (*SavedLibrary, *sqlgraph.CreateSpec)
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := _c.mutation.Kind(); ok {
+		_spec.SetField(savedlibrary.FieldKind, field.TypeString, value)
+		_node.Kind = value
 	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(savedlibrary.FieldName, field.TypeString, value)

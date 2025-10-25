@@ -28,6 +28,20 @@ func (_u *SavedLibraryUpdate) Where(ps ...predicate.SavedLibrary) *SavedLibraryU
 	return _u
 }
 
+// SetKind sets the "kind" field.
+func (_u *SavedLibraryUpdate) SetKind(v string) *SavedLibraryUpdate {
+	_u.mutation.SetKind(v)
+	return _u
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (_u *SavedLibraryUpdate) SetNillableKind(v *string) *SavedLibraryUpdate {
+	if v != nil {
+		_u.SetKind(*v)
+	}
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *SavedLibraryUpdate) SetName(v string) *SavedLibraryUpdate {
 	_u.mutation.SetName(v)
@@ -196,6 +210,11 @@ func (_u *SavedLibraryUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SavedLibraryUpdate) check() error {
+	if v, ok := _u.mutation.Kind(); ok {
+		if err := savedlibrary.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.kind": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := savedlibrary.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.name": %w`, err)}
@@ -240,6 +259,9 @@ func (_u *SavedLibraryUpdate) sqlSave(ctx context.Context) (_node int, err error
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.Kind(); ok {
+		_spec.SetField(savedlibrary.FieldKind, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(savedlibrary.FieldName, field.TypeString, value)
@@ -292,6 +314,20 @@ type SavedLibraryUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *SavedLibraryMutation
+}
+
+// SetKind sets the "kind" field.
+func (_u *SavedLibraryUpdateOne) SetKind(v string) *SavedLibraryUpdateOne {
+	_u.mutation.SetKind(v)
+	return _u
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (_u *SavedLibraryUpdateOne) SetNillableKind(v *string) *SavedLibraryUpdateOne {
+	if v != nil {
+		_u.SetKind(*v)
+	}
+	return _u
 }
 
 // SetName sets the "name" field.
@@ -475,6 +511,11 @@ func (_u *SavedLibraryUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *SavedLibraryUpdateOne) check() error {
+	if v, ok := _u.mutation.Kind(); ok {
+		if err := savedlibrary.KindValidator(v); err != nil {
+			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.kind": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := savedlibrary.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.name": %w`, err)}
@@ -536,6 +577,9 @@ func (_u *SavedLibraryUpdateOne) sqlSave(ctx context.Context) (_node *SavedLibra
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := _u.mutation.Kind(); ok {
+		_spec.SetField(savedlibrary.FieldKind, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(savedlibrary.FieldName, field.TypeString, value)

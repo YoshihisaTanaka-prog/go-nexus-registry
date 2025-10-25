@@ -11,6 +11,7 @@ import (
 func getBaseFields(defaultStatus string, allowedStatus []string) []ent.Field {
 	return []ent.Field{
 		field.String("id").NotEmpty().Unique(),
+		field.String("kind").NotEmpty(),
 		field.String("name").NotEmpty(),
 		field.String("version").NotEmpty(),
 		field.String("status").Default(defaultStatus).Validate(func(s string) error {

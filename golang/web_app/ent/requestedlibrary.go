@@ -17,6 +17,8 @@ type RequestedLibrary struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// Kind holds the value of the "kind" field.
+	Kind string `json:"kind,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Version holds the value of the "version" field.
@@ -37,7 +39,7 @@ func (*RequestedLibrary) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case requestedlibrary.FieldID, requestedlibrary.FieldName, requestedlibrary.FieldVersion, requestedlibrary.FieldStatus, requestedlibrary.FieldRequestedBy:
+		case requestedlibrary.FieldID, requestedlibrary.FieldKind, requestedlibrary.FieldName, requestedlibrary.FieldVersion, requestedlibrary.FieldStatus, requestedlibrary.FieldRequestedBy:
 			values[i] = new(sql.NullString)
 		case requestedlibrary.FieldCreatedAt, requestedlibrary.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -61,6 +63,12 @@ func (_m *RequestedLibrary) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				_m.ID = value.String
+			}
+		case requestedlibrary.FieldKind:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field kind", values[i])
+			} else if value.Valid {
+				_m.Kind = value.String
 			}
 		case requestedlibrary.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -134,6 +142,9 @@ func (_m *RequestedLibrary) String() string {
 	var builder strings.Builder
 	builder.WriteString("RequestedLibrary(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("kind=")
+	builder.WriteString(_m.Kind)
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")

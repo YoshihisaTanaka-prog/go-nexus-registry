@@ -262,12 +262,12 @@ func (_q *SavedLibraryQuery) Clone() *SavedLibraryQuery {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Kind string `json:"kind,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.SavedLibrary.Query().
-//		GroupBy(savedlibrary.FieldName).
+//		GroupBy(savedlibrary.FieldKind).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *SavedLibraryQuery) GroupBy(field string, fields ...string) *SavedLibraryGroupBy {
@@ -285,11 +285,11 @@ func (_q *SavedLibraryQuery) GroupBy(field string, fields ...string) *SavedLibra
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Kind string `json:"kind,omitempty"`
 //	}
 //
 //	client.SavedLibrary.Query().
-//		Select(savedlibrary.FieldName).
+//		Select(savedlibrary.FieldKind).
 //		Scan(ctx, &v)
 func (_q *SavedLibraryQuery) Select(fields ...string) *SavedLibrarySelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

@@ -17,6 +17,8 @@ type SavedLibrary struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// Kind holds the value of the "kind" field.
+	Kind string `json:"kind,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Version holds the value of the "version" field.
@@ -47,7 +49,7 @@ func (*SavedLibrary) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case savedlibrary.FieldV1, savedlibrary.FieldV2, savedlibrary.FieldV3:
 			values[i] = new(sql.NullInt64)
-		case savedlibrary.FieldID, savedlibrary.FieldName, savedlibrary.FieldVersion, savedlibrary.FieldStatus:
+		case savedlibrary.FieldID, savedlibrary.FieldKind, savedlibrary.FieldName, savedlibrary.FieldVersion, savedlibrary.FieldStatus:
 			values[i] = new(sql.NullString)
 		case savedlibrary.FieldCreatedAt, savedlibrary.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -71,6 +73,12 @@ func (_m *SavedLibrary) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				_m.ID = value.String
+			}
+		case savedlibrary.FieldKind:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field kind", values[i])
+			} else if value.Valid {
+				_m.Kind = value.String
 			}
 		case savedlibrary.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -162,6 +170,9 @@ func (_m *SavedLibrary) String() string {
 	var builder strings.Builder
 	builder.WriteString("SavedLibrary(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString("kind=")
+	builder.WriteString(_m.Kind)
+	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
