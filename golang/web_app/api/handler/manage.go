@@ -54,3 +54,7 @@ func GetLibraries(c *gin.Context) {
 	}
 	nexus.Npm.GetLibraries(c, kind, name, v1, v2, v3, limit)
 }
+
+func UpdateIsPublishing(c *gin.Context) {
+	c.JSON(200, gin.H{})
+}
