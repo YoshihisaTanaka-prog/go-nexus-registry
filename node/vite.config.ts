@@ -22,7 +22,7 @@ export default defineConfig({
       input: {
         "index": resolve(__dirname, 'htmls', 'index.html'),
         "apply": resolve(__dirname, 'htmls', 'apply.html'),
-        "allow": resolve(__dirname, 'htmls', 'allow.html'),
+        "manage": resolve(__dirname, 'htmls', 'manage.html'),
         "sign-up": resolve(__dirname, 'htmls', 'sign-up.html'),
         "sign-in": resolve(__dirname, 'htmls', 'sign-in.html'),
       },

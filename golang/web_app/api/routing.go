@@ -13,7 +13,7 @@ var pagePaths = []string{
 	"sign-up",
 	"sign-in",
 	"apply",
-	"allow",
+	"manage",
 }
 
 func Start() {

@@ -11,9 +11,9 @@
       className: "menu-button",
       displayText: "申請",
     },
-    allow: {
+    manage: {
       className: "menu-button",
-      displayText: "認可（要管理者権限）",
+      displayText: "ライブラリ設定",
     },
   };
 </script>
