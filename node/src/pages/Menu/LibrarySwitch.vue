@@ -38,17 +38,20 @@
     border: 1px solid #b6bfd2;
     border-radius: 0.3em;
     box-sizing: border-box;
+    padding: 0.1em;
     display: flex;
     justify-content: center;
   }
   .item {
     width: 5em;
+    padding: 0.2em 0.5em;
+    box-sizing: border-box;
+    display: inline-block;
+    text-align: center;
   }
   .selected-item {
     border: 1px solid #b6bfd2;
     border-radius: 0.3em;
-    padding: 0.5em;
-    box-sizing: border-box;
     background-color: #f4f5f9;
   }
 </style>
