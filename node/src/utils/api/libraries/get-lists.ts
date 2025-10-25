@@ -1,35 +1,6 @@
-import { type Ref, ref } from 'vue'
-import { axios, convertError, alertError } from './_base'
-
-export type Library = {
-  id: string;
-  name: string;
-  version: string;
-  v1: number;
-  v2: number;
-  v3: number;
-  status: 'uploading' | 'uploaded' | 'failed';
-  isPublished: boolean;
-}
-
-type Params = {
-  readonly kind: string,
-  readonly cursor?: Cursor
-  readonly limit: number;
-}
-
-type Cursor = {
-  readonly name: string;
-  readonly v1: number;
-  readonly v2: number;
-  readonly v3: number;
-}
-
-type PaginatedLibrariesResponse = {
-  data: Library[];
-  cursor?: Cursor | null;
-  limit: number;
-}
+import type { Ref } from 'vue'
+import { axios, convertError, alertError } from '@/utils/api/_base'
+import type { Library, PaginationParams as Params, Cursor, PaginatedLibrariesResponse } from './types'
 
 function sortByName(a: Library, b: Library) {
    if (a.name > b.name) {
