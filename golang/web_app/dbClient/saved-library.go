@@ -131,8 +131,7 @@ func (savedLibraryNameSpace)FindLibraries(kind string, name string, v1 int, v2 i
 			savedlibrary.ByV1(),
 			savedlibrary.ByV2(),
 			savedlibrary.ByV3(),
-		).
-		Limit(limit)
+		)
 	
 	if name != "" {
 		q = q.Where(
@@ -157,7 +156,7 @@ func (savedLibraryNameSpace)FindLibraries(kind string, name string, v1 int, v2 i
 		)
 	}
 
-	libraries, err := q.All(*ctx)
+	libraries, err := q.Limit(limit).All(*ctx)
 
 	if err != nil {
 		return []*ent.SavedLibrary{}, nil, err
@@ -175,6 +174,13 @@ func (savedLibraryNameSpace)FindLibraries(kind string, name string, v1 int, v2 i
 	}
 
 	return libraries, nextCursor, nil
+}
+
+func (savedLibraryNameSpace)UpdateIsPublished(id string, isPublished bool) (*ent.SavedLibrary, error) {
+	return psqlClient.SavedLibrary.
+		UpdateOneID(id).
+		SetIsPublished(isPublished).
+		Save(*ctx)
 }
 
 var SavedLibrary = savedLibraryNS
