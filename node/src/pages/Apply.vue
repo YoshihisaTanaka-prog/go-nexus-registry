@@ -2,9 +2,9 @@
   import { ref } from 'vue';
   import Base from '@/components/base/ContentsBase.vue';
   import Field from './Apply/Field.vue';
+  import SelectLibKind from '@/components/SelectLibKind.vue'
   import * as api from '@/utils/api';
 
-  const libKindOptions = ref(['npm']);
   const libKindModel = ref<string>();
 
   type LibData = {
@@ -72,18 +72,7 @@
   <Base :path="'apply'">
   <form>
     <h2>ライブラリの申請</h2>
-    <p style="text-align: center;">
-      ライブラリの種類：
-      <select v-model="libKindModel">
-        <option v-if="libKindModel === undefined" :value="undefined">選択してください。</option>
-        <option
-          v-for="(libKindOption, index) in libKindOptions"
-          :key="index"
-        >
-          {{ libKindOption }}
-        </option>
-      </select>
-    </p>
+    <SelectLibKind v-model="libKindModel" />
     <table>
       <tbody>
         <Field
