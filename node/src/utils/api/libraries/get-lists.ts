@@ -2,6 +2,8 @@ import type { Ref } from 'vue'
 import { axios, convertError, alertError } from '@/utils/api/_base'
 import type { Library, PaginationParams as Params, Cursor, PaginatedLibrariesResponse } from './types'
 
+const DEFAULT_LIMIT_NUM = 50;
+
 function sortByName(a: Library, b: Library) {
    if (a.name > b.name) {
     return 1;
@@ -44,10 +46,11 @@ async function getLibrariesUnit(params: Params): Promise<PaginatedLibrariesRespo
 export async function getLibraries(kind: string, currentLibraryList: Ref<Library[]>) {
   currentLibraryList.value = [];
   let cursor: Cursor | null | undefined = undefined;
-  let limit: number = 10;
+  let limit: number = DEFAULT_LIMIT_NUM;
   
   do {
     const { data: libraries, ...cursorData } = await getLibrariesUnit({kind, cursor, limit});
+    console.log(libraries.length);
     const currentLibs = currentLibraryList.value;
     currentLibs.push(...libraries);
     currentLibs.sort((a,b) => {
@@ -67,5 +70,5 @@ export async function getLibraries(kind: string, currentLibraryList: Ref<Library
     cursor = cursorData.cursor;
     limit = cursorData.limit;
     await new Promise((resolve) => setTimeout(resolve, 500))
-  } while ((cursor != null) && limit > 0);
+  } while ((cursor != null) && (limit === DEFAULT_LIMIT_NUM));
 }
