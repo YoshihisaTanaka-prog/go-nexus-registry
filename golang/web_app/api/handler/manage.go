@@ -43,7 +43,7 @@ func GetLibraries(c *gin.Context) {
 		}
 	}
 	limit := 10
-	limitStr := c.Query("v3")
+	limitStr := c.Query("limit")
 	if limitStr != "" {
 		limit, err = strconv.Atoi(limitStr)
 		if err != nil {
@@ -52,9 +52,19 @@ func GetLibraries(c *gin.Context) {
 			return
 		}
 	}
-	nexus.Npm.GetLibraries(c, kind, name, v1, v2, v3, limit)
+	nexus.GetLibraries(c, kind, name, v1, v2, v3, limit)
 }
 
-func UpdateIsPublishing(c *gin.Context) {
-	c.JSON(200, gin.H{})
+func UpdateIsPublished(c *gin.Context) {
+	var body struct {
+		Id           string `json:"id"          binding:"required"`
+		IsPublished *bool   `json:"isPublished" binding:"required"`
+	}
+
+	if err := c.BindJSON(&body); err != nil {
+		fmt.Fprintln(os.Stderr, "update-is-published\nリクエストJSONの解析に失敗しました\n", err)
+		c.JSON(400, gin.H{"error": "リクエストJSONの解析に失敗しました"})
+		return
+	}
+	nexus.UpdateIsPublished(c, body.Id, *(body.IsPublished))
 }

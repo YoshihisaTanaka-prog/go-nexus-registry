@@ -34,7 +34,7 @@ func Start() {
 		api.POST("/sign-in", handler.SignIn)
 		api.POST("/apply", handler.Apply)
 		api.GET("/get-libraries", handler.GetLibraries)
-		api.POST("/update-is-publishing", handler.UpdateIsPublishing)
+		api.POST("/update-is-published", handler.UpdateIsPublished)
 	}
 
 	// r.GET("/sse", handler.SSE)
