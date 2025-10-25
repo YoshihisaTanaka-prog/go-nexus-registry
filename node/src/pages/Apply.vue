@@ -4,8 +4,8 @@
   import Field from './Apply/Field.vue';
   import * as api from '@/utils/api';
 
-  const libTypeOptions = ref(['npm']);
-  const libTypeModel = ref<string>();
+  const libKindOptions = ref(['npm']);
+  const libKindModel = ref<string>();
 
   type LibData = {
     id: string;
@@ -59,7 +59,7 @@
 
   const apply = () => {
     libDataArray.value = libDataArray.value.filter(libData => libData.name != '');
-    api.apply(libTypeModel.value, ...libDataArray.value.map(libData => {return {name: libData.name, v1: libData.v1, v2: libData.v2, v3: libData.v3}}));
+    api.apply(libKindModel.value, ...libDataArray.value.map(libData => {return {name: libData.name, v1: libData.v1, v2: libData.v2, v3: libData.v3}}));
     if (libDataArray.value.length === 0) {
       setTimeout(async () => {
         libDataArray.value = [createLibData()];
@@ -74,13 +74,13 @@
     <h2>ライブラリの申請</h2>
     <p style="text-align: center;">
       ライブラリの種類：
-      <select v-model="libTypeModel">
-        <option v-if="libTypeModel === undefined" :value="undefined">選択してください。</option>
+      <select v-model="libKindModel">
+        <option v-if="libKindModel === undefined" :value="undefined">選択してください。</option>
         <option
-          v-for="(libTypeOption, index) in libTypeOptions"
+          v-for="(libKindOption, index) in libKindOptions"
           :key="index"
         >
-          {{ libTypeOption }}
+          {{ libKindOption }}
         </option>
       </select>
     </p>

@@ -12,10 +12,10 @@ const onFailedApply = (statusCode: number, data: unknown) => {
   alertError(statusCode, data);
 }
 
-const applyUnit = async (libType: string, index: number, props: ApplyProps) => {
+const applyUnit = async (libKind: string, index: number, props: ApplyProps) => {
   console.log(props)
   try {
-    const result = await axios.post('apply', {...props, index, type: libType});
+    const result = await axios.post('apply', {...props, index, kind: libKind});
     if (result.status < 400) {
       onSuccessApply();
     } else {
@@ -27,13 +27,13 @@ const applyUnit = async (libType: string, index: number, props: ApplyProps) => {
   }
 }
 
-export const apply = (libType: string|undefined, ...propsArray: ApplyProps[]) => {
-  if (libType === undefined) {
+export const apply = (libKind: string|undefined, ...propsArray: ApplyProps[]) => {
+  if (libKind === undefined) {
     alert('ライブラリの種類を選択してください。')
   } else {
     console.log(propsArray)
     propsArray.map((props, index)=>{
-      void applyUnit(libType, index, props);
+      void applyUnit(libKind, index, props);
     });
   }
 }
