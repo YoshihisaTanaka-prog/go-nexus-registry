@@ -9,7 +9,7 @@ import (
 )
 
 func GetLibraries(c *gin.Context) {
-	kind := "npm"
+	kind := c.Query("kind")
 	name := c.Query("name")
 	var err error
 	v1 := 0
