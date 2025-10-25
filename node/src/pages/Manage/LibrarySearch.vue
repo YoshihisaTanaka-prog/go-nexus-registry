@@ -5,7 +5,7 @@
 
   const { libraries } = defineProps<{ libraries: Library[] }>();
   const emits = defineEmits<{
-    updateIsPublishing: [id: string, newIsPublishing: boolean, onDone: ()=>void]
+    updateIsPublished: [id: string, newIsPublished: boolean, onDone: ()=>void]
   }>();
 
   const page = ref(0);
@@ -27,8 +27,8 @@
     page.value = Math.min(length.value, page.value + 1);
   }
 
-  function updateIsPublishing(id: string, newIsPublishing: boolean, onDone: ()=>void) {
-    emits('updateIsPublishing', id, newIsPublishing, onDone);
+  function updateIsPublished(id: string, newIsPublished: boolean, onDone: ()=>void) {
+    emits('updateIsPublished', id, newIsPublished, onDone);
   }
 </script>
 
@@ -42,7 +42,7 @@
     </div>
     <table style="display: inline-block; text-align: left;">
       <tbody>
-        <LibraryUnit v-for="library in selectedLibraries" :key="library.id" :library="library" @update-is-publishing="updateIsPublishing" />
+        <LibraryUnit v-for="library in selectedLibraries" :key="library.id" :library="library" @update-is-published="updateIsPublished" />
       </tbody>
     </table>
     <div style="display: flex; align-items: center; justify-content: center; vertical-align: middle;">

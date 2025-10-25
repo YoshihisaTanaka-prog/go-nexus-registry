@@ -2,8 +2,8 @@
   import { ref, watch } from 'vue';
   import Base from '@/components/base/ContentsBase.vue';
   import SelectLibKind from '@/components/SelectLibKind.vue'
-  import LibrarySearch from './Menu/LibrarySearch.vue';
-  import { type Library, getLibraries, updateIsPublishing } from '@/utils/api';
+  import LibrarySearch from './Manage/LibrarySearch.vue';
+  import { type Library, getLibraries, updateIsPublished } from '@/utils/api';
 
   const libraries = ref<Library[]>([]);
 
@@ -15,14 +15,14 @@
     }
   });
 
-  function _updateIsPublishing(id: string, newIsPublishing: boolean, onDone: ()=>void) {
-    void updateIsPublishing(id, newIsPublishing, libraries, onDone);
+  function _updateIsPublished(id: string, newIsPublished: boolean, onDone: ()=>void) {
+    void updateIsPublished(id, newIsPublished, libraries, onDone);
   }
 </script>
 
 <template>
   <Base :path="'manage'">
     <SelectLibKind v-model="libKindModel" />
-    <LibrarySearch :libraries="libraries" @update-is-publishing="_updateIsPublishing" />
+    <LibrarySearch :libraries="libraries" @update-is-published="_updateIsPublished" />
   </Base>
 </template>

@@ -5,14 +5,14 @@
 
   const { library } = defineProps<{ library: Library }>();
   const emits = defineEmits<{
-    updateIsPublishing: [id: string, newIsPublished: boolean, onDone: ()=>void];
+    updateIsPublished: [id: string, newIsPublished: boolean, onDone: ()=>void];
   }>();
 
   const isChanging = ref(false);
 
-  async function updateIsPublishing(newValue: boolean) {
+  async function updateIsPublished(newValue: boolean) {
     isChanging.value = true
-    emits('updateIsPublishing', library.id, newValue, () => {
+    emits('updateIsPublished', library.id, newValue, () => {
       isChanging.value = false;
     });
   }
@@ -32,7 +32,7 @@
         :display-texts="['非公開', '公開']"
         :is-changing="isChanging"
         :is-selected="library.isPublished"
-        @change="updateIsPublishing"
+        @change="updateIsPublished"
       />
     </td>
   </tr>
