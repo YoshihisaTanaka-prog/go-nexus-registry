@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"os"
-	"reflect"
+	"slices"
+	"time"
 	"web_app/ent"
 	"web_app/ent/savedlibrary"
 )
@@ -20,17 +21,154 @@ type savedLibraryNameSpace struct {
 	Cursor
 }
 
-var savedLibraryNS = savedLibraryNameSpace{} 
+var savedLibraryNS = savedLibraryNameSpace{}
 
-func createSavedLibraryUnit(
-	client *ent.Client,
-	id string,
-	kind string,
-	name string,
-	version string,
-	v1 int, v2 int, v3 int,
-) (ok bool) {
-	_, err := client.SavedLibrary.Create().SetID(id).
+func findByIdWithTx(id string, tx *ent.Tx) (foundLib *ent.SavedLibrary, ok bool) {
+	libraries, err := tx.SavedLibrary.Query().Where(savedlibrary.ID(id)).All(*ctx)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Cache Data Error:", err)
+		tx.Rollback()
+		return nil, false
+	}
+
+	if len(libraries) == 0 {
+		return nil, true
+	}
+	return libraries[0], true
+}
+
+func syncSavedLibraryCache(library *ent.SavedLibrary) (ok bool) {
+	
+	tx, err := ramClient.Tx(*ctx)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Creating Transaction for Cache Data Error:", err)
+		return false
+	}
+
+	foundLib, ok := findByIdWithTx(library.ID, tx)
+
+	if !ok {
+		return false
+	}
+
+	if foundLib == nil {
+		_, err := tx.SavedLibrary.Create().SetID(library.ID).
+			SetName(library.Name).
+			SetKind(library.Kind).
+			SetVersion(library.Version).
+			SetV1(0).
+			SetV2(0).
+			SetV3(0).
+			Save(*ctx)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Creating Cache Data Error:", err)
+			tx.Rollback()
+			return false
+		}
+		go func() {
+			time.Sleep(time.Second * 70)
+			tx, err := ramClient.Tx(*ctx)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "Creating Transaction to Delete Cache Data Error:", err)
+				return
+			}
+			foundLib, _ := findByIdWithTx(library.ID, tx)
+			if foundLib != nil {
+				if foundLib.UpdatedAt.Add(time.Minute).Before(time.Now()) {
+					err := tx.SavedLibrary.DeleteOneID(library.ID).Exec(*ctx)
+					if err != nil {
+						fmt.Fprintln(os.Stderr, "Deleting Cache Data Error:", err)
+						tx.Rollback()
+					}
+				}
+			}
+			err = tx.Commit()
+			if err == nil {
+				fmt.Fprintln(os.Stdout, "Deleted Cache Data id:", library.ID)
+			} else {
+				fmt.Fprintln(os.Stderr, "Deleting Cache Data Error:", err)
+			}
+		}()
+	}
+	
+	_, err = tx.SavedLibrary.UpdateOneID(library.ID).
+		SetStatus(library.Status).
+		SetV1(library.V1).
+		SetV2(library.V2).
+		SetV3(library.V3).
+		SetIsPublished(library.IsPublished).
+		SetUpdatedAt(library.UpdatedAt).
+		Save(*ctx)
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Synchronizing Cache Data Error:", err)
+		tx.Rollback()
+		return false
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Synchronizing Cache Data Error:", err)
+		return false
+	}
+	return true
+}
+
+func findSavedLibraryByKindAndNameAndVersionUnit(client *ent.Client, kind string, name string, version string) (*ent.SavedLibrary, error) {
+	libraries, err := client.SavedLibrary.Query().
+		Where(
+			savedlibrary.Kind(kind),
+			savedlibrary.Name(name),
+			savedlibrary.Version(version),
+		).
+		All(*ctx)
+	
+	if err != nil {
+		return nil, err
+	}
+
+	if len(libraries) == 0{
+		return nil, nil
+	}
+
+	return libraries[0], nil
+}
+
+func findSavedLibraryByKindAndNameAndVersion(kind string, name string, version string) (*ent.SavedLibrary, error) {
+	library, _ := findSavedLibraryByKindAndNameAndVersionUnit(ramClient, kind, name, version)
+	if library != nil {
+		return library, nil
+	}
+
+	library, err := findSavedLibraryByKindAndNameAndVersionUnit(psqlClient, kind, name, version)
+	if library != nil {
+		syncSavedLibraryCache(library)
+	}
+	return library, err
+}
+
+func (savedLibraryNameSpace)FindOrCreate(kind string, name string, version string) (library *ent.SavedLibrary, doSkip bool, err error) {
+	library, _ = findSavedLibraryByKindAndNameAndVersion(kind, name, version)
+	if library != nil {
+		doNextStatuses := []string{
+			"failed",
+		}
+		return library, !(slices.Contains(doNextStatuses, library.Status)), nil
+	}
+
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return nil, true, err
+	}
+
+	localId := fmt.Sprintf("%s", id)
+
+	var v1, v2, v3 int
+	if _, err := fmt.Sscanf(version, "%d.%d.%d", &v1, &v2, &v3); err != nil {
+		return nil, true, err
+	}
+
+	library, err = psqlClient.SavedLibrary.Create().SetID(localId).
 		SetName(name).
 		SetKind(kind).
 		SetVersion(version).
@@ -39,86 +177,13 @@ func createSavedLibraryUnit(
 		SetV3(v3).
 		Save(*ctx)
 		
-	if err == nil {
-		return true
-	}
-	fmt.Fprintln(os.Stderr, err)
-	return false
-}
-
-func (savedLibraryNameSpace)Create(id uuid.UUID, kind string, name string, version string) (ok bool) {
-	localId := fmt.Sprintf("%s", id)
-
-	var v1, v2, v3 int
-	if _, err := fmt.Sscanf(version, "%d.%d.%d", &v1, &v2, &v3); err != nil {
+	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		return false
+		return nil, true, err
 	}
 
-	if ok := createSavedLibraryUnit(
-		psqlClient,
-		localId, kind, name, version,
-		v1, v2, v3,
-	); !ok {
-		return false
-	}
-
-	return createSavedLibraryUnit(
-		ramClient,
-		localId, kind, name, version,
-		v1, v2, v3,
-	)
-}
-
-func (savedLibraryNameSpace)FindById(id uuid.UUID) (ok bool) {
-	library, err := ramClient.SavedLibrary.Query().
-		Where(savedlibrary.ID(fmt.Sprintf("%s", id))).
-		All(*ctx)
-	if err == nil {
-		fmt.Fprintln(os.Stdout, library, reflect.ValueOf(library))
-		return true
-	}
-	return false
-}
-
-func (savedLibraryNameSpace)FindByKindAndNameAndVersion(kind string, name string, version string) (id uuid.UUID, status string, err error) {
-	library, err :=psqlClient.SavedLibrary.Query().
-		Where(
-			savedlibrary.Kind(kind),
-			savedlibrary.Name(name),
-			savedlibrary.Version(version),
-		).
-		Only(*ctx)
-	if err == nil {
-		uuId, err := uuid.Parse(library.ID)
-		if err != nil {
-			return uuid.Nil, "", err
-		}
-		return uuId, library.Status, nil
-	}
-	return uuid.Nil, "", err
-}
-
-func (savedLibraryNameSpace)OnUploaded(id uuid.UUID) (ok bool) {
-	_, err := psqlClient.SavedLibrary.
-		UpdateOneID(fmt.Sprintf("%s", id)).
-		SetStatus("uploaded").
-		Save(*ctx)
-	if err == nil {
-		return true
-	}
-	return false
-}
-
-func (savedLibraryNameSpace)OnUploadFailed(id uuid.UUID) (ok bool) {
-	_, err := psqlClient.SavedLibrary.
-		UpdateOneID(fmt.Sprintf("%s", id)).
-		SetStatus("failed").
-		Save(*ctx)
-	if err == nil {
-		return true
-	}
-	return false
+	syncSavedLibraryCache(library)
+	return library, false, nil
 }
 
 func (savedLibraryNameSpace)FindLibraries(kind string, name string, v1 int, v2 int, v3 int, limit int) ([]*ent.SavedLibrary, *Cursor, error) {
@@ -176,11 +241,156 @@ func (savedLibraryNameSpace)FindLibraries(kind string, name string, v1 int, v2 i
 	return libraries, nextCursor, nil
 }
 
+func (savedLibraryNameSpace)FindNewerPublishedLibraries(targetLibrary *ent.SavedLibrary) ([]*ent.SavedLibrary, error) {
+	kind, name, v1, v2, v3 := targetLibrary.Kind, targetLibrary.Name, targetLibrary.V1, targetLibrary.V2, targetLibrary.V3
+	q := psqlClient.SavedLibrary.Query().
+		Where(
+			savedlibrary.Kind(kind),
+			savedlibrary.Name(name),
+			savedlibrary.IsPublished(true),
+		).
+		Order(
+			savedlibrary.ByV1(),
+			savedlibrary.ByV2(),
+			savedlibrary.ByV3(),
+		)
+	
+	q = q.Where(
+		savedlibrary.Or(
+			savedlibrary.V1GT(v1),
+			savedlibrary.And(
+				savedlibrary.V1EQ(v1),
+				savedlibrary.V2GT(v2),
+			),
+			savedlibrary.And(
+				savedlibrary.V1EQ(v1),
+				savedlibrary.V2EQ(v2),
+				savedlibrary.V3GT(v3),
+			),
+			savedlibrary.And(
+				savedlibrary.V1EQ(v1),
+				savedlibrary.V2EQ(v2),
+				savedlibrary.V3EQ(v3),
+			),
+		),
+	)
+
+	foundLibraries, err := q.All(*ctx)
+
+	if err != nil {
+		return []*ent.SavedLibrary{}, err
+	}
+
+	libraries := []*ent.SavedLibrary{}
+
+	for _, l := range foundLibraries {
+		rawVersion := fmt.Sprintf("%s.%s.%s", l.V1, l.V2, l.V3)
+		if rawVersion != l.Version {
+			libraries = append(libraries, l)
+		}
+	}
+
+	for _, l := range foundLibraries {
+		rawVersion := fmt.Sprintf("%s.%s.%s", l.V1, l.V2, l.V3)
+		if rawVersion == l.Version {
+			libraries = append(libraries, l)
+		}
+	}
+
+	return libraries, nil
+}
+
+func findSavedLibraryByIdUnit(client *ent.Client, id string) (*ent.SavedLibrary, error) {
+	libraries, err := client.SavedLibrary.Query().
+		Where(savedlibrary.ID(id)).
+		All(*ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(libraries) == 0 {
+		return nil, nil
+	}
+	return libraries[0], nil
+}
+
+func findSavedLibraryById(id string) (*ent.SavedLibrary, error) {
+	library, _ := findSavedLibraryByIdUnit(ramClient, id)
+	if library != nil {
+		return library, nil
+	}
+	library, err := findSavedLibraryByIdUnit(psqlClient, id)
+	if err != nil {
+		return nil, err
+	}
+	syncSavedLibraryCache(library)
+	return library, nil
+}
+
+func (savedLibraryNameSpace)FindById(id string) (*ent.SavedLibrary, error) {
+	return findSavedLibraryById(id)
+}
+
+func (savedLibraryNameSpace)OnUploaded(id string) (ok bool) {
+	library, err := psqlClient.SavedLibrary.
+		UpdateOneID(id).
+		SetStatus("uploaded").
+		Save(*ctx)
+	if err != nil {
+		return false
+	}
+	syncSavedLibraryCache(library)
+	return true
+}
+
+func (savedLibraryNameSpace)OnUploadFailed(id string) (ok bool) {
+	library, err := psqlClient.SavedLibrary.
+		UpdateOneID(id).
+		SetStatus("failed").
+		Save(*ctx)
+	if err != nil {
+		return false
+	}
+	syncSavedLibraryCache(library)
+	return true
+}
+
+func (savedLibraryNameSpace)SetStatusUpdating(id string) error {
+	library, err := psqlClient.SavedLibrary.
+		UpdateOneID(id).
+		SetStatus("updating").
+		Save(*ctx)
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return err
+	}
+	syncSavedLibraryCache(library)
+	return nil
+}
+
+func (savedLibraryNameSpace)ResetStatusUpdating(id string) error {
+	library, err := psqlClient.SavedLibrary.
+		UpdateOneID(id).
+		SetStatus("uploaded").
+		Save(*ctx)
+
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		return err
+	}
+	syncSavedLibraryCache(library)
+	return nil
+}
+
 func (savedLibraryNameSpace)UpdateIsPublished(id string, isPublished bool) (*ent.SavedLibrary, error) {
-	return psqlClient.SavedLibrary.
+	library, err := psqlClient.SavedLibrary.
 		UpdateOneID(id).
 		SetIsPublished(isPublished).
 		Save(*ctx)
+	if library != nil {
+		syncSavedLibraryCache(library)
+	}
+	return library, err
 }
 
 var SavedLibrary = savedLibraryNS
