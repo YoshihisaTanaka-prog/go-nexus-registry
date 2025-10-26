@@ -5,13 +5,16 @@ import (
 	"fmt"
 	"os"
 	"web_app/api"
+	"web_app/cryption"
 	"web_app/customError"
 	"web_app/dbClient"
 	"web_app/ldap"
 )
 
 var envKeys = []string{
+	"GO_MANAGER_COOKIE_SECRET",
 	"GO_MANAGER_HOST_NAME",
+	"GO_MANAGER_KEY",
 	"LDAP_BIND_CN_GO",
 	"LDAP_DOMAIN",
 	"NEXUS_EXPOSED_URL",
@@ -24,6 +27,8 @@ func main() {
 	}
 
 	ldap.InitLdap()
+
+	cryption.InitCription()
 	
 	ctx := context.Background()
 	dbClient.InitDb(&ctx)
