@@ -5,7 +5,7 @@ export type Library = {
   v1: number;
   v2: number;
   v3: number;
-  status: 'uploading' | 'uploaded' | 'failed';
+  status: 'uploading' | 'uploaded' | 'failed' | 'updating';
   isPublished: boolean;
 }
 
