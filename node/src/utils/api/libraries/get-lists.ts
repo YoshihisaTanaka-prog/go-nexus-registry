@@ -50,7 +50,6 @@ export async function getLibraries(kind: string, currentLibraryList: Ref<Library
   
   do {
     const { data: libraries, ...cursorData } = await getLibrariesUnit({kind, cursor, limit});
-    console.log(libraries.length);
     const currentLibs = currentLibraryList.value;
     currentLibs.push(...libraries);
     currentLibs.sort((a,b) => {
