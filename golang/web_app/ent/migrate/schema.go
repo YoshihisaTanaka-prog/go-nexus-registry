@@ -26,9 +26,9 @@ var (
 		PrimaryKey: []*schema.Column{RequestedLibrariesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "requested_libraries_name_version_idx",
+				Name:    "requested_libraries_kind_name_version_idx",
 				Unique:  true,
-				Columns: []*schema.Column{RequestedLibrariesColumns[2], RequestedLibrariesColumns[3]},
+				Columns: []*schema.Column{RequestedLibrariesColumns[1], RequestedLibrariesColumns[2], RequestedLibrariesColumns[3]},
 			},
 		},
 	}
@@ -53,9 +53,9 @@ var (
 		PrimaryKey: []*schema.Column{SavedLibrariesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "saved_libraries_name_version_idx",
+				Name:    "saved_libraries_kind_name_version_idx",
 				Unique:  true,
-				Columns: []*schema.Column{SavedLibrariesColumns[2], SavedLibrariesColumns[3]},
+				Columns: []*schema.Column{SavedLibrariesColumns[1], SavedLibrariesColumns[2], SavedLibrariesColumns[3]},
 			},
 		},
 	}

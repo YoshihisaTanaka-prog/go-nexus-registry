@@ -44,8 +44,8 @@ func (RequestedLibrary) Fields() []ent.Field {
 // Indexes of the RequestedLibrary.
 func (RequestedLibrary) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("name", "version").Unique().
-		StorageKey("requested_libraries_name_version_idx"),
+		index.Fields("kind", "name", "version").Unique().
+		StorageKey("requested_libraries_kind_name_version_idx"),
 	}
 }
 
@@ -61,7 +61,7 @@ type SavedLibrary struct {
 
 // Fields of the SavedLibrary.
 func (SavedLibrary) Fields() []ent.Field {
-	baseFields := getBaseFields("uploading", []string{"uploading", "uploaded", "failed"})
+	baseFields := getBaseFields("uploading", []string{"uploading", "uploaded", "failed", "updating"})
 	return append(
 		baseFields,
 		field.Int("v1").NonNegative(),
@@ -74,8 +74,8 @@ func (SavedLibrary) Fields() []ent.Field {
 // Indexes of the SavedLibrary.
 func (SavedLibrary) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("name", "version").Unique().
-		StorageKey("saved_libraries_name_version_idx"),
+		index.Fields("kind", "name", "version").Unique().
+		StorageKey("saved_libraries_kind_name_version_idx"),
 	}
 }
 
