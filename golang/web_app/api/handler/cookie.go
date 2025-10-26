@@ -1,13 +1,14 @@
 package handler
 
 import (
-	"crypto/rand"
+	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"os"
 	"time"
+	"web_app/cryption"
 	"web_app/customError"
 )
 
@@ -16,9 +17,10 @@ var ONE_HOUR_SEC = 3600
 var hmacSecret = make([]byte, 64)
 
 func InitJwt()  {
-	_, err := rand.Read(hmacSecret)
+	var err error
+	hmacSecret, err =  base64.StdEncoding.DecodeString(os.Getenv("GO_MANAGER_COOKIE_SECRET"))
 	if err != nil {
-		customError.Exit1("Generating JWT secret error")
+		customError.Exit1("Decoding JWT secret error")
 	}
 }
 
@@ -57,8 +59,14 @@ func createJwt(userName string, groups []string) (string, error) {
 
 	uuidV4 := fmt.Sprintf("%s", uuidV4Arr)
 
+	userId, err := cryption.Encrypt(userName)
+
+	if err != nil {
+		return "", err
+	}
+
 	claims := MyClaims{
-		UserId: userName,
+		UserId: userId,
 		Roles:   groups,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    os.Getenv("GO_MANAGER_HOST_NAME"),
@@ -79,8 +87,15 @@ func parseJwt(raw string) (userId string, roles []string) {
 		if t.Method != jwt.SigningMethodHS256 { return nil, fmt.Errorf("bad alg") }
 		return hmacSecret, nil
 	}, jwt.WithIssuer(os.Getenv("GO_MANAGER_HOST_NAME")), jwt.WithAudience(os.Getenv("GO_MANAGER_HOST_NAME") + "/app"))
+	
 	if err != nil || !parsed.Valid {
 		return "", []string{}
 	}
-	return parsed.Claims.(*MyClaims).UserId, parsed.Claims.(*MyClaims).Roles
+
+	userName, err := cryption.Decrypt(parsed.Claims.(*MyClaims).UserId)
+
+	if err != nil {
+		return "", []string{}
+	}
+	return userName, parsed.Claims.(*MyClaims).Roles
 }
