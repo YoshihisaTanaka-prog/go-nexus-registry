@@ -158,28 +158,24 @@ func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 		go func() {
 			defer wg.Done()
 
-			uuidV4, err := uuid.NewRandom()
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "failed to create uuid:", err)
-				return
-			}
-
 			name, version, resolvedUrl := subLibrary.Name, subLibrary.Version, subLibrary.Resolved
 			fmt.Fprintln(os.Stdout, "Processing:", name, "version", version)
 
-			if ok := dbClient.SavedLibrary.Create(uuidV4, libKind, name, version); !ok {
-				if id, status, err := dbClient.SavedLibrary.FindByKindAndNameAndVersion(libKind, name, version); err != nil {
-					fmt.Fprintln(os.Stderr, "  ", err)
-					return
-				} else if (status == "uploading") {
-					fmt.Fprintln(os.Stderr, "   The library:", name, "is been pushing on other process.")
-					return
-				} else if (status == "uploaded") {
-					fmt.Fprintln(os.Stderr, "   The library:", name, "has already been pushed.")
-					return
-				} else {
-					uuidV4 = id
+			library, doSkip, err := dbClient.SavedLibrary.FindOrCreate(libKind, name, version)
+
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "  ", err)
+			}
+
+			if doSkip {
+				status := library.Status
+				if (status == "uploading") {
+					fmt.Fprintln(os.Stderr, "   The library:", name, "for", libKind, "is been pushing on other process.")
 				}
+				if (status == "uploaded") {
+					fmt.Fprintln(os.Stderr, "   The library:", name, "for", libKind, "has already been pushed.")
+				}
+				return
 			}
 
 			// --- 1. ファイルをダウンロードしてメモリにキャッシュ ---
@@ -190,22 +186,22 @@ func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 
 			if downloadResp.StatusCode != http.StatusOK {
 				fmt.Fprintln(os.Stderr, "bad status on download:", downloadResp.Status)
-				dbClient.SavedLibrary.OnUploadFailed(uuidV4)
+				dbClient.SavedLibrary.OnUploadFailed(library.ID)
 				return
 			}
 
 			fileBytes, err := io.ReadAll(downloadResp.Body)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "failed to read response body:", err)
-				dbClient.SavedLibrary.OnUploadFailed(uuidV4)
+				dbClient.SavedLibrary.OnUploadFailed(library.ID)
 				return
 			}
 			fmt.Fprintln(os.Stdout, "   -> Successfully downloaded", len(fileBytes), "bytes into memory.")
 
 			// --- 2. Nexusへアップロードするリクエストを準備 ---
 
-			body := &bytes.Buffer{}
-			writer := multipart.NewWriter(body)
+			uploadReqBody := &bytes.Buffer{}
+			writer := multipart.NewWriter(uploadReqBody)
 
 			// アップロードするファイル名
 			uploadFilename := fmt.Sprintf("%s-%s.tgz", name, version)
@@ -213,30 +209,30 @@ func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 			part, err := writer.CreateFormFile("npm.asset", uploadFilename)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "failed to create form file:", err)
-				dbClient.SavedLibrary.OnUploadFailed(uuidV4)
+				dbClient.SavedLibrary.OnUploadFailed(library.ID)
 				return
 			}
 			// メモリ上のバイトデータをパートにコピー
 			_, err = part.Write(fileBytes)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "failed to write file bytes to form:", err)
-				dbClient.SavedLibrary.OnUploadFailed(uuidV4)
+				dbClient.SavedLibrary.OnUploadFailed(library.ID)
 				return
 			}
 			// multipart writerを閉じて、終端境界を追加
 			err = writer.Close()
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "failed to close multipart writer:", err)
-				dbClient.SavedLibrary.OnUploadFailed(uuidV4)
+				dbClient.SavedLibrary.OnUploadFailed(library.ID)
 				return
 			}
 			
 			// --- 3. Nexusへアップロードを実行 ---
-			nexusURL := fmt.Sprintf("%s/service/rest/v1/components?repository=%s", nexusConfig.URL, nexusConfig.Repository)
-			uploadReq, err := http.NewRequest("POST", nexusURL, body)
+			uploadURL := fmt.Sprintf("%s/service/rest/v1/components?repository=%s", nexusConfig.URL, nexusConfig.Repository)
+			uploadReq, err := http.NewRequest("POST", uploadURL, uploadReqBody)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "failed to create upload request:", err)
-				dbClient.SavedLibrary.OnUploadFailed(uuidV4)
+				dbClient.SavedLibrary.OnUploadFailed(library.ID)
 				return
 			}
 
@@ -245,12 +241,12 @@ func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 			// Content-Kindヘッダーをmultipart writerが生成したものに設定 (境界情報が含まれる)
 			uploadReq.Header.Set("Content-Type", writer.FormDataContentType())
 
-			fmt.Fprintln(os.Stdout, "   -> Uploading to", nexusURL)
+			fmt.Fprintln(os.Stdout, "   -> Uploading to", uploadURL)
 			uploadClient := &http.Client{}
 			uploadResp, err := uploadClient.Do(uploadReq)
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "failed to execute upload request:", err)
-				dbClient.SavedLibrary.OnUploadFailed(uuidV4)
+				dbClient.SavedLibrary.OnUploadFailed(library.ID)
 			}
 			defer uploadResp.Body.Close()
 
@@ -258,12 +254,13 @@ func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 				// エラーレスポンスのボディを読んで詳細を確認
 				errorBody, _ := io.ReadAll(uploadResp.Body)
 				fmt.Fprintln(os.Stderr, "upload failed with status", uploadResp.Status, ":", string(errorBody))
-				dbClient.SavedLibrary.OnUploadFailed(uuidV4)
+				dbClient.SavedLibrary.OnUploadFailed(library.ID)
 				return
 			}
 
 			fmt.Fprintln(os.Stdout, "   -> Successfully uploaded", name, "version", version, ".\n")
-			dbClient.SavedLibrary.OnUploaded(uuidV4)
+			time.Sleep(time.Second)
+			dbClient.SavedLibrary.OnUploaded(library.ID)
 		} ()
 	}
 	wg.Wait()
