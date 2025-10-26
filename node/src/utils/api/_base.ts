@@ -4,6 +4,16 @@ export const axios = Axios.create({
   baseURL: '/api/v1'
 });
 
+axios.interceptors.response.use((response) => {
+  if (typeof response.data === 'string') {
+    const url = new URL(location.href);
+    if (!url.pathname.startsWith('/sign-')) {
+      location.href = `/sign-in?redirect=${encodeURIComponent(url.pathname + url.search)}`
+    }
+  }
+  return response;
+});
+
 export const convertError = (error: unknown) => {
   if (Axios.isAxiosError(error) && error.response) {
     const { response } = error;
