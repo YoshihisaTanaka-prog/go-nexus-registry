@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"os"
+	"strings"
 	"time"
 	"web_app/cryption"
 	"web_app/customError"
@@ -14,7 +15,12 @@ import (
 
 var ONE_HOUR_SEC = 3600
 
-var hmacSecret = make([]byte, 64)
+var (
+	hmacSecret = make([]byte, 64)
+	hostName string
+	isLocalHost = false
+)
+
 
 func InitJwt()  {
 	var err error
@@ -22,24 +28,20 @@ func InitJwt()  {
 	if err != nil {
 		customError.Exit1("Decoding JWT secret error")
 	}
+	hostName := os.Getenv("GO_MANAGER_HOST_NAME")
+	if hostName == "localhost" {
+		isLocalHost = true
+	} else if strings.HasPrefix("localhost:") {
+		isLocalHost = true
+	}
 }
 
 func setCookie(c *gin.Context, key string, value string) {
-	secure := true
-	hostName := os.Getenv("GO_MANAGER_HOST_NAME")
-	if hostName == "localhost" {
-		secure = false
-	}
-	c.SetCookie(key, value, ONE_HOUR_SEC, "/", os.Getenv("GO_MANAGER_HOST_NAME"), secure, true)
+	c.SetCookie(key, value, ONE_HOUR_SEC, "/", hostName, !isLocalHost, true)
 }
 
 func deleteCookie(c *gin.Context, key string) {
-	secure := true
-	hostName := os.Getenv("GO_MANAGER_HOST_NAME")
-	if hostName == "localhost" {
-		secure = false
-	}
-	c.SetCookie(key, "", -1, "/", os.Getenv("GO_MANAGER_HOST_NAME"), secure, true)
+	c.SetCookie(key, "", -1, "/", hostName, !isLocalHost, true)
 }
 
 type MyClaims struct {
