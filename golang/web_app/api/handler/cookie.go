@@ -31,7 +31,7 @@ func InitJwt()  {
 	hostName := os.Getenv("GO_MANAGER_HOST_NAME")
 	if hostName == "localhost" {
 		isLocalHost = true
-	} else if strings.HasPrefix("localhost:") {
+	} else if strings.HasPrefix(hostName, "localhost:") {
 		isLocalHost = true
 	}
 }
