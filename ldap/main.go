@@ -1,18 +1,13 @@
 package main
 
 import (
-	"bytes"
 	"crypto/rand"
 	"crypto/sha1"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
-	"regexp"
 	"strings"
-	"time"
 )
 
 // 🔸 追加で注入したい環境変数名リスト（平文）
@@ -20,15 +15,10 @@ var additionalEnvKeys = []string{
 	"LDAP_ADMIN_PASSWORD",
 	"LDAP_ADMIN_USERNAME",
 	"LDAP_BIND_CN_GO",
-	"LDAP_BIND_CN_NEXUS",
-	"LDAP_BIND_PASS_GO",
-	"LDAP_BIND_PASS_NEXUS",
 	"LDAP_DOMAIN",
 	"LDAP_ORGANISATION",
 	"LDAP_PORT",
 }
-
-var savedEnvVarsJsonFilePath = "/customized/saved-data/saved-env-vars.json"
 
 func main()  {
 	domainLabels := strings.Split(os.Getenv("LDAP_DOMAIN"), ".");
@@ -43,40 +33,8 @@ func main()  {
 	baseDn := strings.Join(baseDnSlice, ",")
 
 	envVars := convertEnvVars(baseDn, domainLabels[0])
-
-	currentEnvVarsBytes := toJsonBytes(envVars)
-	savedEnvVarsBytes := loadJsonBytes()
-
-	if (!compareEnvVarsAndUpdateSaveData(currentEnvVarsBytes, savedEnvVarsBytes)) {
-		go func() {
-			fmt.Fprintln(os.Stdout, "環境変数の変更が確認されたので、設定ファイルを更新します。") 
-			makeSubstitutedFile(envVars, "init")
-			fmt.Fprintln(os.Stdout, "設定ファイルの更新が完了しました。") 
-		}()
-		go func() {
-			defer fmt.Fprintln(os.Stdout, "設定ファイルの更新をシステムに反映させました。") 
-			time.Sleep(time.Second * 3)
-			fmt.Fprintln(os.Stdout, "設定ファイルの更新をシステムに反映させます。")
-			cmd := exec.Command(
-				"ldapadd",
-				"-x",
-				"-H", "ldap://localhost",
-				"-D", "cn=" + envVars["LDAP_ADMIN_USERNAME"] + "," + envVars["LDAP_ROOT"],
-				"-w", envVars["LDAP_ADMIN_PASSWORD"],
-				"-f", "/customized/saved-data/init/init.ldif",
-				"-d", "320",
-			)
-			cmd.Stdout = os.Stdout
-			cmd.Stderr = os.Stderr
-
-			if err := cmd.Run(); err != nil {
-			fmt.Fprintf(os.Stderr, "OpenLDAP 設定反映エラー (%s) : %v\n", "init", err)
-				os.Exit(1)
-			}
-		}()
-	}
 	
-	fmt.Fprintln(os.Stdout, "永続化されない設定ファイルを更新します。") 
+	fmt.Fprintln(os.Stdout, "設定ファイルを更新します。") 
 	substituteSlapdConfFile(envVars)
 	fmt.Fprintln(os.Stdout, "openldapサーバを起動します。") 
 	cmd := exec.Command("slapd", "-u", "root", "-g", "root", "-h", "ldap://0.0.0.0:" + os.Getenv("LDAP_PORT"), "-d", "320")
@@ -91,11 +49,9 @@ func main()  {
 
 func convertEnvVars(baseDn string, rootDc string) map[string]string {
 	adminPass := os.Getenv("LDAP_ADMIN_PASSWORD")
-	bindPassNexus := os.Getenv("LDAP_BIND_PASS_NEXUS")
-	bindPassGo := os.Getenv("LDAP_BIND_PASS_GO")
 
-	if adminPass == "" || bindPassNexus == "" || bindPassGo == "" {
-		fmt.Fprintln(os.Stderr, "環境変数 LDAP_ADMIN_PASSWORD, LDAP_BIND_PASS_NEXUS, LDAP_BIND_PASS_GO が必要です。")
+	if adminPass == "" {
+		fmt.Fprintln(os.Stderr, "環境変数 LDAP_ADMIN_PASSWORD が必要です。")
 		os.Exit(1)
 	}
 
@@ -103,8 +59,6 @@ func convertEnvVars(baseDn string, rootDc string) map[string]string {
 		"LDAP_ROOT": baseDn,
 		"LDAP_ROOT_DC": rootDc,
 		"LDAP_ADMIN_PASS_HASH": generateSSHA(adminPass),
-		"LDAP_BIND_PASS_NEXUS_HASH": generateSSHA(bindPassNexus),
-		"LDAP_BIND_PASS_GO_HASH": generateSSHA(bindPassGo),
 	}
 
 	for _, key := range additionalEnvKeys {
@@ -112,53 +66,6 @@ func convertEnvVars(baseDn string, rootDc string) map[string]string {
 	}
 
 	return vars
-}
-
-func toJsonBytes(mapData map[string]string) []byte {
-	filteredMapData := make(map[string]string)
-
-	for k, v := range mapData {
-		if !strings.HasSuffix(k, "_HASH") {
-			filteredMapData[k] = v
-		}
-	}
-
-	bytes, err := json.Marshal(filteredMapData)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "JSON marshal error:", err)
-		os.Exit(1)
-	}
-	return bytes
-}
-
-func loadJsonBytes() []byte {
-	bytes, err := os.ReadFile(savedEnvVarsJsonFilePath)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return nil
-		}
-		fmt.Fprintln(os.Stderr, "failed to read file:", err)
-		os.Exit(1)
-	}
-	return bytes
-}
-
-func compareEnvVarsAndUpdateSaveData(currentEnvVarsBytes []byte, savedEnvVarsBytes []byte) bool {
-	defer fmt.Fprintln(os.Stdout, "セーブデータと現在のデータを比較しました。")
-	fmt.Fprintln(os.Stdout, "セーブデータと現在のデータを比較中...") 
-	if bytes.Equal(currentEnvVarsBytes, savedEnvVarsBytes) {
-		return true
-	} else {
-		go func() {
-			fmt.Fprintln(os.Stdout, "セーブデータを更新しています...")
-			if err := os.WriteFile(savedEnvVarsJsonFilePath, currentEnvVarsBytes, 0644); err != nil {
-				fmt.Fprintln(os.Stderr, "セーブデータの更新に失敗しました。\n", err)
-				os.Exit(1)
-			}
-			fmt.Fprintln(os.Stdout, "セーブデータを更新しました。")
-		}()
-		return false
-	}
 }
 
 func generateSSHA(password string) string {
@@ -177,62 +84,13 @@ func generateSSHA(password string) string {
 	return "{SSHA}" + base64.StdEncoding.EncodeToString(ssha)
 }
 
-func makeSubstitutedFile(envVars map[string]string, fileNames ...string) {
-	var templatePath, targetPath string
-
-	switch len(fileNames) {
-	case 0:
-		fmt.Fprintln(os.Stderr, "引数エラー: 操作するファイル名を出力してください。")
-		os.Exit(1)
-	case 1:
-		templatePath = "/customized/templates/" + fileNames[0] + ".ldif.template"
-		targetPath = "/customized/saved-data/init/" + fileNames[0] + ".ldif"
-	case 2:
-		templatePath = fileNames[0]
-		targetPath = fileNames[1]
-	default:
-		fmt.Fprintln(os.Stderr, "引数エラー: 指定するファイル数は1つまたは2つです。")
-		os.Exit(1)
+func getAuthSettingLines(envVars map[string]string, dnMode string, ou string) []string {
+	return []string {
+		fmt.Sprintf("access to dn.%s=\"ou=%s,%s\"", dnMode, ou, envVars["LDAP_ROOT"]),
+		fmt.Sprintf("    by dn.exact=\"cn=%s,%s\" write", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_ROOT"]),
+		fmt.Sprintf("    by dn.exact=\"cn=%s,ou=service_accounts,%s\" write", envVars["LDAP_BIND_CN_GO"], envVars["LDAP_ROOT"]),
+		"    by * read\n",
 	}
-
-	fmt.Fprintln(os.Stdout, templatePath + " を読み込みます。") 
-	templateFileData, err := os.ReadFile(templatePath)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "テンプレート読み込みエラー:", err)
-		os.Exit(1)
-	}
-
-	fmt.Fprintln(os.Stdout, templatePath + " を読み込みました。\n環境変数を注入します。") 
-	content := string(templateFileData)
-	content = substituteEnv(content, envVars)
-
-	fmt.Fprintln(os.Stdout, "環境変数を注入しました。\n" + targetPath + " を更新します。") 
-	targetDirName, targetBaseName := filepath.Split(targetPath)
-	// 出力先ディレクトリを自動生成（存在しない場合）
-	if err := os.MkdirAll(targetDirName, 0775); err != nil {
-		fmt.Fprintln(os.Stderr, "出力ディレクトリ作成エラー:", err)
-		os.Exit(1)
-	}
-	// ファイルに書き込み
-	if err := os.WriteFile(targetPath, []byte(content), 0644); err != nil {
-		fmt.Fprintln(os.Stderr, targetBaseName + " 書き込みエラー:", err)
-		os.Exit(1)
-	}
-	fmt.Fprintln(os.Stdout, targetPath + " を更新しました。")
-}
-
-func substituteEnv(input string, vars map[string]string) string {
-	re := regexp.MustCompile(`\$\{([^}]+)\}`)
-	return re.ReplaceAllStringFunc(input, func(s string) string {
-		key := re.FindStringSubmatch(s)[1]
-		if val, ok := vars[key]; ok {
-			return val
-		}
-		if val := os.Getenv(key); val != "" {
-			return val
-		}
-		return s
-	})
 }
 
 func substituteSlapdConfFile(envVars map[string]string) {
@@ -263,29 +121,9 @@ func substituteSlapdConfFile(envVars map[string]string) {
 
 	fmt.Fprintln(os.Stdout, readFilePath + " を読み込みました。\n環境変数を注入します。")
 
-	configDatabaseDefinitionsComment := "#######################################################################\n# config database definitions\n#######################################################################"
-
-	splitedContents := strings.Split(string(fileData), configDatabaseDefinitionsComment)
-	contents1 := splitedContents[0]
-	contents2 := splitedContents[1]
-
-	newContentsLines := []string{
-		contents1,
-		"# ============================",
-		fmt.Sprintf("# ACL: %s と %s に書き込み権限付与", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_BIND_CN_GO"]),
-		"# ============================\n",
-		fmt.Sprintf("access to dn.base=\"ou=users,%s\"", envVars["LDAP_ROOT"]),
-		fmt.Sprintf("    by dn.exact=\"cn=%s,%s\" write", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_ROOT"]),
-		fmt.Sprintf("    by dn.exact=\"cn=%s,ou=service_accounts,%s\" write", envVars["LDAP_BIND_CN_GO"], envVars["LDAP_ROOT"]),
-		"    by * read\n",
-		fmt.Sprintf("access to dn.subtree=\"ou=users,%s\"", envVars["LDAP_ROOT"]),
-		fmt.Sprintf("    by dn.exact=\"cn=%s,%s\" write", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_ROOT"]),
-		fmt.Sprintf("    by dn.exact=\"cn=%s,ou=service_accounts,%s\" write", envVars["LDAP_BIND_CN_GO"], envVars["LDAP_ROOT"]),
-		"    by * read\n\n",
-		configDatabaseDefinitionsComment,
-	}
+	newContentsLines := []string{}
 	
-	contentsLines := strings.Split(contents2, "\n")
+	contentsLines := strings.Split(string(fileData), "\n")
 
 	for _, contentsLine := range contentsLines {
 		if (strings.HasPrefix(contentsLine, "suffix")) {
@@ -295,6 +133,30 @@ func substituteSlapdConfFile(envVars map[string]string) {
 		} else if (strings.HasPrefix(contentsLine, "rootpw")) {
 			newContentsLines = append(newContentsLines, "rootpw		" + envVars["LDAP_ADMIN_PASS_HASH"])
 		} else {
+			if contentsLine == "# config database definitions" {
+				newContentsLines = append(
+					newContentsLines,
+					fmt.Sprintf("# ACL: %s と %s に書き込み権限付与", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_BIND_CN_GO"]),
+					"#######################################################################",
+					"",
+				)
+				newContentsLines = append(
+					newContentsLines,
+					getAuthSettingLines(envVars, "base", "user")...,
+				)
+				newContentsLines = append(
+					newContentsLines,
+					getAuthSettingLines(envVars, "subtree", "user")...,
+				)
+				newContentsLines = append(
+					newContentsLines,
+					getAuthSettingLines(envVars, "base", "group")...,
+				)
+				newContentsLines = append(
+					newContentsLines,
+					getAuthSettingLines(envVars, "subtree", "group")...,
+				)
+			}
 			newContentsLines = append(newContentsLines, contentsLine)
 		}
 	}
