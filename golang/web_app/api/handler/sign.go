@@ -45,8 +45,6 @@ func SignUp(c *gin.Context) {
 		return
 	}
 
-	fmt.Fprintln(os.Stdout, "sign-up:", body)
-
 	message, code := ldap.AddUser(body.Email, body.Password)
 	fmt.Println(message, code)
 
