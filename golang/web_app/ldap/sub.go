@@ -17,11 +17,12 @@ func runLDAP(errorMessage string, command string, args []string, inputs ...strin
 	localArgs = append(localArgs, connectionArgs...)
 	localArgs = append(localArgs, args...)
 	cmd := exec.Command(command, localArgs...)
+	joinedInputs := ""
 	if len(inputs) > 0 {
-		joinedInputs := strings.Join(inputs, "\n")
+		joinedInputs = strings.Join(inputs, "\n")
 		cmd.Stdin = bytes.NewBufferString(joinedInputs)
-		fmt.Printf("Executing: %s %s %s\n", command, strings.Join(localArgs, " "), joinedInputs)
 	}
+	fmt.Printf("Executing: %s %s\n%s\n", command, strings.Join(localArgs, " "), joinedInputs)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
