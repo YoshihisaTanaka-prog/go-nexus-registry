@@ -12,9 +12,20 @@ import (
 	"web_app/customError"
 )
 
-func runLDAP(errorMessage string, command string, args []string, inputs ...string) (mean string, responseCode int) {
-	localArgs := []string{}
-	localArgs = append(localArgs, connectionArgs...)
+func runLdap(errorMessage string, command string, args []string, inputs ...string) (mean string, responseCode int) {
+	return runLdapAsUser(errorMessage, command, connectionArgs[4], connectionArgs[6], args, inputs...)
+}
+
+func runLdapAsUser(errorMessage string, command string, dn string, password string, args []string, inputs ...string) (mean string, responseCode int) {
+	localArgs := []string{
+		connectionArgs[0],
+		connectionArgs[1],
+		connectionArgs[2],
+		connectionArgs[3],
+		dn,
+		connectionArgs[5],
+		password,
+	}
 	localArgs = append(localArgs, args...)
 	cmd := exec.Command(command, localArgs...)
 	joinedInputs := ""
@@ -22,7 +33,13 @@ func runLDAP(errorMessage string, command string, args []string, inputs ...strin
 		joinedInputs = strings.Join(inputs, "\n")
 		cmd.Stdin = bytes.NewBufferString(joinedInputs)
 	}
-	fmt.Printf("Executing: %s %s\n%s\n", command, strings.Join(localArgs, " "), joinedInputs)
+
+	debug := os.Getenv("IS_DEBUG")
+	if debug == "" {
+		fmt.Fprintln(os.Stdout, "Executing:", command)
+	} else {
+		fmt.Fprintln(os.Stdout, "Executing:", command, localArgs, "\n", joinedInputs)
+	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {

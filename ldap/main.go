@@ -14,7 +14,6 @@ import (
 var additionalEnvKeys = []string{
 	"LDAP_ADMIN_PASSWORD",
 	"LDAP_ADMIN_USERNAME",
-	"LDAP_BIND_CN_GO",
 	"LDAP_DOMAIN",
 	"LDAP_ORGANISATION",
 	"LDAP_PORT",
@@ -84,15 +83,6 @@ func generateSSHA(password string) string {
 	return "{SSHA}" + base64.StdEncoding.EncodeToString(ssha)
 }
 
-func getAuthSettingLines(envVars map[string]string, dnMode string, ou string) []string {
-	return []string {
-		fmt.Sprintf("access to dn.%s=\"ou=%s,%s\"", dnMode, ou, envVars["LDAP_ROOT"]),
-		fmt.Sprintf("    by dn.exact=\"cn=%s,%s\" write", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_ROOT"]),
-		fmt.Sprintf("    by dn.exact=\"cn=%s,ou=service_accounts,%s\" write", envVars["LDAP_BIND_CN_GO"], envVars["LDAP_ROOT"]),
-		"    by * read\n",
-	}
-}
-
 func substituteSlapdConfFile(envVars map[string]string) {
 	keptFilePath := "/customized/saved-data/slapd.conf"
 	var readFilePath string
@@ -133,30 +123,6 @@ func substituteSlapdConfFile(envVars map[string]string) {
 		} else if (strings.HasPrefix(contentsLine, "rootpw")) {
 			newContentsLines = append(newContentsLines, "rootpw		" + envVars["LDAP_ADMIN_PASS_HASH"])
 		} else {
-			if contentsLine == "# config database definitions" {
-				newContentsLines = append(
-					newContentsLines,
-					fmt.Sprintf("# ACL: %s と %s に書き込み権限付与", envVars["LDAP_ADMIN_USERNAME"], envVars["LDAP_BIND_CN_GO"]),
-					"#######################################################################",
-					"",
-				)
-				newContentsLines = append(
-					newContentsLines,
-					getAuthSettingLines(envVars, "base", "user")...,
-				)
-				newContentsLines = append(
-					newContentsLines,
-					getAuthSettingLines(envVars, "subtree", "user")...,
-				)
-				newContentsLines = append(
-					newContentsLines,
-					getAuthSettingLines(envVars, "base", "group")...,
-				)
-				newContentsLines = append(
-					newContentsLines,
-					getAuthSettingLines(envVars, "subtree", "group")...,
-				)
-			}
 			newContentsLines = append(newContentsLines, contentsLine)
 		}
 	}

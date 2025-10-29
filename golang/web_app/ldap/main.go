@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 	"web_app/customError"
 )
 
@@ -21,13 +22,32 @@ func InitLdap() {
 		baseDnSlice = append(baseDnSlice, "dc=" + domainLabel)
 	}
 	baseDn = strings.Join(baseDnSlice, ",")
-	bindDn = fmt.Sprintf("cn=%s,ou=service_accounts,%s", os.Getenv("LDAP_BIND_CN"), baseDn)
+	bindDn = fmt.Sprintf("cn=%s,%s", os.Getenv("LDAP_ADMIN_USERNAME"), baseDn)
 	connectionArgs = []string{
 		"-x",
-		"-H", "ldap://ldap",
+		"-H", "ldap://ldap:" + os.Getenv("LDAP_PORT"),
 		"-D", bindDn,
-		"-w", os.Getenv("LDAP_BIND_PASS"),
+		"-w", os.Getenv("LDAP_ADMIN_PASSWORD"),
 	}
+	go func() {
+		for i := 0; i <= 60; i++ {
+			if i == 60 {
+				exit1("Failed to Connect to LDAP Server")
+			}
+			time.Sleep(time.Second)
+			cmd := exec.Command(
+				"ldapwhoami",
+				connectionArgs...
+			)
+			if err := cmd.Run(); err == nil {
+				fmt.Println("Passed authentication")
+				go setupLdap()
+				break
+			} else {
+				customError.GetLdapResult(err, "Authenticating error")
+			}
+		}
+	}()
 }
 
 func AddUser(email string, password string) (mean string, responseCode int) {
@@ -40,7 +60,7 @@ func AddUser(email string, password string) (mean string, responseCode int) {
 	userDN := getUserDn(userName)
 	ldif := fmt.Sprintf("dn: %s\nobjectClass: inetOrgPerson\nuid: %s\ncn: %s\nsn: %s\nmail: %s\nuserPassword: %s\n", userDN, userName, "New User", "New User", email, hashedPassword)
 	fmt.Fprintln(os.Stdout, "Adding user:", userName)
-	txt, exitCode := runLDAP("Adding Ldap error", "ldapadd", []string{}, ldif)
+	txt, exitCode := runLdap("Adding Ldap error", "ldapadd", []string{}, ldif)
 	if exitCode == 0 {
 		return userName, 0
 	}
@@ -50,7 +70,7 @@ func AddUser(email string, password string) (mean string, responseCode int) {
 func SearchUser(email string) (mean string, responseCode int) {
 	userName := getUserName(email)
 	fmt.Fprintln(os.Stdout, "Searching user:", userName)
-	txt, exitCode := runLDAP("Searching User error", "ldapsearch", []string{"-b", baseDn, fmt.Sprintf("\"(uid=%s\")", userName)})
+	txt, exitCode := runLdap("Searching User error", "ldapsearch", []string{"-b", baseDn, fmt.Sprintf("\"(uid=%s\")", userName)})
 	if exitCode == 0 {
 		return userName, 0
 	}
@@ -67,7 +87,7 @@ func ChangePassword(email string, password string) (mean string, responseCode in
 	userDN := getUserDn(userName)
 	ldif := fmt.Sprintf("dn: %s\nchangetype: modify\nreplace: userPassword\nuserPassword: %s\n", userDN, hashedPassword)
 	fmt.Fprintln(os.Stdout, "Changing password for:", userName)
-	txt, exitCode := runLDAP("Changing password error", "ldapmodify", []string{}, ldif)
+	txt, exitCode := runLdap("Changing password error", "ldapmodify", []string{}, ldif)
 	if exitCode == 0 {
 		return userName, 0
 	}
@@ -78,7 +98,7 @@ func DeleteUser(email string) (mean string, responseCode int) {
 	userName := getUserName(email)
 	userDN := getUserDn(userName)
 	fmt.Println("Deleting user:", userName)
-	txt, exitCode := runLDAP("Deleting user error", "ldapdelete", []string{userDN})
+	txt, exitCode := runLdap("Deleting user error", "ldapdelete", []string{userDN})
 	if exitCode == 0 {
 		return userName, 0
 	}
@@ -89,9 +109,9 @@ func Authenticate(email string, password string) (mean string, responseCode int)
 	userName := getUserName(email)
 	userDN := getUserDn(userName)
 	fmt.Println("Authenticating user:", userName)
-	cmd := exec.Command("ldapwhoami", "-x", "-H", "ldap://ldap", "-D", userDN ,"-w", password)
-	if err := cmd.Run(); err != nil {
-		return customError.GetLdapResult(err, "Authenticating error")
+	txt, exitCode := runLdapAsUser("Authenticating error", "ldapwhoami", userDN, password, []string{})
+	if exitCode == 0 {
+		return userName, 0
 	}
-	return userName, 0
+	return txt, exitCode
 }

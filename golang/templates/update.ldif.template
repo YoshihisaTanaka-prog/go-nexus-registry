@@ -1,0 +1,7 @@
+#######################################################################
+# サービスアカウント構成
+#######################################################################
+dn: cn=${LDAP_BIND_CN_NEXUS},ou=service_accounts,${LDAP_ROOT}
+changetype: modify
+replace: userPassword
+userPassword: ${LDAP_BIND_PASS_NEXUS_HASH}
