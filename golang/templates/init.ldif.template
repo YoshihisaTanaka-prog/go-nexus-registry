@@ -44,13 +44,13 @@ userPassword: ${LDAP_BIND_PASS_NEXUS}
 dn: cn=viewers,ou=groups,${LDAP_ROOT}
 changetype: add
 objectclass: groupOfNames
-objectclass: top
 cn: viewers
 description: Groups for Nexus Viewers
+member:
 
 dn: cn=editors,ou=groups,${LDAP_ROOT}
 changetype: add
 objectclass: groupOfNames
-objectclass: top
 cn: editors
 description: Groups for Nexus Editors
+member:
