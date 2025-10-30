@@ -28,7 +28,7 @@ objectClass: organizationalUnit
 ou: groups
 
 #######################################################################
-# Bind Accounts
+# Bind Service Accounts
 #######################################################################
 dn: cn=${LDAP_BIND_CN_NEXUS},ou=service_accounts,${LDAP_ROOT}
 changetype: add
@@ -37,3 +37,20 @@ objectClass: organizationalRole
 cn: ${LDAP_BIND_CN_NEXUS}
 description: Bind account for Nexus LDAP authentication
 userPassword: ${LDAP_BIND_PASS_NEXUS}
+
+#######################################################################
+# Bind Groups
+#######################################################################
+dn: cn=viewers,ou=groups,${LDAP_ROOT}
+changetype: add
+objectclass: groupOfNames
+objectclass: top
+cn: viewers
+description: Groups for Nexus Viewers
+
+dn: cn=editors,ou=groups,${LDAP_ROOT}
+changetype: add
+objectclass: groupOfNames
+objectclass: top
+cn: editors
+description: Groups for Nexus Editors

@@ -30,12 +30,12 @@ func main() {
 		customError.Exit1("以上の環境変数が指定されていないので終了します。")
 	}
 
-	ldap.InitLdap()
-
 	cryption.InitCription()
 	
 	ctx := context.Background()
 	dbClient.InitDb(&ctx)
+	ldap.InitLdap()
+
 	api.Start()
 }
 

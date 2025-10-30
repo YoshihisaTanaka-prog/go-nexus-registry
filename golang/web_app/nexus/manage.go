@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"os"
 	"sync"
 	"time"
@@ -48,7 +49,9 @@ var nexusConfig = struct {
 }
 
 func publishUnit(library *ent.SavedLibrary) (ok bool) {
-	downloadUrl := fmt.Sprintf("%s/repository/%s/%s/-/%s-%s.tgz", nexusConfig.URL, nexusConfig.StagingRepository, library.Name, library.Name, library.Version)
+	safeName := url.PathEscape(library.Name)
+	safeVersion := url.PathEscape(library.Version)
+	downloadUrl := fmt.Sprintf("%s/repository/%s/%s/-/%s-%s.tgz", nexusConfig.URL, nexusConfig.StagingRepository, safeName, safeName, safeVersion)
 	fmt.Fprintln(os.Stdout, "publish", "   -> Downloading from", downloadUrl)
 	
 	// --- 1. Stagingディレクトリからファイルをダウンロードしてメモリにキャッシュ ---

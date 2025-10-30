@@ -51,6 +51,9 @@ func InitLdap() {
 }
 
 func AddUser(email string, password string) (mean string, responseCode int) {
+	if (!strings.HasSuffix(email, "@" + os.Getenv("LDAP_DOMAIN"))) {
+		return "Invalid Email Domain error", 422
+	}
 	userName := getUserName(email)
 	hashedPassword, err := generateSSHA(password)
 	if err != nil {
@@ -70,7 +73,7 @@ func AddUser(email string, password string) (mean string, responseCode int) {
 func SearchUser(email string) (mean string, responseCode int) {
 	userName := getUserName(email)
 	fmt.Fprintln(os.Stdout, "Searching user:", userName)
-	txt, exitCode := runLdap("Searching User error", "ldapsearch", []string{"-b", baseDn, fmt.Sprintf("\"(uid=%s\")", userName)})
+	txt, exitCode := runLdap("Searching User error", "ldapsearch", []string{"-b", baseDn, fmt.Sprintf("(uid=%s)", userName)})
 	if exitCode == 0 {
 		return userName, 0
 	}
@@ -106,6 +109,9 @@ func DeleteUser(email string) (mean string, responseCode int) {
 }
 
 func Authenticate(email string, password string) (mean string, responseCode int) {
+	if (!strings.HasSuffix(email, "@" + os.Getenv("LDAP_DOMAIN"))) {
+		return "Invalid Email Domain error", 422
+	}
 	userName := getUserName(email)
 	userDN := getUserDn(userName)
 	fmt.Println("Authenticating user:", userName)

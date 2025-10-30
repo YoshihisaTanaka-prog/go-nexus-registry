@@ -26,7 +26,9 @@ var additionalEnvKeys = []string{
 var savedEnvVarsJsonFilePath = "/app/saved-data/saved-env-vars.json"
 
 func exit1(args ...any)  {
-	fmt.Fprintln(os.Stderr, args...)
+	if len(args) > 0 {
+		fmt.Fprintln(os.Stderr, args...)
+	}
 	os.Exit(1)
 }
 
@@ -34,7 +36,7 @@ func setupLdap() {
 	envVars := getEnvVars()
 	dbAdminDn := fmt.Sprintf("cn=%s,%s", envVars["LDAP_ADMIN_USERNAME"], baseDn)
 	adminPassword := envVars["LDAP_ADMIN_PASSWORD"]
-	txt, exitCode := runLdapAsUser("OpenLDAP 設定反映エラー", "ldapsearch", dbAdminDn, adminPassword, []string{"-b", baseDn, fmt.Sprintf("(cn=%s)", envVars["LDAP_BIND_CN_NEXUS"])})
+	txt, exitCode := runLdapAsUser("OpenLDAP 設定エラー", "ldapsearch", dbAdminDn, adminPassword, []string{"-b", baseDn, fmt.Sprintf("(cn=%s)", envVars["LDAP_BIND_CN_NEXUS"])})
 	fmt.Println(txt, exitCode)
 	if exitCode == 0 {
 		updateSchema("/app/templates/update.ldif.template", dbAdminDn, adminPassword, envVars)
@@ -86,7 +88,7 @@ func updateSchema(templateFilePath string, dn string, password string, envVars m
 	content := substituteEnv(string(templateFileData), envVars)
 	fmt.Fprintln(os.Stdout, "環境変数を注入しました。\nLDAPのデータを更新します。")
 
-	_, exitCode := runLdapAsUser("OpenLDAP 設定反映エラー", "ldapmodify", dn, password, []string{"-c"}, content)
+	_, exitCode := runLdapAsUser("OpenLDAP 設定エラー", "ldapmodify", dn, password, []string{"-c"}, content)
 	if exitCode != 0 {
 		os.Exit(1)
 	}
