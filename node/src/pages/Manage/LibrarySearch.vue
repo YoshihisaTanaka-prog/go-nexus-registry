@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, defineEmits, defineProps, ref } from 'vue';
+  import { computed, defineEmits, defineProps, ref, watch } from 'vue';
   import LibraryUnit from './LibraryUnit.vue';
   import { type Library } from '@/utils/api';
 
@@ -13,6 +13,9 @@
   const searchWord = ref<string>("");
 
   const filteredLibraries = computed(() => searchWord.value === "" ? libraries : libraries.filter((l) => l.name.includes(searchWord.value)));
+  watch(filteredLibraries, () => {
+    page.value = 0;
+  });
   const length = computed(() => Math.ceil(filteredLibraries.value.length / numOfDisplayedLibraries.value));
   const selectedLibraries = computed(() => {
     const sliceStart = page.value * numOfDisplayedLibraries.value;
@@ -24,7 +27,7 @@
     page.value = Math.max(0, page.value - 1);
   }
   function goToNextPage() {
-    page.value = Math.min(length.value, page.value + 1);
+    page.value = Math.min(length.value-1, page.value + 1);
   }
 
   function updateIsPublished(id: string, newIsPublished: boolean, onDone: ()=>void) {
