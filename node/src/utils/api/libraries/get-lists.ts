@@ -5,9 +5,9 @@ import type { Library, PaginationParams as Params, Cursor, PaginatedLibrariesRes
 const DEFAULT_LIMIT_NUM = 50;
 
 function sortByName(a: Library, b: Library) {
-   if (a.name > b.name) {
+   if (a.fullName > b.fullName) {
     return 1;
-   } else if (a.name < b.name) {
+   } else if (a.fullName < b.fullName) {
     return -1;
    } else {
     return 0;
@@ -50,6 +50,7 @@ export async function getLibraries(kind: string, currentLibraryList: Ref<Library
   
   do {
     const { data: libraries, ...cursorData } = await getLibrariesUnit({kind, cursor, limit});
+    console.log(libraries)
     const currentLibs = currentLibraryList.value;
     currentLibs.push(...libraries);
     currentLibs.sort((a,b) => {
@@ -68,6 +69,6 @@ export async function getLibraries(kind: string, currentLibraryList: Ref<Library
     currentLibraryList.value = [...currentLibs]
     cursor = cursorData.cursor;
     limit = cursorData.limit;
-    await new Promise((resolve) => setTimeout(resolve, 500))
+    await new Promise((resolve) => setTimeout(resolve, 50))
   } while ((cursor != null) && (limit === DEFAULT_LIMIT_NUM));
 }

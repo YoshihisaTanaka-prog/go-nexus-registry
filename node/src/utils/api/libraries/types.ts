@@ -1,6 +1,6 @@
 export type Library = {
   id: string;
-  name: string;
+  fullName: string;
   version: string;
   v1: number;
   v2: number;

@@ -22,7 +22,7 @@
   <tr>
     <td style="width: 40vw;">
       <div>
-        <b>{{ library.name }}</b>
+        <b>{{ library.fullName }}</b>
         <br />
         Version：{{ library.version }}
       </div>

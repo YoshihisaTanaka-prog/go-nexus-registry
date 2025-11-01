@@ -12,9 +12,16 @@
   const numOfDisplayedLibraries = ref(10);
   const searchWord = ref<string>("");
 
-  const filteredLibraries = computed(() => searchWord.value === "" ? libraries : libraries.filter((l) => l.name.includes(searchWord.value)));
-  watch(filteredLibraries, () => {
-    page.value = 0;
+  const filteredLibraries = computed(() => searchWord.value === "" ? libraries : libraries.filter((l) => l.fullName.includes(searchWord.value)));
+  watch(filteredLibraries, (newLibraries, oldLibraries) => {
+    for(let i=0; i<Math.min(newLibraries.length, oldLibraries.length); i++) {
+      if (i == page.value * numOfDisplayedLibraries.value ) {
+        break;
+      }
+      if (newLibraries[i]!.id != oldLibraries[i]!.id) {
+        page.value = 0;
+      }
+    }
   });
   const length = computed(() => Math.ceil(filteredLibraries.value.length / numOfDisplayedLibraries.value));
   const selectedLibraries = computed(() => {
@@ -37,7 +44,7 @@
 
 <template>
   <div style="text-align: center;">
-    <div v-if="length > 0">
+    <div v-if="length > 0 || searchWord != ''">
       <label>
         検索：
         <input type="text" v-model="searchWord" />
