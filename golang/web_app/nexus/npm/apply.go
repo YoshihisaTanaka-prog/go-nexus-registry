@@ -153,10 +153,11 @@ func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 		"npm-staging",
 	}
 	for i, subLibrary := range subLibraries {
-		time.Sleep(time.Millisecond * time.Duration(i * 50))
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
+
+			time.Sleep(time.Millisecond * time.Duration(i * 50))
 
 			name, version, resolvedUrl := subLibrary.Name, subLibrary.Version, subLibrary.Resolved
 			fmt.Fprintln(os.Stdout, "Processing:", name, "version", version)
@@ -165,6 +166,7 @@ func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "  ", err)
+				return
 			}
 
 			if doSkip {

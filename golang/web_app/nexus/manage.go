@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-	"net/url"
 	"os"
 	"sync"
 	"time"
@@ -49,9 +48,7 @@ var nexusConfig = struct {
 }
 
 func publishUnit(library *ent.SavedLibrary) (ok bool) {
-	safeName := url.PathEscape(library.Name)
-	safeVersion := url.PathEscape(library.Version)
-	downloadUrl := fmt.Sprintf("%s/repository/%s/%s/-/%s-%s.tgz", nexusConfig.URL, nexusConfig.StagingRepository, safeName, safeName, safeVersion)
+	downloadUrl := fmt.Sprintf("%s/repository/%s/%s/-/%s-%s.tgz", nexusConfig.URL, nexusConfig.StagingRepository, library.FullName, library.SimpleName, library.Version)
 	fmt.Fprintln(os.Stdout, "publish", "   -> Downloading from", downloadUrl)
 	
 	// --- 1. Stagingディレクトリからファイルをダウンロードしてメモリにキャッシュ ---
@@ -96,7 +93,7 @@ func publishUnit(library *ent.SavedLibrary) (ok bool) {
 	writer := multipart.NewWriter(uploadReqBody)
 
 	// アップロードするファイル名
-	uploadFilename := fmt.Sprintf("%s-%s.tgz", library.Name, library.Version)
+	uploadFilename := fmt.Sprintf("%s-%s.tgz", library.FullName, library.Version)
 	// ファイルパートを作成
 	part, err := writer.CreateFormFile("npm.asset", uploadFilename)
 	if err != nil {
@@ -150,7 +147,7 @@ func publishUnit(library *ent.SavedLibrary) (ok bool) {
 		return false
 	}
 
-	fmt.Fprintln(os.Stdout, "publish", "   -> Successfully uploaded", library.Name, "version", library.Version, ".\n")
+	fmt.Fprintln(os.Stdout, "publish", "   -> Successfully uploaded", library.FullName, "version", library.Version, ".\n")
 
 	return true
 }
@@ -183,7 +180,7 @@ type searchedAssetsResponse struct {
 }
 
 func unpublish(library *ent.SavedLibrary) (ok bool) {
-	searchUrl := fmt.Sprintf("%s/service/rest/v1/search?repository=%s&name=%s&version=%s", nexusConfig.URL, nexusConfig.PublishedRepository, library.Name, library.Version)
+	searchUrl := fmt.Sprintf("%s/service/rest/v1/search?repository=%s&name=%s&version=%s", nexusConfig.URL, nexusConfig.PublishedRepository, library.SimpleName, library.Version)
 	fmt.Fprintln(os.Stdout, "unpublish", "   -> Searching from", searchUrl)
 
 	searchReq, err := http.NewRequest("GET", searchUrl, nil)
@@ -260,7 +257,7 @@ func unpublish(library *ent.SavedLibrary) (ok bool) {
 		return false
 	}
 
-	fmt.Fprintln(os.Stdout, "unpublish", "   -> Successfully deleted", library.Name, "version", library.Version, ".\n")
+	fmt.Fprintln(os.Stdout, "unpublish", "   -> Successfully deleted", library.FullName, "version", library.Version, ".\n")
 	return true
 }
 
