@@ -15,6 +15,10 @@
       className: "menu-button",
       displayText: "ライブラリ設定",
     },
+    role: {
+      className: "menu-button",
+      displayText: "ロール設定",
+    },
   };
 </script>
 

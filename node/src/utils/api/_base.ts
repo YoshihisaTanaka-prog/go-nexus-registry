@@ -5,10 +5,15 @@ export const axios = Axios.create({
 });
 
 axios.interceptors.response.use((response) => {
+  if (import.meta.env.DEV) {
+    return response;
+  }
   if (typeof response.data === 'string') {
-    const url = new URL(location.href);
-    if (!url.pathname.startsWith('/sign-')) {
-      location.href = `/sign-in?redirect=${encodeURIComponent(url.pathname + url.search)}`
+    if (response.data.startsWith('<!DOCTYPE html')) {
+      const url = new URL(location.href);
+      if (!url.pathname.startsWith('/sign-')) {
+        location.href = `/sign-in?redirect=${encodeURIComponent(url.pathname + url.search)}`
+      }
     }
   }
   return response;
