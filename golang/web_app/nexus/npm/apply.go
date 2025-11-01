@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -25,8 +26,9 @@ type ApplyProps struct {
 	V3    *int    `json:"v3"`
 }
 
-var dockerImageMap = map[string]string{
-	"npm": "node:22",
+var (
+	dockerImageMap = map[string]string{
+		"npm": "node:22",
 }
 
 func InstallLibraries(body ApplyProps, userId string, uuid uuid.UUID, dockerImageName string) (ok bool) {
@@ -53,19 +55,13 @@ func InstallLibraries(body ApplyProps, userId string, uuid uuid.UUID, dockerImag
 	)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	onStartRunNpm()
+	defer onDoneRunNpm()
 	if err := cmd.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, "ライブラリ", body.Kind, "のインストールに失敗しました。\n", err)
 		pubsub.Publish(userId, uuid, -1, 1)
 		return false
 	}
-
-	go func(){
-		// node_modulesを削除
-		if err := os.RemoveAll(fmt.Sprintf("/app/tmp/npm/%s/node_modules", uuid)); err != nil {
-			fmt.Fprintln(os.Stderr, body.Kind, "の node_modules フォルダの削除に失敗しました。\n", err)
-			pubsub.Publish(userId, uuid, -2, 1)
-		}
-	}()
 
 	pubsub.Publish(userId, uuid, -1, 0)
 	return true
@@ -84,7 +80,19 @@ func AuditLibraries(libName string, userId string, uuid uuid.UUID, dockerImageNa
 	
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err == nil {
+	onStartRunNpm()
+	defer onDoneRunNpm()
+	err := cmd.Run()
+
+	go func(){
+		// node_modulesを削除
+		if err := os.RemoveAll(fmt.Sprintf("/app/tmp/npm/%s/node_modules", uuid)); err != nil {
+			fmt.Fprintln(os.Stderr, "node_modules フォルダの削除に失敗しました。\n", err)
+			pubsub.Publish(userId, uuid, -2, 1)
+		}
+	}()
+
+	if err == nil {
 		pubsub.Publish(userId, uuid, -3, 0)
 		return true
 	} else {
@@ -152,12 +160,48 @@ func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 		"apiNpm",
 		"npm-staging",
 	}
-	for i, subLibrary := range subLibraries {
+	testUrl := fmt.Sprintf("%s/service/rest/v1/security/roles/閲覧者", nexusConfig.URL)
+	testReq, err := http.NewRequest("GET", testUrl, nil)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "test-url", err)
+		return
+	}
+
+	testReq.SetBasicAuth("admin", "ToHi3118")
+	testClient := &http.Client{}
+
+	testResp, err := testClient.Do(testReq)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "test-url", err)
+		return
+	}
+	defer testResp.Body.Close()
+	
+	if testResp.StatusCode != http.StatusOK {
+		fmt.Fprintln(os.Stderr, "test-url", "failed with status:", testResp.Status)
+		body, err := ioutil.ReadAll(testResp.Body)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "test-url", "failed:", err)
+			return
+		}
+		fmt.Fprintln(os.Stderr, "test-url", "failed:", string(body))
+		return
+	}
+	
+	testBytes, err := io.ReadAll(testResp.Body)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "test-url", "error:", err)
+		return
+	}
+	fmt.Fprintln(os.Stdout, "test-url:",  string(testBytes))
+
+	for _, subLibrary := range subLibraries {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 
-			time.Sleep(time.Millisecond * time.Duration(i * 50))
+			onStartUploading()
+			defer onDoneUploading()
 
 			name, version, resolvedUrl := subLibrary.Name, subLibrary.Version, subLibrary.Resolved
 			fmt.Fprintln(os.Stdout, "Processing:", name, "version", version)

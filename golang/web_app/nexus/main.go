@@ -20,8 +20,7 @@ var npmNS = npmNameSpace{}
 func (npmNameSpace)Apply(c *gin.Context, body ApplyProps, userId string, uuId uuid.UUID) {
 	fmt.Fprintln(os.Stdout, "apply:", userId, uuId, body)
 	pubsub.PublishUuid(userId, uuId)
-
-	time.Sleep(time.Millisecond * 100)
+	
 	dockerImageName, ok := getDockerImageName(body)
 	if ok {
 		c.JSON(200, gin.H{})
