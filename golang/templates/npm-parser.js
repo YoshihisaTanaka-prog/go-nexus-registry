@@ -15,8 +15,8 @@ for (const [key, val] of Object.entries(packages)) {
     }
   } else {
     const [libName] = key.split('node_modules/').slice(-1);
-    const { version, resolved } = val;
-    subLibraries.push({name: libName, version, resolved});
+    const { version, resolved, name = libName } = val;
+    subLibraries.push({name: name, version, resolved});
   }
 }
 
