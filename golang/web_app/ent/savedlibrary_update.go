@@ -42,20 +42,6 @@ func (_u *SavedLibraryUpdate) SetNillableKind(v *string) *SavedLibraryUpdate {
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *SavedLibraryUpdate) SetName(v string) *SavedLibraryUpdate {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *SavedLibraryUpdate) SetNillableName(v *string) *SavedLibraryUpdate {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
 // SetVersion sets the "version" field.
 func (_u *SavedLibraryUpdate) SetVersion(v string) *SavedLibraryUpdate {
 	_u.mutation.SetVersion(v)
@@ -87,6 +73,34 @@ func (_u *SavedLibraryUpdate) SetNillableStatus(v *string) *SavedLibraryUpdate {
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *SavedLibraryUpdate) SetUpdatedAt(v time.Time) *SavedLibraryUpdate {
 	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
+// SetFullName sets the "fullName" field.
+func (_u *SavedLibraryUpdate) SetFullName(v string) *SavedLibraryUpdate {
+	_u.mutation.SetFullName(v)
+	return _u
+}
+
+// SetNillableFullName sets the "fullName" field if the given value is not nil.
+func (_u *SavedLibraryUpdate) SetNillableFullName(v *string) *SavedLibraryUpdate {
+	if v != nil {
+		_u.SetFullName(*v)
+	}
+	return _u
+}
+
+// SetSimpleName sets the "simpleName" field.
+func (_u *SavedLibraryUpdate) SetSimpleName(v string) *SavedLibraryUpdate {
+	_u.mutation.SetSimpleName(v)
+	return _u
+}
+
+// SetNillableSimpleName sets the "simpleName" field if the given value is not nil.
+func (_u *SavedLibraryUpdate) SetNillableSimpleName(v *string) *SavedLibraryUpdate {
+	if v != nil {
+		_u.SetSimpleName(*v)
+	}
 	return _u
 }
 
@@ -215,11 +229,6 @@ func (_u *SavedLibraryUpdate) check() error {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.kind": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Name(); ok {
-		if err := savedlibrary.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.name": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Version(); ok {
 		if err := savedlibrary.VersionValidator(v); err != nil {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.version": %w`, err)}
@@ -228,6 +237,16 @@ func (_u *SavedLibraryUpdate) check() error {
 	if v, ok := _u.mutation.Status(); ok {
 		if err := savedlibrary.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.status": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.FullName(); ok {
+		if err := savedlibrary.FullNameValidator(v); err != nil {
+			return &ValidationError{Name: "fullName", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.fullName": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.SimpleName(); ok {
+		if err := savedlibrary.SimpleNameValidator(v); err != nil {
+			return &ValidationError{Name: "simpleName", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.simpleName": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.V1(); ok {
@@ -263,9 +282,6 @@ func (_u *SavedLibraryUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(savedlibrary.FieldKind, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(savedlibrary.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(savedlibrary.FieldVersion, field.TypeString, value)
 	}
@@ -274,6 +290,12 @@ func (_u *SavedLibraryUpdate) sqlSave(ctx context.Context) (_node int, err error
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(savedlibrary.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.FullName(); ok {
+		_spec.SetField(savedlibrary.FieldFullName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.SimpleName(); ok {
+		_spec.SetField(savedlibrary.FieldSimpleName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.V1(); ok {
 		_spec.SetField(savedlibrary.FieldV1, field.TypeInt, value)
@@ -330,20 +352,6 @@ func (_u *SavedLibraryUpdateOne) SetNillableKind(v *string) *SavedLibraryUpdateO
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *SavedLibraryUpdateOne) SetName(v string) *SavedLibraryUpdateOne {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *SavedLibraryUpdateOne) SetNillableName(v *string) *SavedLibraryUpdateOne {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
 // SetVersion sets the "version" field.
 func (_u *SavedLibraryUpdateOne) SetVersion(v string) *SavedLibraryUpdateOne {
 	_u.mutation.SetVersion(v)
@@ -375,6 +383,34 @@ func (_u *SavedLibraryUpdateOne) SetNillableStatus(v *string) *SavedLibraryUpdat
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *SavedLibraryUpdateOne) SetUpdatedAt(v time.Time) *SavedLibraryUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
+// SetFullName sets the "fullName" field.
+func (_u *SavedLibraryUpdateOne) SetFullName(v string) *SavedLibraryUpdateOne {
+	_u.mutation.SetFullName(v)
+	return _u
+}
+
+// SetNillableFullName sets the "fullName" field if the given value is not nil.
+func (_u *SavedLibraryUpdateOne) SetNillableFullName(v *string) *SavedLibraryUpdateOne {
+	if v != nil {
+		_u.SetFullName(*v)
+	}
+	return _u
+}
+
+// SetSimpleName sets the "simpleName" field.
+func (_u *SavedLibraryUpdateOne) SetSimpleName(v string) *SavedLibraryUpdateOne {
+	_u.mutation.SetSimpleName(v)
+	return _u
+}
+
+// SetNillableSimpleName sets the "simpleName" field if the given value is not nil.
+func (_u *SavedLibraryUpdateOne) SetNillableSimpleName(v *string) *SavedLibraryUpdateOne {
+	if v != nil {
+		_u.SetSimpleName(*v)
+	}
 	return _u
 }
 
@@ -516,11 +552,6 @@ func (_u *SavedLibraryUpdateOne) check() error {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.kind": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Name(); ok {
-		if err := savedlibrary.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.name": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Version(); ok {
 		if err := savedlibrary.VersionValidator(v); err != nil {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.version": %w`, err)}
@@ -529,6 +560,16 @@ func (_u *SavedLibraryUpdateOne) check() error {
 	if v, ok := _u.mutation.Status(); ok {
 		if err := savedlibrary.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.status": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.FullName(); ok {
+		if err := savedlibrary.FullNameValidator(v); err != nil {
+			return &ValidationError{Name: "fullName", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.fullName": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.SimpleName(); ok {
+		if err := savedlibrary.SimpleNameValidator(v); err != nil {
+			return &ValidationError{Name: "simpleName", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.simpleName": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.V1(); ok {
@@ -581,9 +622,6 @@ func (_u *SavedLibraryUpdateOne) sqlSave(ctx context.Context) (_node *SavedLibra
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(savedlibrary.FieldKind, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(savedlibrary.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(savedlibrary.FieldVersion, field.TypeString, value)
 	}
@@ -592,6 +630,12 @@ func (_u *SavedLibraryUpdateOne) sqlSave(ctx context.Context) (_node *SavedLibra
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(savedlibrary.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.FullName(); ok {
+		_spec.SetField(savedlibrary.FieldFullName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.SimpleName(); ok {
+		_spec.SetField(savedlibrary.FieldSimpleName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.V1(); ok {
 		_spec.SetField(savedlibrary.FieldV1, field.TypeInt, value)

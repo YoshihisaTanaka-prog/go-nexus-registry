@@ -42,20 +42,6 @@ func (_u *RequestedLibraryUpdate) SetNillableKind(v *string) *RequestedLibraryUp
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *RequestedLibraryUpdate) SetName(v string) *RequestedLibraryUpdate {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *RequestedLibraryUpdate) SetNillableName(v *string) *RequestedLibraryUpdate {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
 // SetVersion sets the "version" field.
 func (_u *RequestedLibraryUpdate) SetVersion(v string) *RequestedLibraryUpdate {
 	_u.mutation.SetVersion(v)
@@ -87,6 +73,20 @@ func (_u *RequestedLibraryUpdate) SetNillableStatus(v *string) *RequestedLibrary
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *RequestedLibraryUpdate) SetUpdatedAt(v time.Time) *RequestedLibraryUpdate {
 	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
+// SetName sets the "name" field.
+func (_u *RequestedLibraryUpdate) SetName(v string) *RequestedLibraryUpdate {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *RequestedLibraryUpdate) SetNillableName(v *string) *RequestedLibraryUpdate {
+	if v != nil {
+		_u.SetName(*v)
+	}
 	return _u
 }
 
@@ -152,11 +152,6 @@ func (_u *RequestedLibraryUpdate) check() error {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.kind": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Name(); ok {
-		if err := requestedlibrary.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.name": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Version(); ok {
 		if err := requestedlibrary.VersionValidator(v); err != nil {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.version": %w`, err)}
@@ -165,6 +160,11 @@ func (_u *RequestedLibraryUpdate) check() error {
 	if v, ok := _u.mutation.Status(); ok {
 		if err := requestedlibrary.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.status": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Name(); ok {
+		if err := requestedlibrary.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.name": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.RequestedBy(); ok {
@@ -190,9 +190,6 @@ func (_u *RequestedLibraryUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(requestedlibrary.FieldKind, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(requestedlibrary.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(requestedlibrary.FieldVersion, field.TypeString, value)
 	}
@@ -201,6 +198,9 @@ func (_u *RequestedLibraryUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(requestedlibrary.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(requestedlibrary.FieldName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.RequestedBy(); ok {
 		_spec.SetField(requestedlibrary.FieldRequestedBy, field.TypeString, value)
@@ -239,20 +239,6 @@ func (_u *RequestedLibraryUpdateOne) SetNillableKind(v *string) *RequestedLibrar
 	return _u
 }
 
-// SetName sets the "name" field.
-func (_u *RequestedLibraryUpdateOne) SetName(v string) *RequestedLibraryUpdateOne {
-	_u.mutation.SetName(v)
-	return _u
-}
-
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_u *RequestedLibraryUpdateOne) SetNillableName(v *string) *RequestedLibraryUpdateOne {
-	if v != nil {
-		_u.SetName(*v)
-	}
-	return _u
-}
-
 // SetVersion sets the "version" field.
 func (_u *RequestedLibraryUpdateOne) SetVersion(v string) *RequestedLibraryUpdateOne {
 	_u.mutation.SetVersion(v)
@@ -284,6 +270,20 @@ func (_u *RequestedLibraryUpdateOne) SetNillableStatus(v *string) *RequestedLibr
 // SetUpdatedAt sets the "updated_at" field.
 func (_u *RequestedLibraryUpdateOne) SetUpdatedAt(v time.Time) *RequestedLibraryUpdateOne {
 	_u.mutation.SetUpdatedAt(v)
+	return _u
+}
+
+// SetName sets the "name" field.
+func (_u *RequestedLibraryUpdateOne) SetName(v string) *RequestedLibraryUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (_u *RequestedLibraryUpdateOne) SetNillableName(v *string) *RequestedLibraryUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
+	}
 	return _u
 }
 
@@ -362,11 +362,6 @@ func (_u *RequestedLibraryUpdateOne) check() error {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.kind": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Name(); ok {
-		if err := requestedlibrary.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.name": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Version(); ok {
 		if err := requestedlibrary.VersionValidator(v); err != nil {
 			return &ValidationError{Name: "version", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.version": %w`, err)}
@@ -375,6 +370,11 @@ func (_u *RequestedLibraryUpdateOne) check() error {
 	if v, ok := _u.mutation.Status(); ok {
 		if err := requestedlibrary.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.status": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Name(); ok {
+		if err := requestedlibrary.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "RequestedLibrary.name": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.RequestedBy(); ok {
@@ -417,9 +417,6 @@ func (_u *RequestedLibraryUpdateOne) sqlSave(ctx context.Context) (_node *Reques
 	if value, ok := _u.mutation.Kind(); ok {
 		_spec.SetField(requestedlibrary.FieldKind, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.Name(); ok {
-		_spec.SetField(requestedlibrary.FieldName, field.TypeString, value)
-	}
 	if value, ok := _u.mutation.Version(); ok {
 		_spec.SetField(requestedlibrary.FieldVersion, field.TypeString, value)
 	}
@@ -428,6 +425,9 @@ func (_u *RequestedLibraryUpdateOne) sqlSave(ctx context.Context) (_node *Reques
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(requestedlibrary.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.Name(); ok {
+		_spec.SetField(requestedlibrary.FieldName, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.RequestedBy(); ok {
 		_spec.SetField(requestedlibrary.FieldRequestedBy, field.TypeString, value)

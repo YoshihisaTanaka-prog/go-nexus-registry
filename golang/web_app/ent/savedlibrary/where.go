@@ -69,11 +69,6 @@ func Kind(v string) predicate.SavedLibrary {
 	return predicate.SavedLibrary(sql.FieldEQ(FieldKind, v))
 }
 
-// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
-func Name(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldEQ(FieldName, v))
-}
-
 // Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
 func Version(v string) predicate.SavedLibrary {
 	return predicate.SavedLibrary(sql.FieldEQ(FieldVersion, v))
@@ -92,6 +87,16 @@ func CreatedAt(v time.Time) predicate.SavedLibrary {
 // UpdatedAt applies equality check predicate on the "updated_at" field. It's identical to UpdatedAtEQ.
 func UpdatedAt(v time.Time) predicate.SavedLibrary {
 	return predicate.SavedLibrary(sql.FieldEQ(FieldUpdatedAt, v))
+}
+
+// FullName applies equality check predicate on the "fullName" field. It's identical to FullNameEQ.
+func FullName(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldEQ(FieldFullName, v))
+}
+
+// SimpleName applies equality check predicate on the "simpleName" field. It's identical to SimpleNameEQ.
+func SimpleName(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldEQ(FieldSimpleName, v))
 }
 
 // V1 applies equality check predicate on the "v1" field. It's identical to V1EQ.
@@ -177,71 +182,6 @@ func KindEqualFold(v string) predicate.SavedLibrary {
 // KindContainsFold applies the ContainsFold predicate on the "kind" field.
 func KindContainsFold(v string) predicate.SavedLibrary {
 	return predicate.SavedLibrary(sql.FieldContainsFold(FieldKind, v))
-}
-
-// NameEQ applies the EQ predicate on the "name" field.
-func NameEQ(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldEQ(FieldName, v))
-}
-
-// NameNEQ applies the NEQ predicate on the "name" field.
-func NameNEQ(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldNEQ(FieldName, v))
-}
-
-// NameIn applies the In predicate on the "name" field.
-func NameIn(vs ...string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldIn(FieldName, vs...))
-}
-
-// NameNotIn applies the NotIn predicate on the "name" field.
-func NameNotIn(vs ...string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldNotIn(FieldName, vs...))
-}
-
-// NameGT applies the GT predicate on the "name" field.
-func NameGT(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldGT(FieldName, v))
-}
-
-// NameGTE applies the GTE predicate on the "name" field.
-func NameGTE(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldGTE(FieldName, v))
-}
-
-// NameLT applies the LT predicate on the "name" field.
-func NameLT(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldLT(FieldName, v))
-}
-
-// NameLTE applies the LTE predicate on the "name" field.
-func NameLTE(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldLTE(FieldName, v))
-}
-
-// NameContains applies the Contains predicate on the "name" field.
-func NameContains(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldContains(FieldName, v))
-}
-
-// NameHasPrefix applies the HasPrefix predicate on the "name" field.
-func NameHasPrefix(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldHasPrefix(FieldName, v))
-}
-
-// NameHasSuffix applies the HasSuffix predicate on the "name" field.
-func NameHasSuffix(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldHasSuffix(FieldName, v))
-}
-
-// NameEqualFold applies the EqualFold predicate on the "name" field.
-func NameEqualFold(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldEqualFold(FieldName, v))
-}
-
-// NameContainsFold applies the ContainsFold predicate on the "name" field.
-func NameContainsFold(v string) predicate.SavedLibrary {
-	return predicate.SavedLibrary(sql.FieldContainsFold(FieldName, v))
 }
 
 // VersionEQ applies the EQ predicate on the "version" field.
@@ -452,6 +392,136 @@ func UpdatedAtLT(v time.Time) predicate.SavedLibrary {
 // UpdatedAtLTE applies the LTE predicate on the "updated_at" field.
 func UpdatedAtLTE(v time.Time) predicate.SavedLibrary {
 	return predicate.SavedLibrary(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// FullNameEQ applies the EQ predicate on the "fullName" field.
+func FullNameEQ(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldEQ(FieldFullName, v))
+}
+
+// FullNameNEQ applies the NEQ predicate on the "fullName" field.
+func FullNameNEQ(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldNEQ(FieldFullName, v))
+}
+
+// FullNameIn applies the In predicate on the "fullName" field.
+func FullNameIn(vs ...string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldIn(FieldFullName, vs...))
+}
+
+// FullNameNotIn applies the NotIn predicate on the "fullName" field.
+func FullNameNotIn(vs ...string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldNotIn(FieldFullName, vs...))
+}
+
+// FullNameGT applies the GT predicate on the "fullName" field.
+func FullNameGT(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldGT(FieldFullName, v))
+}
+
+// FullNameGTE applies the GTE predicate on the "fullName" field.
+func FullNameGTE(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldGTE(FieldFullName, v))
+}
+
+// FullNameLT applies the LT predicate on the "fullName" field.
+func FullNameLT(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldLT(FieldFullName, v))
+}
+
+// FullNameLTE applies the LTE predicate on the "fullName" field.
+func FullNameLTE(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldLTE(FieldFullName, v))
+}
+
+// FullNameContains applies the Contains predicate on the "fullName" field.
+func FullNameContains(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldContains(FieldFullName, v))
+}
+
+// FullNameHasPrefix applies the HasPrefix predicate on the "fullName" field.
+func FullNameHasPrefix(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldHasPrefix(FieldFullName, v))
+}
+
+// FullNameHasSuffix applies the HasSuffix predicate on the "fullName" field.
+func FullNameHasSuffix(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldHasSuffix(FieldFullName, v))
+}
+
+// FullNameEqualFold applies the EqualFold predicate on the "fullName" field.
+func FullNameEqualFold(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldEqualFold(FieldFullName, v))
+}
+
+// FullNameContainsFold applies the ContainsFold predicate on the "fullName" field.
+func FullNameContainsFold(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldContainsFold(FieldFullName, v))
+}
+
+// SimpleNameEQ applies the EQ predicate on the "simpleName" field.
+func SimpleNameEQ(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldEQ(FieldSimpleName, v))
+}
+
+// SimpleNameNEQ applies the NEQ predicate on the "simpleName" field.
+func SimpleNameNEQ(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldNEQ(FieldSimpleName, v))
+}
+
+// SimpleNameIn applies the In predicate on the "simpleName" field.
+func SimpleNameIn(vs ...string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldIn(FieldSimpleName, vs...))
+}
+
+// SimpleNameNotIn applies the NotIn predicate on the "simpleName" field.
+func SimpleNameNotIn(vs ...string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldNotIn(FieldSimpleName, vs...))
+}
+
+// SimpleNameGT applies the GT predicate on the "simpleName" field.
+func SimpleNameGT(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldGT(FieldSimpleName, v))
+}
+
+// SimpleNameGTE applies the GTE predicate on the "simpleName" field.
+func SimpleNameGTE(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldGTE(FieldSimpleName, v))
+}
+
+// SimpleNameLT applies the LT predicate on the "simpleName" field.
+func SimpleNameLT(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldLT(FieldSimpleName, v))
+}
+
+// SimpleNameLTE applies the LTE predicate on the "simpleName" field.
+func SimpleNameLTE(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldLTE(FieldSimpleName, v))
+}
+
+// SimpleNameContains applies the Contains predicate on the "simpleName" field.
+func SimpleNameContains(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldContains(FieldSimpleName, v))
+}
+
+// SimpleNameHasPrefix applies the HasPrefix predicate on the "simpleName" field.
+func SimpleNameHasPrefix(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldHasPrefix(FieldSimpleName, v))
+}
+
+// SimpleNameHasSuffix applies the HasSuffix predicate on the "simpleName" field.
+func SimpleNameHasSuffix(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldHasSuffix(FieldSimpleName, v))
+}
+
+// SimpleNameEqualFold applies the EqualFold predicate on the "simpleName" field.
+func SimpleNameEqualFold(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldEqualFold(FieldSimpleName, v))
+}
+
+// SimpleNameContainsFold applies the ContainsFold predicate on the "simpleName" field.
+func SimpleNameContainsFold(v string) predicate.SavedLibrary {
+	return predicate.SavedLibrary(sql.FieldContainsFold(FieldSimpleName, v))
 }
 
 // V1EQ applies the EQ predicate on the "v1" field.

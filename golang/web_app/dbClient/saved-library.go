@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"os"
 	"slices"
+	"strings"
 	"time"
 	"web_app/ent"
 	"web_app/ent/savedlibrary"
@@ -53,7 +54,8 @@ func syncSavedLibraryCache(library *ent.SavedLibrary) (ok bool) {
 
 	if foundLib == nil {
 		_, err := tx.SavedLibrary.Create().SetID(library.ID).
-			SetName(library.Name).
+			SetFullName(library.FullName).
+			SetSimpleName(library.SimpleName).
 			SetKind(library.Kind).
 			SetVersion(library.Version).
 			SetV1(0).
@@ -118,7 +120,7 @@ func findSavedLibraryByKindAndNameAndVersionUnit(client *ent.Client, kind string
 	libraries, err := client.SavedLibrary.Query().
 		Where(
 			savedlibrary.Kind(kind),
-			savedlibrary.Name(name),
+			savedlibrary.FullName(name),
 			savedlibrary.Version(version),
 		).
 		All(*ctx)
@@ -168,8 +170,13 @@ func (savedLibraryNameSpace)FindOrCreate(kind string, name string, version strin
 		return nil, true, err
 	}
 
+	splitedName := strings.Split(name, "/")
+
+	simpleName := splitedName[len(splitedName)-1]
+
 	library, err = psqlClient.SavedLibrary.Create().SetID(localId).
-		SetName(name).
+		SetFullName(name).
+		SetSimpleName(simpleName).
 		SetKind(kind).
 		SetVersion(version).
 		SetV1(v1).
@@ -192,7 +199,7 @@ func (savedLibraryNameSpace)FindLibraries(kind string, name string, v1 int, v2 i
 			savedlibrary.Kind(kind),
 		).
 		Order(
-			savedlibrary.ByName(),
+			savedlibrary.ByFullName(),
 			savedlibrary.ByV1(),
 			savedlibrary.ByV2(),
 			savedlibrary.ByV3(),
@@ -201,18 +208,18 @@ func (savedLibraryNameSpace)FindLibraries(kind string, name string, v1 int, v2 i
 	if name != "" {
 		q = q.Where(
 			savedlibrary.Or(
-				savedlibrary.NameGT(name),
+				savedlibrary.FullNameGT(name),
 				savedlibrary.And(
-					savedlibrary.NameEQ(name),
+					savedlibrary.FullNameEQ(name),
 					savedlibrary.V1GT(v1),
 				),
 				savedlibrary.And(
-					savedlibrary.NameEQ(name),
+					savedlibrary.FullNameEQ(name),
 					savedlibrary.V1EQ(v1),
 					savedlibrary.V2GT(v2),
 				),
 				savedlibrary.And(
-					savedlibrary.NameEQ(name),
+					savedlibrary.FullNameEQ(name),
 					savedlibrary.V1EQ(v1),
 					savedlibrary.V2EQ(v2),
 					savedlibrary.V3GT(v3),
@@ -231,7 +238,7 @@ func (savedLibraryNameSpace)FindLibraries(kind string, name string, v1 int, v2 i
 	if len(libraries) > 0 {
 		last := libraries[len(libraries) - 1]
 		nextCursor = &Cursor{
-			Name: last.Name,
+			Name: last.FullName,
 			V1:   last.V1,
 			V2:   last.V2,
 			V3:   last.V3,
@@ -242,11 +249,11 @@ func (savedLibraryNameSpace)FindLibraries(kind string, name string, v1 int, v2 i
 }
 
 func (savedLibraryNameSpace)FindNewerPublishedLibraries(targetLibrary *ent.SavedLibrary) ([]*ent.SavedLibrary, error) {
-	kind, name, v1, v2, v3 := targetLibrary.Kind, targetLibrary.Name, targetLibrary.V1, targetLibrary.V2, targetLibrary.V3
+	kind, name, v1, v2, v3 := targetLibrary.Kind, targetLibrary.FullName, targetLibrary.V1, targetLibrary.V2, targetLibrary.V3
 	q := psqlClient.SavedLibrary.Query().
 		Where(
 			savedlibrary.Kind(kind),
-			savedlibrary.Name(name),
+			savedlibrary.FullName(name),
 			savedlibrary.IsPublished(true),
 		).
 		Order(

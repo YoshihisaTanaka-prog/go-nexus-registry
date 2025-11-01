@@ -19,8 +19,6 @@ type SavedLibrary struct {
 	ID string `json:"id,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind string `json:"kind,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
 	// Version holds the value of the "version" field.
 	Version string `json:"version,omitempty"`
 	// Status holds the value of the "status" field.
@@ -29,6 +27,10 @@ type SavedLibrary struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// FullName holds the value of the "fullName" field.
+	FullName string `json:"fullName,omitempty"`
+	// SimpleName holds the value of the "simpleName" field.
+	SimpleName string `json:"simpleName,omitempty"`
 	// V1 holds the value of the "v1" field.
 	V1 int `json:"v1,omitempty"`
 	// V2 holds the value of the "v2" field.
@@ -49,7 +51,7 @@ func (*SavedLibrary) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case savedlibrary.FieldV1, savedlibrary.FieldV2, savedlibrary.FieldV3:
 			values[i] = new(sql.NullInt64)
-		case savedlibrary.FieldID, savedlibrary.FieldKind, savedlibrary.FieldName, savedlibrary.FieldVersion, savedlibrary.FieldStatus:
+		case savedlibrary.FieldID, savedlibrary.FieldKind, savedlibrary.FieldVersion, savedlibrary.FieldStatus, savedlibrary.FieldFullName, savedlibrary.FieldSimpleName:
 			values[i] = new(sql.NullString)
 		case savedlibrary.FieldCreatedAt, savedlibrary.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -80,12 +82,6 @@ func (_m *SavedLibrary) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Kind = value.String
 			}
-		case savedlibrary.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				_m.Name = value.String
-			}
 		case savedlibrary.FieldVersion:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field version", values[i])
@@ -109,6 +105,18 @@ func (_m *SavedLibrary) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
+			}
+		case savedlibrary.FieldFullName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field fullName", values[i])
+			} else if value.Valid {
+				_m.FullName = value.String
+			}
+		case savedlibrary.FieldSimpleName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field simpleName", values[i])
+			} else if value.Valid {
+				_m.SimpleName = value.String
 			}
 		case savedlibrary.FieldV1:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -173,9 +181,6 @@ func (_m *SavedLibrary) String() string {
 	builder.WriteString("kind=")
 	builder.WriteString(_m.Kind)
 	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
-	builder.WriteString(", ")
 	builder.WriteString("version=")
 	builder.WriteString(_m.Version)
 	builder.WriteString(", ")
@@ -187,6 +192,12 @@ func (_m *SavedLibrary) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("fullName=")
+	builder.WriteString(_m.FullName)
+	builder.WriteString(", ")
+	builder.WriteString("simpleName=")
+	builder.WriteString(_m.SimpleName)
 	builder.WriteString(", ")
 	builder.WriteString("v1=")
 	builder.WriteString(fmt.Sprintf("%v", _m.V1))

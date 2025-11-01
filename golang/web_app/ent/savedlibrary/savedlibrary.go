@@ -15,8 +15,6 @@ const (
 	FieldID = "id"
 	// FieldKind holds the string denoting the kind field in the database.
 	FieldKind = "kind"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
 	// FieldVersion holds the string denoting the version field in the database.
 	FieldVersion = "version"
 	// FieldStatus holds the string denoting the status field in the database.
@@ -25,6 +23,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldFullName holds the string denoting the fullname field in the database.
+	FieldFullName = "full_name"
+	// FieldSimpleName holds the string denoting the simplename field in the database.
+	FieldSimpleName = "simple_name"
 	// FieldV1 holds the string denoting the v1 field in the database.
 	FieldV1 = "v1"
 	// FieldV2 holds the string denoting the v2 field in the database.
@@ -41,11 +43,12 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldKind,
-	FieldName,
 	FieldVersion,
 	FieldStatus,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldFullName,
+	FieldSimpleName,
 	FieldV1,
 	FieldV2,
 	FieldV3,
@@ -65,8 +68,6 @@ func ValidColumn(column string) bool {
 var (
 	// KindValidator is a validator for the "kind" field. It is called by the builders before save.
 	KindValidator func(string) error
-	// NameValidator is a validator for the "name" field. It is called by the builders before save.
-	NameValidator func(string) error
 	// VersionValidator is a validator for the "version" field. It is called by the builders before save.
 	VersionValidator func(string) error
 	// DefaultStatus holds the default value on creation for the "status" field.
@@ -79,6 +80,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// FullNameValidator is a validator for the "fullName" field. It is called by the builders before save.
+	FullNameValidator func(string) error
+	// SimpleNameValidator is a validator for the "simpleName" field. It is called by the builders before save.
+	SimpleNameValidator func(string) error
 	// V1Validator is a validator for the "v1" field. It is called by the builders before save.
 	V1Validator func(int) error
 	// V2Validator is a validator for the "v2" field. It is called by the builders before save.
@@ -104,11 +109,6 @@ func ByKind(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldKind, opts...).ToFunc()
 }
 
-// ByName orders the results by the name field.
-func ByName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldName, opts...).ToFunc()
-}
-
 // ByVersion orders the results by the version field.
 func ByVersion(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldVersion, opts...).ToFunc()
@@ -127,6 +127,16 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updated_at field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByFullName orders the results by the fullName field.
+func ByFullName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFullName, opts...).ToFunc()
+}
+
+// BySimpleName orders the results by the simpleName field.
+func BySimpleName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSimpleName, opts...).ToFunc()
 }
 
 // ByV1 orders the results by the v1 field.

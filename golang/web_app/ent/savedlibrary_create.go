@@ -26,12 +26,6 @@ func (_c *SavedLibraryCreate) SetKind(v string) *SavedLibraryCreate {
 	return _c
 }
 
-// SetName sets the "name" field.
-func (_c *SavedLibraryCreate) SetName(v string) *SavedLibraryCreate {
-	_c.mutation.SetName(v)
-	return _c
-}
-
 // SetVersion sets the "version" field.
 func (_c *SavedLibraryCreate) SetVersion(v string) *SavedLibraryCreate {
 	_c.mutation.SetVersion(v)
@@ -77,6 +71,18 @@ func (_c *SavedLibraryCreate) SetNillableUpdatedAt(v *time.Time) *SavedLibraryCr
 	if v != nil {
 		_c.SetUpdatedAt(*v)
 	}
+	return _c
+}
+
+// SetFullName sets the "fullName" field.
+func (_c *SavedLibraryCreate) SetFullName(v string) *SavedLibraryCreate {
+	_c.mutation.SetFullName(v)
+	return _c
+}
+
+// SetSimpleName sets the "simpleName" field.
+func (_c *SavedLibraryCreate) SetSimpleName(v string) *SavedLibraryCreate {
+	_c.mutation.SetSimpleName(v)
 	return _c
 }
 
@@ -181,14 +187,6 @@ func (_c *SavedLibraryCreate) check() error {
 			return &ValidationError{Name: "kind", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.kind": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "SavedLibrary.name"`)}
-	}
-	if v, ok := _c.mutation.Name(); ok {
-		if err := savedlibrary.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.name": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.Version(); !ok {
 		return &ValidationError{Name: "version", err: errors.New(`ent: missing required field "SavedLibrary.version"`)}
 	}
@@ -210,6 +208,22 @@ func (_c *SavedLibraryCreate) check() error {
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "SavedLibrary.updated_at"`)}
+	}
+	if _, ok := _c.mutation.FullName(); !ok {
+		return &ValidationError{Name: "fullName", err: errors.New(`ent: missing required field "SavedLibrary.fullName"`)}
+	}
+	if v, ok := _c.mutation.FullName(); ok {
+		if err := savedlibrary.FullNameValidator(v); err != nil {
+			return &ValidationError{Name: "fullName", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.fullName": %w`, err)}
+		}
+	}
+	if _, ok := _c.mutation.SimpleName(); !ok {
+		return &ValidationError{Name: "simpleName", err: errors.New(`ent: missing required field "SavedLibrary.simpleName"`)}
+	}
+	if v, ok := _c.mutation.SimpleName(); ok {
+		if err := savedlibrary.SimpleNameValidator(v); err != nil {
+			return &ValidationError{Name: "simpleName", err: fmt.Errorf(`ent: validator failed for field "SavedLibrary.simpleName": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.V1(); !ok {
 		return &ValidationError{Name: "v1", err: errors.New(`ent: missing required field "SavedLibrary.v1"`)}
@@ -282,10 +296,6 @@ func (_c *SavedLibraryCreate) createSpec() (*SavedLibrary, *sqlgraph.CreateSpec)
 		_spec.SetField(savedlibrary.FieldKind, field.TypeString, value)
 		_node.Kind = value
 	}
-	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(savedlibrary.FieldName, field.TypeString, value)
-		_node.Name = value
-	}
 	if value, ok := _c.mutation.Version(); ok {
 		_spec.SetField(savedlibrary.FieldVersion, field.TypeString, value)
 		_node.Version = value
@@ -301,6 +311,14 @@ func (_c *SavedLibraryCreate) createSpec() (*SavedLibrary, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(savedlibrary.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := _c.mutation.FullName(); ok {
+		_spec.SetField(savedlibrary.FieldFullName, field.TypeString, value)
+		_node.FullName = value
+	}
+	if value, ok := _c.mutation.SimpleName(); ok {
+		_spec.SetField(savedlibrary.FieldSimpleName, field.TypeString, value)
+		_node.SimpleName = value
 	}
 	if value, ok := _c.mutation.V1(); ok {
 		_spec.SetField(savedlibrary.FieldV1, field.TypeInt, value)

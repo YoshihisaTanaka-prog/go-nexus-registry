@@ -19,8 +19,6 @@ type RequestedLibrary struct {
 	ID string `json:"id,omitempty"`
 	// Kind holds the value of the "kind" field.
 	Kind string `json:"kind,omitempty"`
-	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
 	// Version holds the value of the "version" field.
 	Version string `json:"version,omitempty"`
 	// Status holds the value of the "status" field.
@@ -29,6 +27,8 @@ type RequestedLibrary struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
 	// RequestedBy holds the value of the "requested_by" field.
 	RequestedBy  string `json:"requested_by,omitempty"`
 	selectValues sql.SelectValues
@@ -39,7 +39,7 @@ func (*RequestedLibrary) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case requestedlibrary.FieldID, requestedlibrary.FieldKind, requestedlibrary.FieldName, requestedlibrary.FieldVersion, requestedlibrary.FieldStatus, requestedlibrary.FieldRequestedBy:
+		case requestedlibrary.FieldID, requestedlibrary.FieldKind, requestedlibrary.FieldVersion, requestedlibrary.FieldStatus, requestedlibrary.FieldName, requestedlibrary.FieldRequestedBy:
 			values[i] = new(sql.NullString)
 		case requestedlibrary.FieldCreatedAt, requestedlibrary.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -70,12 +70,6 @@ func (_m *RequestedLibrary) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Kind = value.String
 			}
-		case requestedlibrary.FieldName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
-			} else if value.Valid {
-				_m.Name = value.String
-			}
 		case requestedlibrary.FieldVersion:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field version", values[i])
@@ -99,6 +93,12 @@ func (_m *RequestedLibrary) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
 				_m.UpdatedAt = value.Time
+			}
+		case requestedlibrary.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				_m.Name = value.String
 			}
 		case requestedlibrary.FieldRequestedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -145,9 +145,6 @@ func (_m *RequestedLibrary) String() string {
 	builder.WriteString("kind=")
 	builder.WriteString(_m.Kind)
 	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
-	builder.WriteString(", ")
 	builder.WriteString("version=")
 	builder.WriteString(_m.Version)
 	builder.WriteString(", ")
@@ -159,6 +156,9 @@ func (_m *RequestedLibrary) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
 	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
 	builder.WriteString("requested_by=")
 	builder.WriteString(_m.RequestedBy)
