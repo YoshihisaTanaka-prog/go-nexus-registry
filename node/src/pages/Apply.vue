@@ -111,6 +111,13 @@
       }
     }
     libDataArray.value = filteredLibDataArray;
+    fileInputRef.value!.value = '';
+  }
+
+  const onChangeFileInput = () => {
+    if (fileInputRef.value) {
+      fileInputRef.value.click();
+    }
   }
 </script>
 
@@ -121,7 +128,8 @@
     <SelectLibKind v-model="libKindModel" />
     <div v-if="libKindModel !== undefined">
       <p style="text-align: center;">
-        <input ref="file-input-ref" type="file" @change="onChangeFileInputRef" />
+        <input ref="file-input-ref" type="file" @change="onChangeFileInputRef" style="display: none;" />
+        <button @click="onChangeFileInput" type="button">ライブラリ設定ファイルの選択</button>
       </p>
       <table>
         <tbody>
