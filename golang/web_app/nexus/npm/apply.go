@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -29,6 +28,37 @@ type ApplyProps struct {
 var (
 	dockerImageMap = map[string]string{
 		"npm": "node:22",
+	}
+	runNpmMutex sync.Mutex
+	runningNpmCount = 0
+	uploadingMutex sync.Mutex
+	uploadingCount = 0
+)
+
+func onStartRunNpm() {
+	runNpmMutex.Lock()
+	currentCount := runningNpmCount
+	runningNpmCount++
+	runNpmMutex.Unlock()
+	time.Sleep(time.Second * time.Duration(currentCount))
+}
+func onDoneRunNpm() {
+	runNpmMutex.Lock()
+	runningNpmCount--
+	runNpmMutex.Unlock()
+}
+
+func onStartUploading() {
+	uploadingMutex.Lock()
+	currentCount := uploadingCount
+	uploadingCount++
+	uploadingMutex.Unlock()
+	time.Sleep(time.Millisecond * time.Duration(currentCount * 50))
+}
+func onDoneUploading() {
+	uploadingMutex.Lock()
+	uploadingCount--
+	uploadingMutex.Unlock()
 }
 
 func InstallLibraries(body ApplyProps, userId string, uuid uuid.UUID, dockerImageName string) (ok bool) {
@@ -43,7 +73,6 @@ func InstallLibraries(body ApplyProps, userId string, uuid uuid.UUID, dockerImag
 			}
 		}
 	}
-
 	cmd := exec.Command(
 		"docker", "run",
 		"--rm",
@@ -160,40 +189,6 @@ func UploadLibraries(libKind string, subLibraries []ParsedSubLibrary) {
 		"apiNpm",
 		"npm-staging",
 	}
-	testUrl := fmt.Sprintf("%s/service/rest/v1/security/roles/閲覧者", nexusConfig.URL)
-	testReq, err := http.NewRequest("GET", testUrl, nil)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "test-url", err)
-		return
-	}
-
-	testReq.SetBasicAuth("admin", "ToHi3118")
-	testClient := &http.Client{}
-
-	testResp, err := testClient.Do(testReq)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "test-url", err)
-		return
-	}
-	defer testResp.Body.Close()
-	
-	if testResp.StatusCode != http.StatusOK {
-		fmt.Fprintln(os.Stderr, "test-url", "failed with status:", testResp.Status)
-		body, err := ioutil.ReadAll(testResp.Body)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "test-url", "failed:", err)
-			return
-		}
-		fmt.Fprintln(os.Stderr, "test-url", "failed:", string(body))
-		return
-	}
-	
-	testBytes, err := io.ReadAll(testResp.Body)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "test-url", "error:", err)
-		return
-	}
-	fmt.Fprintln(os.Stdout, "test-url:",  string(testBytes))
 
 	for _, subLibrary := range subLibraries {
 		wg.Add(1)
