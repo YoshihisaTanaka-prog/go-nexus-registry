@@ -1,9 +1,10 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref, useTemplateRef } from 'vue';
   import Base from '@/components/base/ContentsBase.vue';
   import Field from './Apply/Field.vue';
   import SelectLibKind from '@/components/SelectLibKind.vue'
   import * as api from '@/utils/api';
+  import { formatNpm } from '@/utils/format';
 
   const libKindModel = ref<string>();
 
@@ -23,6 +24,16 @@
       v2: undefined,
       v3: undefined,
     }
+  }
+
+  function createSpecificLibData(name: string, version: string): LibData {
+    const library = createLibData();
+    library.name = name;
+    const [v1 = 0, v2 = 0, v3 = 0] = version.split('.').map(v => Number(v));
+    library.v1 = v1;
+    library.v2 = v2;
+    library.v3 = v3;
+    return library;
   }
 
   const libDataArray = ref<LibData[]>([createLibData()])
@@ -66,6 +77,41 @@
       }, 100);
     }
   }
+
+  const fileInputRef = useTemplateRef('file-input-ref');
+
+  const onChangeFileInputRef = async () => {
+    const files =fileInputRef.value?.files;
+    if (files == null) {
+      return
+    }
+
+    const newLibraryDataArray = [...libDataArray.value];
+    switch (libKindModel.value) {
+      case 'npm':
+        const libraries = await formatNpm(files)
+        newLibraryDataArray.push(...libraries.map(library => createSpecificLibData(library.name, library.version)))
+        break;
+    
+      default:
+        break;
+    }
+    const filteredLibDataArray: LibData[] = [];
+    for(const libData of newLibraryDataArray) {
+      const foundLibData = filteredLibDataArray.find((l) => {
+        return (l.name === libData.name) &&
+          (l.v1 === libData.v1) &&
+          (l.v2 === libData.v2) &&
+          (l.v3 === libData.v3)
+      });
+      if (foundLibData == undefined) {
+        if (libData.name != '') {
+          filteredLibDataArray.push(libData)
+        }
+      }
+    }
+    libDataArray.value = filteredLibDataArray;
+  }
 </script>
 
 <template>
@@ -73,31 +119,36 @@
   <form>
     <h2>ライブラリの申請</h2>
     <SelectLibKind v-model="libKindModel" />
-    <table>
-      <tbody>
-        <Field
-          v-for="libData in libDataArray"
-          :key="libData.id"
-          :length="libDataArray.length"
-          :lib-id="libData.id"
-          @delete="deleteLibData"
-          @set-lib-name="setLibName"
-          @set-lib-v1="setLibV1"
-          @set-lib-v2="setLibV2"
-          @set-lib-v3="setLibV3"
-        />
-      </tbody>
-    </table>
-    <p class="button-p">
-      <button type="button" @click="addLibData">
-        +
-      </button>
-    </p>
-    <p class="button-p">
-      <button type="button" class="main-button" @click="apply">
-        ライブラリを申請
-      </button>
-    </p>
+    <div v-if="libKindModel !== undefined">
+      <p style="text-align: center;">
+        <input ref="file-input-ref" type="file" @change="onChangeFileInputRef" />
+      </p>
+      <table>
+        <tbody>
+          <Field
+            v-for="libData in libDataArray"
+            :key="libData.id"
+            :length="libDataArray.length"
+            :library="libData"
+            @delete="deleteLibData"
+            @set-lib-name="setLibName"
+            @set-lib-v1="setLibV1"
+            @set-lib-v2="setLibV2"
+            @set-lib-v3="setLibV3"
+          />
+        </tbody>
+      </table>
+      <p class="button-p">
+        <button type="button" @click="addLibData">
+          +
+        </button>
+      </p>
+      <p class="button-p">
+        <button type="button" class="main-button" @click="apply">
+          ライブラリを申請
+        </button>
+      </p>
+    </div>
   </form>
   </Base>
 </template>
@@ -117,6 +168,7 @@
     padding-block: 1rem;
     padding-inline: 3rem;
     box-sizing: border-box;
+    position: relative;
   }
   select {
     border: 1px solid #b6bfd2;

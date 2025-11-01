@@ -1,9 +1,12 @@
 <script setup lang="ts">
   import { defineProps, defineEmits, ref } from 'vue';
 
-  const { inputType = 'number' } = defineProps<{ inputType?: 'text'|'number' }>()
+  const { inputType = 'number', defaultValue } = defineProps<
+    { inputType: 'text'|'number', defaultValue?: string } |
+    { inputType?: 'number', defaultValue?: number }
+  >()
 
-  const model = inputType ==='number' ? ref<number|undefined>(): ref('');
+  const model = inputType ==='number' ? ref<number|undefined>(defaultValue as number | undefined): ref(defaultValue as string);
   const emits = defineEmits<{
     'set': [value: string|number|undefined]
   }>();
