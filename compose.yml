@@ -4,7 +4,7 @@ services:
     restart: always
     volumes:
       - ./postgres/init:/docker-entrypoint-initdb.d
-      - postgresql_data:/var/lib/postgresql/data
+      - postgresql_data:/var/lib/postgresql
     env_file: .env
 
   ldap:
