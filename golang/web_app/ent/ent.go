@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
+	"web_app/ent/group"
 	"web_app/ent/requestedlibrary"
 	"web_app/ent/savedlibrary"
 
@@ -74,6 +75,7 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			group.Table:            group.ValidColumn,
 			requestedlibrary.Table: requestedlibrary.ValidColumn,
 			savedlibrary.Table:     savedlibrary.ValidColumn,
 		})

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"time"
+	"web_app/ent/group"
 	"web_app/ent/requestedlibrary"
 	"web_app/ent/savedlibrary"
 	"web_app/ent/schema"
@@ -13,6 +14,30 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	groupFields := schema.Group{}.Fields()
+	_ = groupFields
+	// groupDescName is the schema descriptor for name field.
+	groupDescName := groupFields[1].Descriptor()
+	// group.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	group.NameValidator = groupDescName.Validators[0].(func(string) error)
+	// groupDescRequestedBy is the schema descriptor for requestedBy field.
+	groupDescRequestedBy := groupFields[3].Descriptor()
+	// group.RequestedByValidator is a validator for the "requestedBy" field. It is called by the builders before save.
+	group.RequestedByValidator = groupDescRequestedBy.Validators[0].(func(string) error)
+	// groupDescCreatedAt is the schema descriptor for createdAt field.
+	groupDescCreatedAt := groupFields[4].Descriptor()
+	// group.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	group.DefaultCreatedAt = groupDescCreatedAt.Default.(func() time.Time)
+	// groupDescUpdatedAt is the schema descriptor for updatedAt field.
+	groupDescUpdatedAt := groupFields[5].Descriptor()
+	// group.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	group.DefaultUpdatedAt = groupDescUpdatedAt.Default.(func() time.Time)
+	// group.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
+	group.UpdateDefaultUpdatedAt = groupDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// groupDescID is the schema descriptor for id field.
+	groupDescID := groupFields[0].Descriptor()
+	// group.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	group.IDValidator = groupDescID.Validators[0].(func(string) error)
 	requestedlibraryFields := schema.RequestedLibrary{}.Fields()
 	_ = requestedlibraryFields
 	// requestedlibraryDescKind is the schema descriptor for kind field.

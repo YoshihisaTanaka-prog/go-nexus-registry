@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Group is the predicate function for group builders.
+type Group func(*sql.Selector)
+
 // RequestedLibrary is the predicate function for requestedlibrary builders.
 type RequestedLibrary func(*sql.Selector)
 
