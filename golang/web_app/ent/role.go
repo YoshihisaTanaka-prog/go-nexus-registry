@@ -6,21 +6,21 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"web_app/ent/group"
+	"web_app/ent/role"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 )
 
-// Group is the model entity for the Group schema.
-type Group struct {
+// Role is the model entity for the Role schema.
+type Role struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// IsForUser holds the value of the "isForUser" field.
-	IsForUser bool `json:"isForUser,omitempty"`
+	// Mode holds the value of the "mode" field.
+	Mode string `json:"mode,omitempty"`
 	// RequestedBy holds the value of the "requestedBy" field.
 	RequestedBy string `json:"requestedBy,omitempty"`
 	// CreatedAt holds the value of the "createdAt" field.
@@ -31,15 +31,13 @@ type Group struct {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Group) scanValues(columns []string) ([]any, error) {
+func (*Role) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case group.FieldIsForUser:
-			values[i] = new(sql.NullBool)
-		case group.FieldID, group.FieldName, group.FieldRequestedBy:
+		case role.FieldID, role.FieldName, role.FieldMode, role.FieldRequestedBy:
 			values[i] = new(sql.NullString)
-		case group.FieldCreatedAt, group.FieldUpdatedAt:
+		case role.FieldCreatedAt, role.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -49,44 +47,44 @@ func (*Group) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Group fields.
-func (_m *Group) assignValues(columns []string, values []any) error {
+// to the Role fields.
+func (_m *Role) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case group.FieldID:
+		case role.FieldID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				_m.ID = value.String
 			}
-		case group.FieldName:
+		case role.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				_m.Name = value.String
 			}
-		case group.FieldIsForUser:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field isForUser", values[i])
+		case role.FieldMode:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field mode", values[i])
 			} else if value.Valid {
-				_m.IsForUser = value.Bool
+				_m.Mode = value.String
 			}
-		case group.FieldRequestedBy:
+		case role.FieldRequestedBy:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field requestedBy", values[i])
 			} else if value.Valid {
 				_m.RequestedBy = value.String
 			}
-		case group.FieldCreatedAt:
+		case role.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field createdAt", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = value.Time
 			}
-		case group.FieldUpdatedAt:
+		case role.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updatedAt", values[i])
 			} else if value.Valid {
@@ -99,40 +97,40 @@ func (_m *Group) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Group.
+// Value returns the ent.Value that was dynamically selected and assigned to the Role.
 // This includes values selected through modifiers, order, etc.
-func (_m *Group) Value(name string) (ent.Value, error) {
+func (_m *Role) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// Update returns a builder for updating this Group.
-// Note that you need to call Group.Unwrap() before calling this method if this Group
+// Update returns a builder for updating this Role.
+// Note that you need to call Role.Unwrap() before calling this method if this Role
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Group) Update() *GroupUpdateOne {
-	return NewGroupClient(_m.config).UpdateOne(_m)
+func (_m *Role) Update() *RoleUpdateOne {
+	return NewRoleClient(_m.config).UpdateOne(_m)
 }
 
-// Unwrap unwraps the Group entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the Role entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Group) Unwrap() *Group {
+func (_m *Role) Unwrap() *Role {
 	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Group is not a transactional entity")
+		panic("ent: Role is not a transactional entity")
 	}
 	_m.config.driver = _tx.drv
 	return _m
 }
 
 // String implements the fmt.Stringer.
-func (_m *Group) String() string {
+func (_m *Role) String() string {
 	var builder strings.Builder
-	builder.WriteString("Group(")
+	builder.WriteString("Role(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
 	builder.WriteString(", ")
-	builder.WriteString("isForUser=")
-	builder.WriteString(fmt.Sprintf("%v", _m.IsForUser))
+	builder.WriteString("mode=")
+	builder.WriteString(_m.Mode)
 	builder.WriteString(", ")
 	builder.WriteString("requestedBy=")
 	builder.WriteString(_m.RequestedBy)
@@ -146,5 +144,5 @@ func (_m *Group) String() string {
 	return builder.String()
 }
 
-// Groups is a parsable slice of Group.
-type Groups []*Group
+// Roles is a parsable slice of Role.
+type Roles []*Role

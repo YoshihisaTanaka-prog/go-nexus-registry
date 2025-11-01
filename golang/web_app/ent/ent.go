@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"reflect"
 	"sync"
-	"web_app/ent/group"
 	"web_app/ent/requestedlibrary"
+	"web_app/ent/role"
 	"web_app/ent/savedlibrary"
 
 	"entgo.io/ent"
@@ -75,8 +75,8 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			group.Table:            group.ValidColumn,
 			requestedlibrary.Table: requestedlibrary.ValidColumn,
+			role.Table:             role.ValidColumn,
 			savedlibrary.Table:     savedlibrary.ValidColumn,
 		})
 	})

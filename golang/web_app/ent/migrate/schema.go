@@ -8,28 +8,6 @@ import (
 )
 
 var (
-	// GroupsColumns holds the columns for the "groups" table.
-	GroupsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, Unique: true},
-		{Name: "name", Type: field.TypeString},
-		{Name: "is_for_user", Type: field.TypeBool},
-		{Name: "requested_by", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-	}
-	// GroupsTable holds the schema information for the "groups" table.
-	GroupsTable = &schema.Table{
-		Name:       "groups",
-		Columns:    GroupsColumns,
-		PrimaryKey: []*schema.Column{GroupsColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "groups_name_is_for_user",
-				Unique:  true,
-				Columns: []*schema.Column{GroupsColumns[1], GroupsColumns[2]},
-			},
-		},
-	}
 	// RequestedLibrariesColumns holds the columns for the "requested_libraries" table.
 	RequestedLibrariesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
@@ -51,6 +29,28 @@ var (
 				Name:    "requested_libraries_kind_name_version_idx",
 				Unique:  true,
 				Columns: []*schema.Column{RequestedLibrariesColumns[1], RequestedLibrariesColumns[6], RequestedLibrariesColumns[2]},
+			},
+		},
+	}
+	// RolesColumns holds the columns for the "roles" table.
+	RolesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "mode", Type: field.TypeString},
+		{Name: "requested_by", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// RolesTable holds the schema information for the "roles" table.
+	RolesTable = &schema.Table{
+		Name:       "roles",
+		Columns:    RolesColumns,
+		PrimaryKey: []*schema.Column{RolesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "roles_name_mode",
+				Unique:  true,
+				Columns: []*schema.Column{RolesColumns[1], RolesColumns[2]},
 			},
 		},
 	}
@@ -84,8 +84,8 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		GroupsTable,
 		RequestedLibrariesTable,
+		RolesTable,
 		SavedLibrariesTable,
 	}
 )

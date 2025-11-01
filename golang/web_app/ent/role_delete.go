@@ -4,34 +4,34 @@ package ent
 
 import (
 	"context"
-	"web_app/ent/group"
 	"web_app/ent/predicate"
+	"web_app/ent/role"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
 
-// GroupDelete is the builder for deleting a Group entity.
-type GroupDelete struct {
+// RoleDelete is the builder for deleting a Role entity.
+type RoleDelete struct {
 	config
 	hooks    []Hook
-	mutation *GroupMutation
+	mutation *RoleMutation
 }
 
-// Where appends a list predicates to the GroupDelete builder.
-func (_d *GroupDelete) Where(ps ...predicate.Group) *GroupDelete {
+// Where appends a list predicates to the RoleDelete builder.
+func (_d *RoleDelete) Where(ps ...predicate.Role) *RoleDelete {
 	_d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *GroupDelete) Exec(ctx context.Context) (int, error) {
+func (_d *RoleDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *GroupDelete) ExecX(ctx context.Context) int {
+func (_d *RoleDelete) ExecX(ctx context.Context) int {
 	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -39,8 +39,8 @@ func (_d *GroupDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (_d *GroupDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(group.Table, sqlgraph.NewFieldSpec(group.FieldID, field.TypeString))
+func (_d *RoleDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(role.Table, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -56,32 +56,32 @@ func (_d *GroupDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// GroupDeleteOne is the builder for deleting a single Group entity.
-type GroupDeleteOne struct {
-	_d *GroupDelete
+// RoleDeleteOne is the builder for deleting a single Role entity.
+type RoleDeleteOne struct {
+	_d *RoleDelete
 }
 
-// Where appends a list predicates to the GroupDelete builder.
-func (_d *GroupDeleteOne) Where(ps ...predicate.Group) *GroupDeleteOne {
+// Where appends a list predicates to the RoleDelete builder.
+func (_d *RoleDeleteOne) Where(ps ...predicate.Role) *RoleDeleteOne {
 	_d._d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query.
-func (_d *GroupDeleteOne) Exec(ctx context.Context) error {
+func (_d *RoleDeleteOne) Exec(ctx context.Context) error {
 	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{group.Label}
+		return &NotFoundError{role.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *GroupDeleteOne) ExecX(ctx context.Context) {
+func (_d *RoleDeleteOne) ExecX(ctx context.Context) {
 	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}

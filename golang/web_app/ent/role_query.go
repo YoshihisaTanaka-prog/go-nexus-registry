@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"web_app/ent/group"
 	"web_app/ent/predicate"
+	"web_app/ent/role"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -15,64 +15,64 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// GroupQuery is the builder for querying Group entities.
-type GroupQuery struct {
+// RoleQuery is the builder for querying Role entities.
+type RoleQuery struct {
 	config
 	ctx        *QueryContext
-	order      []group.OrderOption
+	order      []role.OrderOption
 	inters     []Interceptor
-	predicates []predicate.Group
+	predicates []predicate.Role
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the GroupQuery builder.
-func (_q *GroupQuery) Where(ps ...predicate.Group) *GroupQuery {
+// Where adds a new predicate for the RoleQuery builder.
+func (_q *RoleQuery) Where(ps ...predicate.Role) *RoleQuery {
 	_q.predicates = append(_q.predicates, ps...)
 	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *GroupQuery) Limit(limit int) *GroupQuery {
+func (_q *RoleQuery) Limit(limit int) *RoleQuery {
 	_q.ctx.Limit = &limit
 	return _q
 }
 
 // Offset to start from.
-func (_q *GroupQuery) Offset(offset int) *GroupQuery {
+func (_q *RoleQuery) Offset(offset int) *RoleQuery {
 	_q.ctx.Offset = &offset
 	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *GroupQuery) Unique(unique bool) *GroupQuery {
+func (_q *RoleQuery) Unique(unique bool) *RoleQuery {
 	_q.ctx.Unique = &unique
 	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (_q *GroupQuery) Order(o ...group.OrderOption) *GroupQuery {
+func (_q *RoleQuery) Order(o ...role.OrderOption) *RoleQuery {
 	_q.order = append(_q.order, o...)
 	return _q
 }
 
-// First returns the first Group entity from the query.
-// Returns a *NotFoundError when no Group was found.
-func (_q *GroupQuery) First(ctx context.Context) (*Group, error) {
+// First returns the first Role entity from the query.
+// Returns a *NotFoundError when no Role was found.
+func (_q *RoleQuery) First(ctx context.Context) (*Role, error) {
 	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{group.Label}
+		return nil, &NotFoundError{role.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *GroupQuery) FirstX(ctx context.Context) *Group {
+func (_q *RoleQuery) FirstX(ctx context.Context) *Role {
 	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -80,22 +80,22 @@ func (_q *GroupQuery) FirstX(ctx context.Context) *Group {
 	return node
 }
 
-// FirstID returns the first Group ID from the query.
-// Returns a *NotFoundError when no Group ID was found.
-func (_q *GroupQuery) FirstID(ctx context.Context) (id string, err error) {
+// FirstID returns the first Role ID from the query.
+// Returns a *NotFoundError when no Role ID was found.
+func (_q *RoleQuery) FirstID(ctx context.Context) (id string, err error) {
 	var ids []string
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{group.Label}
+		err = &NotFoundError{role.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *GroupQuery) FirstIDX(ctx context.Context) string {
+func (_q *RoleQuery) FirstIDX(ctx context.Context) string {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -103,10 +103,10 @@ func (_q *GroupQuery) FirstIDX(ctx context.Context) string {
 	return id
 }
 
-// Only returns a single Group entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one Group entity is found.
-// Returns a *NotFoundError when no Group entities are found.
-func (_q *GroupQuery) Only(ctx context.Context) (*Group, error) {
+// Only returns a single Role entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one Role entity is found.
+// Returns a *NotFoundError when no Role entities are found.
+func (_q *RoleQuery) Only(ctx context.Context) (*Role, error) {
 	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -115,14 +115,14 @@ func (_q *GroupQuery) Only(ctx context.Context) (*Group, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{group.Label}
+		return nil, &NotFoundError{role.Label}
 	default:
-		return nil, &NotSingularError{group.Label}
+		return nil, &NotSingularError{role.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *GroupQuery) OnlyX(ctx context.Context) *Group {
+func (_q *RoleQuery) OnlyX(ctx context.Context) *Role {
 	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -130,10 +130,10 @@ func (_q *GroupQuery) OnlyX(ctx context.Context) *Group {
 	return node
 }
 
-// OnlyID is like Only, but returns the only Group ID in the query.
-// Returns a *NotSingularError when more than one Group ID is found.
+// OnlyID is like Only, but returns the only Role ID in the query.
+// Returns a *NotSingularError when more than one Role ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *GroupQuery) OnlyID(ctx context.Context) (id string, err error) {
+func (_q *RoleQuery) OnlyID(ctx context.Context) (id string, err error) {
 	var ids []string
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -142,15 +142,15 @@ func (_q *GroupQuery) OnlyID(ctx context.Context) (id string, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{group.Label}
+		err = &NotFoundError{role.Label}
 	default:
-		err = &NotSingularError{group.Label}
+		err = &NotSingularError{role.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *GroupQuery) OnlyIDX(ctx context.Context) string {
+func (_q *RoleQuery) OnlyIDX(ctx context.Context) string {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -158,18 +158,18 @@ func (_q *GroupQuery) OnlyIDX(ctx context.Context) string {
 	return id
 }
 
-// All executes the query and returns a list of Groups.
-func (_q *GroupQuery) All(ctx context.Context) ([]*Group, error) {
+// All executes the query and returns a list of Roles.
+func (_q *RoleQuery) All(ctx context.Context) ([]*Role, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*Group, *GroupQuery]()
-	return withInterceptors[[]*Group](ctx, _q, qr, _q.inters)
+	qr := querierAll[[]*Role, *RoleQuery]()
+	return withInterceptors[[]*Role](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *GroupQuery) AllX(ctx context.Context) []*Group {
+func (_q *RoleQuery) AllX(ctx context.Context) []*Role {
 	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
@@ -177,20 +177,20 @@ func (_q *GroupQuery) AllX(ctx context.Context) []*Group {
 	return nodes
 }
 
-// IDs executes the query and returns a list of Group IDs.
-func (_q *GroupQuery) IDs(ctx context.Context) (ids []string, err error) {
+// IDs executes the query and returns a list of Role IDs.
+func (_q *RoleQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(group.FieldID).Scan(ctx, &ids); err != nil {
+	if err = _q.Select(role.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *GroupQuery) IDsX(ctx context.Context) []string {
+func (_q *RoleQuery) IDsX(ctx context.Context) []string {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -199,16 +199,16 @@ func (_q *GroupQuery) IDsX(ctx context.Context) []string {
 }
 
 // Count returns the count of the given query.
-func (_q *GroupQuery) Count(ctx context.Context) (int, error) {
+func (_q *RoleQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*GroupQuery](), _q.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*RoleQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *GroupQuery) CountX(ctx context.Context) int {
+func (_q *RoleQuery) CountX(ctx context.Context) int {
 	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -217,7 +217,7 @@ func (_q *GroupQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *GroupQuery) Exist(ctx context.Context) (bool, error) {
+func (_q *RoleQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
 	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
@@ -230,7 +230,7 @@ func (_q *GroupQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *GroupQuery) ExistX(ctx context.Context) bool {
+func (_q *RoleQuery) ExistX(ctx context.Context) bool {
 	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -238,18 +238,18 @@ func (_q *GroupQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the GroupQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the RoleQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *GroupQuery) Clone() *GroupQuery {
+func (_q *RoleQuery) Clone() *RoleQuery {
 	if _q == nil {
 		return nil
 	}
-	return &GroupQuery{
+	return &RoleQuery{
 		config:     _q.config,
 		ctx:        _q.ctx.Clone(),
-		order:      append([]group.OrderOption{}, _q.order...),
+		order:      append([]role.OrderOption{}, _q.order...),
 		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.Group{}, _q.predicates...),
+		predicates: append([]predicate.Role{}, _q.predicates...),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -266,15 +266,15 @@ func (_q *GroupQuery) Clone() *GroupQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.Group.Query().
-//		GroupBy(group.FieldName).
+//	client.Role.Query().
+//		GroupBy(role.FieldName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *GroupQuery) GroupBy(field string, fields ...string) *GroupGroupBy {
+func (_q *RoleQuery) GroupBy(field string, fields ...string) *RoleGroupBy {
 	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &GroupGroupBy{build: _q}
+	grbuild := &RoleGroupBy{build: _q}
 	grbuild.flds = &_q.ctx.Fields
-	grbuild.label = group.Label
+	grbuild.label = role.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -288,23 +288,23 @@ func (_q *GroupQuery) GroupBy(field string, fields ...string) *GroupGroupBy {
 //		Name string `json:"name,omitempty"`
 //	}
 //
-//	client.Group.Query().
-//		Select(group.FieldName).
+//	client.Role.Query().
+//		Select(role.FieldName).
 //		Scan(ctx, &v)
-func (_q *GroupQuery) Select(fields ...string) *GroupSelect {
+func (_q *RoleQuery) Select(fields ...string) *RoleSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &GroupSelect{GroupQuery: _q}
-	sbuild.label = group.Label
+	sbuild := &RoleSelect{RoleQuery: _q}
+	sbuild.label = role.Label
 	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a GroupSelect configured with the given aggregations.
-func (_q *GroupQuery) Aggregate(fns ...AggregateFunc) *GroupSelect {
+// Aggregate returns a RoleSelect configured with the given aggregations.
+func (_q *RoleQuery) Aggregate(fns ...AggregateFunc) *RoleSelect {
 	return _q.Select().Aggregate(fns...)
 }
 
-func (_q *GroupQuery) prepareQuery(ctx context.Context) error {
+func (_q *RoleQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -316,7 +316,7 @@ func (_q *GroupQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range _q.ctx.Fields {
-		if !group.ValidColumn(f) {
+		if !role.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -330,16 +330,16 @@ func (_q *GroupQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (_q *GroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Group, error) {
+func (_q *RoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Role, error) {
 	var (
-		nodes = []*Group{}
+		nodes = []*Role{}
 		_spec = _q.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*Group).scanValues(nil, columns)
+		return (*Role).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Group{config: _q.config}
+		node := &Role{config: _q.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
@@ -355,7 +355,7 @@ func (_q *GroupQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Group,
 	return nodes, nil
 }
 
-func (_q *GroupQuery) sqlCount(ctx context.Context) (int, error) {
+func (_q *RoleQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
 	_spec.Node.Columns = _q.ctx.Fields
 	if len(_q.ctx.Fields) > 0 {
@@ -364,8 +364,8 @@ func (_q *GroupQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (_q *GroupQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(group.Table, group.Columns, sqlgraph.NewFieldSpec(group.FieldID, field.TypeString))
+func (_q *RoleQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(role.Table, role.Columns, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -374,9 +374,9 @@ func (_q *GroupQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, group.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, role.FieldID)
 		for i := range fields {
-			if fields[i] != group.FieldID {
+			if fields[i] != role.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -404,12 +404,12 @@ func (_q *GroupQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *GroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (_q *RoleQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(_q.driver.Dialect())
-	t1 := builder.Table(group.Table)
+	t1 := builder.Table(role.Table)
 	columns := _q.ctx.Fields
 	if len(columns) == 0 {
-		columns = group.Columns
+		columns = role.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if _q.sql != nil {
@@ -436,28 +436,28 @@ func (_q *GroupQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// GroupGroupBy is the group-by builder for Group entities.
-type GroupGroupBy struct {
+// RoleGroupBy is the group-by builder for Role entities.
+type RoleGroupBy struct {
 	selector
-	build *GroupQuery
+	build *RoleQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *GroupGroupBy) Aggregate(fns ...AggregateFunc) *GroupGroupBy {
+func (_g *RoleGroupBy) Aggregate(fns ...AggregateFunc) *RoleGroupBy {
 	_g.fns = append(_g.fns, fns...)
 	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *GroupGroupBy) Scan(ctx context.Context, v any) error {
+func (_g *RoleGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
 	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*GroupQuery, *GroupGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*RoleQuery, *RoleGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (_g *GroupGroupBy) sqlScan(ctx context.Context, root *GroupQuery, v any) error {
+func (_g *RoleGroupBy) sqlScan(ctx context.Context, root *RoleQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(_g.fns))
 	for _, fn := range _g.fns {
@@ -484,28 +484,28 @@ func (_g *GroupGroupBy) sqlScan(ctx context.Context, root *GroupQuery, v any) er
 	return sql.ScanSlice(rows, v)
 }
 
-// GroupSelect is the builder for selecting fields of Group entities.
-type GroupSelect struct {
-	*GroupQuery
+// RoleSelect is the builder for selecting fields of Role entities.
+type RoleSelect struct {
+	*RoleQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *GroupSelect) Aggregate(fns ...AggregateFunc) *GroupSelect {
+func (_s *RoleSelect) Aggregate(fns ...AggregateFunc) *RoleSelect {
 	_s.fns = append(_s.fns, fns...)
 	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *GroupSelect) Scan(ctx context.Context, v any) error {
+func (_s *RoleSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
 	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*GroupQuery, *GroupSelect](ctx, _s.GroupQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*RoleQuery, *RoleSelect](ctx, _s.RoleQuery, _s, _s.inters, v)
 }
 
-func (_s *GroupSelect) sqlScan(ctx context.Context, root *GroupQuery, v any) error {
+func (_s *RoleSelect) sqlScan(ctx context.Context, root *RoleQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(_s.fns))
 	for _, fn := range _s.fns {

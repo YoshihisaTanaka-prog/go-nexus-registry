@@ -7,45 +7,45 @@ import (
 	"errors"
 	"fmt"
 	"time"
-	"web_app/ent/group"
+	"web_app/ent/role"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
 
-// GroupCreate is the builder for creating a Group entity.
-type GroupCreate struct {
+// RoleCreate is the builder for creating a Role entity.
+type RoleCreate struct {
 	config
-	mutation *GroupMutation
+	mutation *RoleMutation
 	hooks    []Hook
 }
 
 // SetName sets the "name" field.
-func (_c *GroupCreate) SetName(v string) *GroupCreate {
+func (_c *RoleCreate) SetName(v string) *RoleCreate {
 	_c.mutation.SetName(v)
 	return _c
 }
 
-// SetIsForUser sets the "isForUser" field.
-func (_c *GroupCreate) SetIsForUser(v bool) *GroupCreate {
-	_c.mutation.SetIsForUser(v)
+// SetMode sets the "mode" field.
+func (_c *RoleCreate) SetMode(v string) *RoleCreate {
+	_c.mutation.SetMode(v)
 	return _c
 }
 
 // SetRequestedBy sets the "requestedBy" field.
-func (_c *GroupCreate) SetRequestedBy(v string) *GroupCreate {
+func (_c *RoleCreate) SetRequestedBy(v string) *RoleCreate {
 	_c.mutation.SetRequestedBy(v)
 	return _c
 }
 
 // SetCreatedAt sets the "createdAt" field.
-func (_c *GroupCreate) SetCreatedAt(v time.Time) *GroupCreate {
+func (_c *RoleCreate) SetCreatedAt(v time.Time) *RoleCreate {
 	_c.mutation.SetCreatedAt(v)
 	return _c
 }
 
 // SetNillableCreatedAt sets the "createdAt" field if the given value is not nil.
-func (_c *GroupCreate) SetNillableCreatedAt(v *time.Time) *GroupCreate {
+func (_c *RoleCreate) SetNillableCreatedAt(v *time.Time) *RoleCreate {
 	if v != nil {
 		_c.SetCreatedAt(*v)
 	}
@@ -53,13 +53,13 @@ func (_c *GroupCreate) SetNillableCreatedAt(v *time.Time) *GroupCreate {
 }
 
 // SetUpdatedAt sets the "updatedAt" field.
-func (_c *GroupCreate) SetUpdatedAt(v time.Time) *GroupCreate {
+func (_c *RoleCreate) SetUpdatedAt(v time.Time) *RoleCreate {
 	_c.mutation.SetUpdatedAt(v)
 	return _c
 }
 
 // SetNillableUpdatedAt sets the "updatedAt" field if the given value is not nil.
-func (_c *GroupCreate) SetNillableUpdatedAt(v *time.Time) *GroupCreate {
+func (_c *RoleCreate) SetNillableUpdatedAt(v *time.Time) *RoleCreate {
 	if v != nil {
 		_c.SetUpdatedAt(*v)
 	}
@@ -67,24 +67,24 @@ func (_c *GroupCreate) SetNillableUpdatedAt(v *time.Time) *GroupCreate {
 }
 
 // SetID sets the "id" field.
-func (_c *GroupCreate) SetID(v string) *GroupCreate {
+func (_c *RoleCreate) SetID(v string) *RoleCreate {
 	_c.mutation.SetID(v)
 	return _c
 }
 
-// Mutation returns the GroupMutation object of the builder.
-func (_c *GroupCreate) Mutation() *GroupMutation {
+// Mutation returns the RoleMutation object of the builder.
+func (_c *RoleCreate) Mutation() *RoleMutation {
 	return _c.mutation
 }
 
-// Save creates the Group in the database.
-func (_c *GroupCreate) Save(ctx context.Context) (*Group, error) {
+// Save creates the Role in the database.
+func (_c *RoleCreate) Save(ctx context.Context) (*Role, error) {
 	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *GroupCreate) SaveX(ctx context.Context) *Group {
+func (_c *RoleCreate) SaveX(ctx context.Context) *Role {
 	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -93,66 +93,71 @@ func (_c *GroupCreate) SaveX(ctx context.Context) *Group {
 }
 
 // Exec executes the query.
-func (_c *GroupCreate) Exec(ctx context.Context) error {
+func (_c *RoleCreate) Exec(ctx context.Context) error {
 	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *GroupCreate) ExecX(ctx context.Context) {
+func (_c *RoleCreate) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *GroupCreate) defaults() {
+func (_c *RoleCreate) defaults() {
 	if _, ok := _c.mutation.CreatedAt(); !ok {
-		v := group.DefaultCreatedAt()
+		v := role.DefaultCreatedAt()
 		_c.mutation.SetCreatedAt(v)
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		v := group.DefaultUpdatedAt()
+		v := role.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *GroupCreate) check() error {
+func (_c *RoleCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Group.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Role.name"`)}
 	}
 	if v, ok := _c.mutation.Name(); ok {
-		if err := group.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Group.name": %w`, err)}
+		if err := role.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Role.name": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.IsForUser(); !ok {
-		return &ValidationError{Name: "isForUser", err: errors.New(`ent: missing required field "Group.isForUser"`)}
+	if _, ok := _c.mutation.Mode(); !ok {
+		return &ValidationError{Name: "mode", err: errors.New(`ent: missing required field "Role.mode"`)}
+	}
+	if v, ok := _c.mutation.Mode(); ok {
+		if err := role.ModeValidator(v); err != nil {
+			return &ValidationError{Name: "mode", err: fmt.Errorf(`ent: validator failed for field "Role.mode": %w`, err)}
+		}
 	}
 	if _, ok := _c.mutation.RequestedBy(); !ok {
-		return &ValidationError{Name: "requestedBy", err: errors.New(`ent: missing required field "Group.requestedBy"`)}
+		return &ValidationError{Name: "requestedBy", err: errors.New(`ent: missing required field "Role.requestedBy"`)}
 	}
 	if v, ok := _c.mutation.RequestedBy(); ok {
-		if err := group.RequestedByValidator(v); err != nil {
-			return &ValidationError{Name: "requestedBy", err: fmt.Errorf(`ent: validator failed for field "Group.requestedBy": %w`, err)}
+		if err := role.RequestedByValidator(v); err != nil {
+			return &ValidationError{Name: "requestedBy", err: fmt.Errorf(`ent: validator failed for field "Role.requestedBy": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "Group.createdAt"`)}
+		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "Role.createdAt"`)}
 	}
 	if _, ok := _c.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updatedAt", err: errors.New(`ent: missing required field "Group.updatedAt"`)}
+		return &ValidationError{Name: "updatedAt", err: errors.New(`ent: missing required field "Role.updatedAt"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
-		if err := group.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Group.id": %w`, err)}
+		if err := role.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Role.id": %w`, err)}
 		}
 	}
 	return nil
 }
 
-func (_c *GroupCreate) sqlSave(ctx context.Context) (*Group, error) {
+func (_c *RoleCreate) sqlSave(ctx context.Context) (*Role, error) {
 	if err := _c.check(); err != nil {
 		return nil, err
 	}
@@ -167,7 +172,7 @@ func (_c *GroupCreate) sqlSave(ctx context.Context) (*Group, error) {
 		if id, ok := _spec.ID.Value.(string); ok {
 			_node.ID = id
 		} else {
-			return nil, fmt.Errorf("unexpected Group.ID type: %T", _spec.ID.Value)
+			return nil, fmt.Errorf("unexpected Role.ID type: %T", _spec.ID.Value)
 		}
 	}
 	_c.mutation.id = &_node.ID
@@ -175,59 +180,59 @@ func (_c *GroupCreate) sqlSave(ctx context.Context) (*Group, error) {
 	return _node, nil
 }
 
-func (_c *GroupCreate) createSpec() (*Group, *sqlgraph.CreateSpec) {
+func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Group{config: _c.config}
-		_spec = sqlgraph.NewCreateSpec(group.Table, sqlgraph.NewFieldSpec(group.FieldID, field.TypeString))
+		_node = &Role{config: _c.config}
+		_spec = sqlgraph.NewCreateSpec(role.Table, sqlgraph.NewFieldSpec(role.FieldID, field.TypeString))
 	)
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
 	if value, ok := _c.mutation.Name(); ok {
-		_spec.SetField(group.FieldName, field.TypeString, value)
+		_spec.SetField(role.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := _c.mutation.IsForUser(); ok {
-		_spec.SetField(group.FieldIsForUser, field.TypeBool, value)
-		_node.IsForUser = value
+	if value, ok := _c.mutation.Mode(); ok {
+		_spec.SetField(role.FieldMode, field.TypeString, value)
+		_node.Mode = value
 	}
 	if value, ok := _c.mutation.RequestedBy(); ok {
-		_spec.SetField(group.FieldRequestedBy, field.TypeString, value)
+		_spec.SetField(role.FieldRequestedBy, field.TypeString, value)
 		_node.RequestedBy = value
 	}
 	if value, ok := _c.mutation.CreatedAt(); ok {
-		_spec.SetField(group.FieldCreatedAt, field.TypeTime, value)
+		_spec.SetField(role.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
 	if value, ok := _c.mutation.UpdatedAt(); ok {
-		_spec.SetField(group.FieldUpdatedAt, field.TypeTime, value)
+		_spec.SetField(role.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
 	return _node, _spec
 }
 
-// GroupCreateBulk is the builder for creating many Group entities in bulk.
-type GroupCreateBulk struct {
+// RoleCreateBulk is the builder for creating many Role entities in bulk.
+type RoleCreateBulk struct {
 	config
 	err      error
-	builders []*GroupCreate
+	builders []*RoleCreate
 }
 
-// Save creates the Group entities in the database.
-func (_c *GroupCreateBulk) Save(ctx context.Context) ([]*Group, error) {
+// Save creates the Role entities in the database.
+func (_c *RoleCreateBulk) Save(ctx context.Context) ([]*Role, error) {
 	if _c.err != nil {
 		return nil, _c.err
 	}
 	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*Group, len(_c.builders))
+	nodes := make([]*Role, len(_c.builders))
 	mutators := make([]Mutator, len(_c.builders))
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*GroupMutation)
+				mutation, ok := m.(*RoleMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -270,7 +275,7 @@ func (_c *GroupCreateBulk) Save(ctx context.Context) ([]*Group, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *GroupCreateBulk) SaveX(ctx context.Context) []*Group {
+func (_c *RoleCreateBulk) SaveX(ctx context.Context) []*Role {
 	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -279,13 +284,13 @@ func (_c *GroupCreateBulk) SaveX(ctx context.Context) []*Group {
 }
 
 // Exec executes the query.
-func (_c *GroupCreateBulk) Exec(ctx context.Context) error {
+func (_c *RoleCreateBulk) Exec(ctx context.Context) error {
 	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *GroupCreateBulk) ExecX(ctx context.Context) {
+func (_c *RoleCreateBulk) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
