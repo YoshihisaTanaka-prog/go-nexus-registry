@@ -24,11 +24,10 @@ type savedLibraryNameSpace struct {
 
 var savedLibraryNS = savedLibraryNameSpace{}
 
-func findByIdWithTx(id string, tx *ent.Tx) (foundLib *ent.SavedLibrary, ok bool) {
-	libraries, err := tx.SavedLibrary.Query().Where(savedlibrary.ID(id)).All(*ctx)
+func findByIdFromRam(id string) (foundLib *ent.SavedLibrary, ok bool) {
+	libraries, err := ramClient.SavedLibrary.Query().Where(savedlibrary.ID(id)).All(*ctx)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Cache Data Error:", err)
-		tx.Rollback()
 		return nil, false
 	}
 
@@ -39,21 +38,16 @@ func findByIdWithTx(id string, tx *ent.Tx) (foundLib *ent.SavedLibrary, ok bool)
 }
 
 func syncSavedLibraryCache(library *ent.SavedLibrary) (ok bool) {
-	
-	tx, err := ramClient.Tx(*ctx)
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Creating Transaction for Cache Data Error:", err)
-		return false
-	}
-
-	foundLib, ok := findByIdWithTx(library.ID, tx)
+	ramMutex.Lock()
+	defer ramMutex.Unlock()
+	foundLib, ok := findByIdFromRam(library.ID)
 
 	if !ok {
 		return false
 	}
 
 	if foundLib == nil {
-		_, err := tx.SavedLibrary.Create().SetID(library.ID).
+		_, err := ramClient.SavedLibrary.Create().SetID(library.ID).
 			SetFullName(library.FullName).
 			SetSimpleName(library.SimpleName).
 			SetKind(library.Kind).
@@ -64,36 +58,25 @@ func syncSavedLibraryCache(library *ent.SavedLibrary) (ok bool) {
 			Save(*ctx)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "Creating Cache Data Error:", err)
-			tx.Rollback()
 			return false
 		}
 		go func() {
 			time.Sleep(time.Second * 70)
-			tx, err := ramClient.Tx(*ctx)
-			if err != nil {
-				fmt.Fprintln(os.Stderr, "Creating Transaction to Delete Cache Data Error:", err)
-				return
-			}
-			foundLib, _ := findByIdWithTx(library.ID, tx)
+			ramMutex.Lock()
+			defer ramMutex.Unlock()
+			foundLib, _ := findByIdFromRam(library.ID)
 			if foundLib != nil {
 				if foundLib.UpdatedAt.Add(time.Minute).Before(time.Now()) {
-					err := tx.SavedLibrary.DeleteOneID(library.ID).Exec(*ctx)
+					err := ramClient.SavedLibrary.DeleteOneID(library.ID).Exec(*ctx)
 					if err != nil {
 						fmt.Fprintln(os.Stderr, "Deleting Cache Data Error:", err)
-						tx.Rollback()
 					}
 				}
-			}
-			err = tx.Commit()
-			if err == nil {
-				fmt.Fprintln(os.Stdout, "Deleted Cache Data id:", library.ID)
-			} else {
-				fmt.Fprintln(os.Stderr, "Deleting Cache Data Error:", err)
 			}
 		}()
 	}
 	
-	_, err = tx.SavedLibrary.UpdateOneID(library.ID).
+	_, err := ramClient.SavedLibrary.UpdateOneID(library.ID).
 		SetStatus(library.Status).
 		SetV1(library.V1).
 		SetV2(library.V2).
@@ -102,13 +85,6 @@ func syncSavedLibraryCache(library *ent.SavedLibrary) (ok bool) {
 		SetUpdatedAt(library.UpdatedAt).
 		Save(*ctx)
 
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Synchronizing Cache Data Error:", err)
-		tx.Rollback()
-		return false
-	}
-
-	err = tx.Commit()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Synchronizing Cache Data Error:", err)
 		return false
@@ -137,7 +113,9 @@ func findSavedLibraryByKindAndNameAndVersionUnit(client *ent.Client, kind string
 }
 
 func findSavedLibraryByKindAndNameAndVersion(kind string, name string, version string) (*ent.SavedLibrary, error) {
+	ramMutex.Lock()
 	library, _ := findSavedLibraryByKindAndNameAndVersionUnit(ramClient, kind, name, version)
+	ramMutex.Unlock()
 	if library != nil {
 		return library, nil
 	}
@@ -150,6 +128,8 @@ func findSavedLibraryByKindAndNameAndVersion(kind string, name string, version s
 }
 
 func (savedLibraryNameSpace)FindOrCreate(kind string, name string, version string) (library *ent.SavedLibrary, doSkip bool, err error) {
+	psqlMutex.Lock()
+	defer psqlMutex.Unlock()
 	library, _ = findSavedLibraryByKindAndNameAndVersion(kind, name, version)
 	if library != nil {
 		doNextStatuses := []string{
@@ -321,7 +301,9 @@ func findSavedLibraryByIdUnit(client *ent.Client, id string) (*ent.SavedLibrary,
 }
 
 func findSavedLibraryById(id string) (*ent.SavedLibrary, error) {
+	ramMutex.Lock()
 	library, _ := findSavedLibraryByIdUnit(ramClient, id)
+	ramMutex.Unlock()
 	if library != nil {
 		return library, nil
 	}
