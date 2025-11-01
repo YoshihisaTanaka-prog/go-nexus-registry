@@ -37,20 +37,3 @@ objectClass: organizationalRole
 cn: ${LDAP_BIND_CN_NEXUS}
 description: Bind account for Nexus LDAP authentication
 userPassword: ${LDAP_BIND_PASS_NEXUS}
-
-#######################################################################
-# Bind Groups
-#######################################################################
-dn: cn=viewers,ou=groups,${LDAP_ROOT}
-changetype: add
-objectclass: groupOfNames
-cn: viewers
-description: Groups for Nexus Viewers
-member:
-
-dn: cn=editors,ou=groups,${LDAP_ROOT}
-changetype: add
-objectclass: groupOfNames
-cn: editors
-description: Groups for Nexus Editors
-member:
