@@ -12,11 +12,14 @@ import (
 var cookieSessionKey = "_session"
 
 var publicPaths = []string{
+	"/assets/_base.js",
 	"/assets/api.js",
 	"/assets/api.css",
 	"/assets/BaseBase.js",
 	"/assets/BaseBase.css",
 	"/assets/sign.js",
+	"/favicon.ico",
+	"/icon.png",
 	"/.well-known",
 }
 
@@ -28,7 +31,6 @@ var guestOnlyPaths = []string{
 	"/assets/sign-in.js",
 	"/assets/sign-up.js",
 	"/assets/sign.css",
-	"/favicon.ico",
 	"/sign-in",
 	"/sign-up",
 }

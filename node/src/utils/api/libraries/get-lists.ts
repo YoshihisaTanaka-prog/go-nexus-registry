@@ -7,11 +7,11 @@ const DEFAULT_LIMIT_NUM = 50;
 function sortByName(a: Library, b: Library) {
    if (a.fullName > b.fullName) {
     return 1;
-   } else if (a.fullName < b.fullName) {
-    return -1;
-   } else {
-    return 0;
    }
+   if (a.fullName < b.fullName) {
+    return -1;
+   }
+  return 0;
 }
 
 function sortByV1(a: Library, b: Library) {

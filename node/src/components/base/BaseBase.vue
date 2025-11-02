@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import { defineProps } from 'vue';
   import Toast from '@/components/Toast.vue';
+  import IconImage from "/icon.png";
   import type { SelectionObj } from './types';
   const { path, selections, urlSuffix = '' } = defineProps<{path?: string, selections: SelectionObj, urlSuffix?: string}>();
 
@@ -17,7 +18,17 @@
 
 <template>
   <div id="header">
-    Header
+    <div class="header-main-div">
+      <img :src="IconImage" />
+      <div class="header-sub-div">
+        <div style="font-weight: bolder;">
+          Golang+Vue <span style="color: #158654;">NePlus Manager</span>
+        </div>
+        <div style="font-size: 0.5em;">
+          <span style="font-weight: bolder; color: #f00">Unofficial</span> <span style="color: #aaa;">Nexus Manager</span>
+        </div>
+      </div>
+    </div>
   </div>
   <div id="main">
     <div class="menu">
@@ -38,17 +49,27 @@
     </div>
   </div>
   <div id="footer">
-    &copy; Yoshihisa Tanaka 2025
+    <div>
+      NePlusはSonatype社とは一切関係のない非公式ツールです。SonatypeおよびNexusはSonatype, Inc.の商標です。
+    </div>
+    <div style="margin-right: 1em;">
+      &copy; Yoshihisa Tanaka 2025
+    </div>
   </div>
 </template>
 
 <style scoped>
-  #header {
-    border-bottom: 1px solid #b6bfd2;
+  .header-main-div {
+    display: flex;
   }
-
-  #footer {
-    border-top: 1px solid #b6bfd2;
+  .header-sub-div {
+    display: inline-block;
+    height: 100%;
+  }
+   img {
+    width: 2.5rem;
+    margin-left: 1rem;
+    margin-right: 0.5rem;
   }
 
   .menu {
@@ -62,6 +83,7 @@
     flex: 1;
     padding: 1.5rem;
     position: relative;
+    overflow-y: scroll;
   }
 
   .selected-menu-button {

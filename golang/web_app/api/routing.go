@@ -14,6 +14,7 @@ var pagePaths = []string{
 	"sign-in",
 	"apply",
 	"manage",
+	"role",
 }
 
 func Start() {
@@ -35,6 +36,9 @@ func Start() {
 		api.POST("/apply", handler.Apply)
 		api.GET("/get-libraries", handler.GetLibraries)
 		api.POST("/update-is-published", handler.UpdateIsPublished)
+		api.GET("/get-roles", handler.GetRoles)
+		api.POST("/create-role", handler.CreateRole)
+		api.PUT("/update-role", handler.UpdateRole)
 	}
 
 	// r.GET("/sse", handler.SSE)
@@ -47,6 +51,10 @@ func Start() {
 		})
 	}
 
+	// /icon.png -> icon.png を返す
+	r.GET("/icon.png", func(c *gin.Context) {
+		c.File("/app/public/icon.png")
+	})
 	// /favicon.ico -> favicon.ico を返す
 	r.GET("/favicon.ico", func(c *gin.Context) {
 		c.File("/app/public/favicon.ico")
