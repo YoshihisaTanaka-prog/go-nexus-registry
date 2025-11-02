@@ -22,10 +22,25 @@ changetype: add
 objectClass: organizationalUnit
 ou: users
 
-dn: ou=groups,${LDAP_ROOT}
+dn: ou=nexus_groups,${LDAP_ROOT}
 changetype: add
 objectClass: organizationalUnit
-ou: groups
+ou: nexus_groups
+
+dn: ou=neplus_groups,${LDAP_ROOT}
+changetype: add
+objectClass: organizationalUnit
+ou: neplus_groups
+
+dn: ou=apis,${LDAP_ROOT}
+changetype: add
+objectClass: organizationalUnit
+ou: apis
+
+dn: ou=api_groups,${LDAP_ROOT}
+changetype: add
+objectClass: organizationalUnit
+ou: api_groups
 
 #######################################################################
 # Bind Service Accounts
@@ -36,4 +51,14 @@ objectClass: simpleSecurityObject
 objectClass: organizationalRole
 cn: ${LDAP_BIND_CN_NEXUS}
 description: Bind account for Nexus LDAP authentication
-userPassword: ${LDAP_BIND_PASS_NEXUS}
+userPassword: ${LDAP_BIND_PASS_NEXUS_HASH}
+
+dn: cn=_api_admin,ou=apis,${LDAP_ROOT}
+changetype: add
+objectClass: inetOrgPerson
+uid: _api_admin
+cn: _api_admin
+sn: api
+mail: admin@api.${LDAP_DOMAIN}
+description: API Account as Nexus admin
+userPassword: ${LDAP_BIND_PASS_ADMIN_API_HASH}
