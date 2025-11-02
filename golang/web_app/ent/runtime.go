@@ -77,15 +77,15 @@ func init() {
 		}
 	}()
 	// roleDescRequestedBy is the schema descriptor for requestedBy field.
-	roleDescRequestedBy := roleFields[3].Descriptor()
+	roleDescRequestedBy := roleFields[4].Descriptor()
 	// role.RequestedByValidator is a validator for the "requestedBy" field. It is called by the builders before save.
 	role.RequestedByValidator = roleDescRequestedBy.Validators[0].(func(string) error)
 	// roleDescCreatedAt is the schema descriptor for createdAt field.
-	roleDescCreatedAt := roleFields[4].Descriptor()
+	roleDescCreatedAt := roleFields[5].Descriptor()
 	// role.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	role.DefaultCreatedAt = roleDescCreatedAt.Default.(func() time.Time)
 	// roleDescUpdatedAt is the schema descriptor for updatedAt field.
-	roleDescUpdatedAt := roleFields[5].Descriptor()
+	roleDescUpdatedAt := roleFields[6].Descriptor()
 	// role.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
 	role.DefaultUpdatedAt = roleDescUpdatedAt.Default.(func() time.Time)
 	// role.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.

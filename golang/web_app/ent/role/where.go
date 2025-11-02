@@ -74,6 +74,11 @@ func Mode(v string) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldMode, v))
 }
 
+// IsForNexus applies equality check predicate on the "isForNexus" field. It's identical to IsForNexusEQ.
+func IsForNexus(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsForNexus, v))
+}
+
 // RequestedBy applies equality check predicate on the "requestedBy" field. It's identical to RequestedByEQ.
 func RequestedBy(v string) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldRequestedBy, v))
@@ -217,6 +222,16 @@ func ModeEqualFold(v string) predicate.Role {
 // ModeContainsFold applies the ContainsFold predicate on the "mode" field.
 func ModeContainsFold(v string) predicate.Role {
 	return predicate.Role(sql.FieldContainsFold(FieldMode, v))
+}
+
+// IsForNexusEQ applies the EQ predicate on the "isForNexus" field.
+func IsForNexusEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsForNexus, v))
+}
+
+// IsForNexusNEQ applies the NEQ predicate on the "isForNexus" field.
+func IsForNexusNEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldIsForNexus, v))
 }
 
 // RequestedByEQ applies the EQ predicate on the "requestedBy" field.

@@ -17,6 +17,8 @@ const (
 	FieldName = "name"
 	// FieldMode holds the string denoting the mode field in the database.
 	FieldMode = "mode"
+	// FieldIsForNexus holds the string denoting the isfornexus field in the database.
+	FieldIsForNexus = "is_for_nexus"
 	// FieldRequestedBy holds the string denoting the requestedby field in the database.
 	FieldRequestedBy = "requested_by"
 	// FieldCreatedAt holds the string denoting the createdat field in the database.
@@ -32,6 +34,7 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldMode,
+	FieldIsForNexus,
 	FieldRequestedBy,
 	FieldCreatedAt,
 	FieldUpdatedAt,
@@ -80,6 +83,11 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByMode orders the results by the mode field.
 func ByMode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMode, opts...).ToFunc()
+}
+
+// ByIsForNexus orders the results by the isForNexus field.
+func ByIsForNexus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsForNexus, opts...).ToFunc()
 }
 
 // ByRequestedBy orders the results by the requestedBy field.

@@ -56,6 +56,20 @@ func (_u *RoleUpdate) SetNillableMode(v *string) *RoleUpdate {
 	return _u
 }
 
+// SetIsForNexus sets the "isForNexus" field.
+func (_u *RoleUpdate) SetIsForNexus(v bool) *RoleUpdate {
+	_u.mutation.SetIsForNexus(v)
+	return _u
+}
+
+// SetNillableIsForNexus sets the "isForNexus" field if the given value is not nil.
+func (_u *RoleUpdate) SetNillableIsForNexus(v *bool) *RoleUpdate {
+	if v != nil {
+		_u.SetIsForNexus(*v)
+	}
+	return _u
+}
+
 // SetRequestedBy sets the "requestedBy" field.
 func (_u *RoleUpdate) SetRequestedBy(v string) *RoleUpdate {
 	_u.mutation.SetRequestedBy(v)
@@ -155,6 +169,9 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Mode(); ok {
 		_spec.SetField(role.FieldMode, field.TypeString, value)
 	}
+	if value, ok := _u.mutation.IsForNexus(); ok {
+		_spec.SetField(role.FieldIsForNexus, field.TypeBool, value)
+	}
 	if value, ok := _u.mutation.RequestedBy(); ok {
 		_spec.SetField(role.FieldRequestedBy, field.TypeString, value)
 	}
@@ -205,6 +222,20 @@ func (_u *RoleUpdateOne) SetMode(v string) *RoleUpdateOne {
 func (_u *RoleUpdateOne) SetNillableMode(v *string) *RoleUpdateOne {
 	if v != nil {
 		_u.SetMode(*v)
+	}
+	return _u
+}
+
+// SetIsForNexus sets the "isForNexus" field.
+func (_u *RoleUpdateOne) SetIsForNexus(v bool) *RoleUpdateOne {
+	_u.mutation.SetIsForNexus(v)
+	return _u
+}
+
+// SetNillableIsForNexus sets the "isForNexus" field if the given value is not nil.
+func (_u *RoleUpdateOne) SetNillableIsForNexus(v *bool) *RoleUpdateOne {
+	if v != nil {
+		_u.SetIsForNexus(*v)
 	}
 	return _u
 }
@@ -337,6 +368,9 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	}
 	if value, ok := _u.mutation.Mode(); ok {
 		_spec.SetField(role.FieldMode, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.IsForNexus(); ok {
+		_spec.SetField(role.FieldIsForNexus, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.RequestedBy(); ok {
 		_spec.SetField(role.FieldRequestedBy, field.TypeString, value)

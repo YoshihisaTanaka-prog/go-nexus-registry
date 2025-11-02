@@ -32,6 +32,12 @@ func (_c *RoleCreate) SetMode(v string) *RoleCreate {
 	return _c
 }
 
+// SetIsForNexus sets the "isForNexus" field.
+func (_c *RoleCreate) SetIsForNexus(v bool) *RoleCreate {
+	_c.mutation.SetIsForNexus(v)
+	return _c
+}
+
 // SetRequestedBy sets the "requestedBy" field.
 func (_c *RoleCreate) SetRequestedBy(v string) *RoleCreate {
 	_c.mutation.SetRequestedBy(v)
@@ -135,6 +141,9 @@ func (_c *RoleCreate) check() error {
 			return &ValidationError{Name: "mode", err: fmt.Errorf(`ent: validator failed for field "Role.mode": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.IsForNexus(); !ok {
+		return &ValidationError{Name: "isForNexus", err: errors.New(`ent: missing required field "Role.isForNexus"`)}
+	}
 	if _, ok := _c.mutation.RequestedBy(); !ok {
 		return &ValidationError{Name: "requestedBy", err: errors.New(`ent: missing required field "Role.requestedBy"`)}
 	}
@@ -196,6 +205,10 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Mode(); ok {
 		_spec.SetField(role.FieldMode, field.TypeString, value)
 		_node.Mode = value
+	}
+	if value, ok := _c.mutation.IsForNexus(); ok {
+		_spec.SetField(role.FieldIsForNexus, field.TypeBool, value)
+		_node.IsForNexus = value
 	}
 	if value, ok := _c.mutation.RequestedBy(); ok {
 		_spec.SetField(role.FieldRequestedBy, field.TypeString, value)

@@ -37,6 +37,7 @@ var (
 		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "mode", Type: field.TypeString},
+		{Name: "is_for_nexus", Type: field.TypeBool},
 		{Name: "requested_by", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
@@ -48,9 +49,9 @@ var (
 		PrimaryKey: []*schema.Column{RolesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "roles_name_mode",
+				Name:    "roles_name_is_for_nexus",
 				Unique:  true,
-				Columns: []*schema.Column{RolesColumns[1], RolesColumns[2]},
+				Columns: []*schema.Column{RolesColumns[1], RolesColumns[3]},
 			},
 		},
 	}

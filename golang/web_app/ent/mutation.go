@@ -695,6 +695,7 @@ type RoleMutation struct {
 	id            *string
 	name          *string
 	mode          *string
+	isForNexus    *bool
 	requestedBy   *string
 	createdAt     *time.Time
 	updatedAt     *time.Time
@@ -880,6 +881,42 @@ func (m *RoleMutation) ResetMode() {
 	m.mode = nil
 }
 
+// SetIsForNexus sets the "isForNexus" field.
+func (m *RoleMutation) SetIsForNexus(b bool) {
+	m.isForNexus = &b
+}
+
+// IsForNexus returns the value of the "isForNexus" field in the mutation.
+func (m *RoleMutation) IsForNexus() (r bool, exists bool) {
+	v := m.isForNexus
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsForNexus returns the old "isForNexus" field's value of the Role entity.
+// If the Role object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMutation) OldIsForNexus(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsForNexus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsForNexus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsForNexus: %w", err)
+	}
+	return oldValue.IsForNexus, nil
+}
+
+// ResetIsForNexus resets all changes to the "isForNexus" field.
+func (m *RoleMutation) ResetIsForNexus() {
+	m.isForNexus = nil
+}
+
 // SetRequestedBy sets the "requestedBy" field.
 func (m *RoleMutation) SetRequestedBy(s string) {
 	m.requestedBy = &s
@@ -1022,12 +1059,15 @@ func (m *RoleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoleMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.name != nil {
 		fields = append(fields, role.FieldName)
 	}
 	if m.mode != nil {
 		fields = append(fields, role.FieldMode)
+	}
+	if m.isForNexus != nil {
+		fields = append(fields, role.FieldIsForNexus)
 	}
 	if m.requestedBy != nil {
 		fields = append(fields, role.FieldRequestedBy)
@@ -1050,6 +1090,8 @@ func (m *RoleMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case role.FieldMode:
 		return m.Mode()
+	case role.FieldIsForNexus:
+		return m.IsForNexus()
 	case role.FieldRequestedBy:
 		return m.RequestedBy()
 	case role.FieldCreatedAt:
@@ -1069,6 +1111,8 @@ func (m *RoleMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case role.FieldMode:
 		return m.OldMode(ctx)
+	case role.FieldIsForNexus:
+		return m.OldIsForNexus(ctx)
 	case role.FieldRequestedBy:
 		return m.OldRequestedBy(ctx)
 	case role.FieldCreatedAt:
@@ -1097,6 +1141,13 @@ func (m *RoleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMode(v)
+		return nil
+	case role.FieldIsForNexus:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsForNexus(v)
 		return nil
 	case role.FieldRequestedBy:
 		v, ok := value.(string)
@@ -1173,6 +1224,9 @@ func (m *RoleMutation) ResetField(name string) error {
 		return nil
 	case role.FieldMode:
 		m.ResetMode()
+		return nil
+	case role.FieldIsForNexus:
+		m.ResetIsForNexus()
 		return nil
 	case role.FieldRequestedBy:
 		m.ResetRequestedBy()

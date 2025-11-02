@@ -33,5 +33,7 @@ func InitDb(c *context.Context) {
 	initDbUnit(&psqlClient, "postgres", psqlDsn)
 	initDbUnit(&ramClient, "sqlite3", ramDsn)
 
+	go initRole()
+
 	fmt.Fprintln(os.Stdout, "DBのスキーマを設定しました。")
 }

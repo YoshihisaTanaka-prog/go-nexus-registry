@@ -26,6 +26,7 @@ func (Role) Fields() []ent.Field {
 			}
 			return fmt.Errorf("invalid mode: %s", s)
 		}),
+		field.Bool("isForNexus").Immutable(),
 		field.String("requestedBy").NotEmpty(),
 		field.Time("createdAt").Default(time.Now).Immutable(),
 		field.Time("updatedAt").Default(time.Now).UpdateDefault(time.Now),
@@ -35,8 +36,8 @@ func (Role) Fields() []ent.Field {
 // Indexes of the Role.
 func (Role) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("name", "mode").Unique().
-		StorageKey("roles_name_mode"),
+		index.Fields("name", "isForNexus").Unique().
+		StorageKey("roles_name_is_for_nexus"),
 	}
 }
 
