@@ -4,7 +4,7 @@
   import SSE from './SSE.vue';
 
   import type { SelectionObj } from './types';
-  const { path } = defineProps<{path?: string}>();
+  const { path } = defineProps<{path?: string, style?: unknown}>();
 
   const selections: SelectionObj = {
     apply: {
