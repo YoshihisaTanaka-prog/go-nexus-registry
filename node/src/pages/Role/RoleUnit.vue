@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { defineEmits, defineProps, ref } from 'vue';
-  import type { Role } from '@/utils/api/role';
+  import { getRoleDetails, type Role } from '@/utils/api/role';
   
   const { role } = defineProps<{role: Role}>();
 
@@ -18,6 +18,10 @@
         isSubmitting.value = false;
       });
     }
+  }
+
+  function _getRoleDetails() {
+    void getRoleDetails(role.id, () =>{console.log('done')})
   }
 </script>
 
@@ -38,6 +42,7 @@
       </div>
       {{ roleName }}
     </span>
+    <button @click="_getRoleDetails">詳細</button>
   </p>
 </template>
 

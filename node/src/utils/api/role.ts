@@ -74,3 +74,9 @@ export async function updateRoleName(currentRoleRef: Ref<Role[]>, id: string, na
     }, 0);
   }
 }
+
+export async function getRoleDetails(id: string, callback:() => void) {
+  const result = await axios.get(`/get-role-details?id=${id}`);
+  console.log(result.data)
+  callback()
+}
