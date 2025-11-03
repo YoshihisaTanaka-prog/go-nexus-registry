@@ -22,7 +22,7 @@ var (
 )
 
 
-func InitJwt()  {
+func setJwt()  {
 	var err error
 	hmacSecret, err =  base64.StdEncoding.DecodeString(os.Getenv("NEPLUS_COOKIE_SECRET"))
 	if err != nil {

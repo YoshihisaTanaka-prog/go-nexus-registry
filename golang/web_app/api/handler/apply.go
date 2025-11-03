@@ -8,7 +8,7 @@ import (
 	"web_app/nexus"
 )
 
-func SetNpmrc() {
+func setNpmrc() {
 	if err := os.MkdirAll("/app/tmp/npm", 0775); err != nil {
 		fmt.Fprintln(os.Stderr, "出力ディレクトリ作成エラー:", err)
 		os.Exit(1)
