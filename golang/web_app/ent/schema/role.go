@@ -19,7 +19,7 @@ func (Role) Fields() []ent.Field {
 		field.String("id").NotEmpty().Unique(),
 		field.String("name").NotEmpty(),
 		field.String("mode").NotEmpty().Validate(func(s string) error {
-			for _, v := range []string{"viewers", "editors", "admins", "apis", "custom"} {
+			for _, v := range []string{"admins", "editors", "viewers", "neplus", "apis", "custom"} {
 				if s == v {
 					return nil
 				}
