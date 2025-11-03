@@ -15,7 +15,17 @@ type ApplyProps = npm.ApplyProps
 
 type npmNameSpace struct {}
 
-var npmNS = npmNameSpace{} 
+var npmNS = npmNameSpace{}
+
+var apiPasswords map[string]string
+
+func setUp() {}
+
+func InitNexus(_apiPasswords *map[string]string) {
+	apiPasswords = *_apiPasswords
+}
+
+func SetUpWithAdminPassword(password string) {}
 
 func (npmNameSpace)Apply(c *gin.Context, body ApplyProps, userId string, uuId uuid.UUID) {
 	fmt.Fprintln(os.Stdout, "apply:", userId, uuId, body)
