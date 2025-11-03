@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
 	"os"
 	"web_app/api"
@@ -9,6 +10,7 @@ import (
 	"web_app/customError"
 	"web_app/dbClient"
 	"web_app/ldap"
+	"web_app/nexus"
 )
 
 var envKeys = []string{
@@ -25,6 +27,10 @@ var envKeys = []string{
 	"ROOT_DIR_PATH",
 }
 
+var apiPasswords = map[string]string{
+	"admin": rand.Text(),
+}
+
 func main() {
 	if isEnvKeysEmpty() {
 		customError.Exit1("以上の環境変数が指定されていないので終了します。")
@@ -34,8 +40,9 @@ func main() {
 	
 	ctx := context.Background()
 	dbClient.InitDb(&ctx)
-	ldap.InitLdap()
-
+	ldap.InitLdap(apiPasswords)
+	nexus.InitNexus(&apiPasswords)
+	
 	api.Start()
 }
 
