@@ -29,3 +29,13 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+  svg {
+    border-radius: 0.5rem;
+    background-color: #f4f5f9;
+  }
+  svg:hover {
+    background-color: #e3eaf3;
+  }
+</style>
