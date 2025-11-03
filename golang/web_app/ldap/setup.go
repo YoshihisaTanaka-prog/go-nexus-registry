@@ -18,8 +18,8 @@ var additionalEnvKeys = []string{
 	"LDAP_ADMIN_USERNAME",
 	"LDAP_BIND_CN_NEXUS",
 	"LDAP_BIND_PASS_NEXUS",
-	"LDAP_DOMAIN",
-	"LDAP_ORGANISATION",
+	"DOMAIN_NAME",
+	"ORGANISATION_NAME",
 	"LDAP_PORT",
 }
 
@@ -45,9 +45,9 @@ func setupLdap(apiPasswords map[string]string) {
 }
 
 func getEnvVars(apiPasswords map[string]string) map[string]string {
-	domainLabels := strings.Split(os.Getenv("LDAP_DOMAIN"), ".");
+	domainLabels := strings.Split(os.Getenv("DOMAIN_NAME"), ".");
 	if len(domainLabels) == 0 {
-		exit1("'LDAP_DOMAIN'の値を設定してください。")
+		exit1("'DOMAIN_NAME'の値を設定してください。")
 	}
 	baseDnSlice := []string{}
 	for _, domainLabel := range domainLabels {

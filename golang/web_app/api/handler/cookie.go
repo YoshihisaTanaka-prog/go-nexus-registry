@@ -24,11 +24,11 @@ var (
 
 func InitJwt()  {
 	var err error
-	hmacSecret, err =  base64.StdEncoding.DecodeString(os.Getenv("GO_MANAGER_COOKIE_SECRET"))
+	hmacSecret, err =  base64.StdEncoding.DecodeString(os.Getenv("NEPLUS_COOKIE_SECRET"))
 	if err != nil {
 		customError.Exit1("Decoding JWT secret error")
 	}
-	hostName := os.Getenv("GO_MANAGER_HOST_NAME")
+	hostName := os.Getenv("NEPLUS_HOST_NAME")
 	if hostName == "localhost" {
 		isLocalHost = true
 	} else if strings.HasPrefix(hostName, "localhost:") {
@@ -71,9 +71,9 @@ func createJwt(userName string, groups []string) (string, error) {
 		UserId: userId,
 		Roles:   groups,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    os.Getenv("GO_MANAGER_HOST_NAME"),
+			Issuer:    os.Getenv("NEPLUS_HOST_NAME"),
 			Subject:   "auth",
-			Audience:  []string{os.Getenv("GO_MANAGER_HOST_NAME") + "/app"},
+			Audience:  []string{os.Getenv("NEPLUS_HOST_NAME") + "/app"},
 			ExpiresAt: jwt.NewNumericDate(now.Add(3600 * time.Second)),
 			NotBefore: jwt.NewNumericDate(now.Add(-30 * time.Second)),
 			IssuedAt:  jwt.NewNumericDate(now),
@@ -88,7 +88,7 @@ func parseJwt(raw string) (userId string, roles []string) {
 	parsed, err := jwt.ParseWithClaims(raw, &MyClaims{}, func(t *jwt.Token) (any, error) {
 		if t.Method != jwt.SigningMethodHS256 { return nil, fmt.Errorf("bad alg") }
 		return hmacSecret, nil
-	}, jwt.WithIssuer(os.Getenv("GO_MANAGER_HOST_NAME")), jwt.WithAudience(os.Getenv("GO_MANAGER_HOST_NAME") + "/app"))
+	}, jwt.WithIssuer(os.Getenv("NEPLUS_HOST_NAME")), jwt.WithAudience(os.Getenv("NEPLUS_HOST_NAME") + "/app"))
 	
 	if err != nil || !parsed.Valid {
 		return "", []string{}

@@ -16,7 +16,7 @@ var (
 )
 
 func InitLdap(apiPasswords map[string]string) {
-	domainLabels := strings.Split(os.Getenv("LDAP_DOMAIN"), ".");
+	domainLabels := strings.Split(os.Getenv("DOMAIN_NAME"), ".");
 	baseDnSlice := []string{}
 	for _, domainLabel := range domainLabels {
 		baseDnSlice = append(baseDnSlice, "dc=" + domainLabel)
@@ -48,7 +48,7 @@ func InitLdap(apiPasswords map[string]string) {
 }
 
 func AddUser(email string, password string) (mean string, responseCode int) {
-	if (!strings.HasSuffix(email, "@" + os.Getenv("LDAP_DOMAIN"))) {
+	if (!strings.HasSuffix(email, "@" + os.Getenv("DOMAIN_NAME"))) {
 		return "Invalid Email Domain error", 422
 	}
 	userName := getUserName(email)
@@ -109,7 +109,7 @@ func DeleteUser(email string) (mean string, responseCode int) {
 }
 
 func Authenticate(email string, password string) (mean string, responseCode int) {
-	if (!strings.HasSuffix(email, "@" + os.Getenv("LDAP_DOMAIN"))) {
+	if (!strings.HasSuffix(email, "@" + os.Getenv("DOMAIN_NAME"))) {
 		return "Invalid Email Domain error", 422
 	}
 	userName := getUserName(email)

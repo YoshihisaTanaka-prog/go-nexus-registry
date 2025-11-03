@@ -6,7 +6,7 @@ changetype: add
 objectClass: top
 objectClass: dcObject
 objectClass: organization
-o: Example Corporation
+o: ${ORGANISATION_NAME}
 dc: ${LDAP_ROOT_DC}
 
 #######################################################################
@@ -59,6 +59,6 @@ objectClass: inetOrgPerson
 uid: _api_admin
 cn: _api_admin
 sn: api
-mail: admin@api.${LDAP_DOMAIN}
+mail: admin@api.${DOMAIN_NAME}
 description: API Account as Nexus admin
 userPassword: ${LDAP_BIND_PASS_ADMIN_API_HASH}

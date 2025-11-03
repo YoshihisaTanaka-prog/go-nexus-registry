@@ -14,15 +14,14 @@ import (
 var additionalEnvKeys = []string{
 	"LDAP_ADMIN_PASSWORD",
 	"LDAP_ADMIN_USERNAME",
-	"LDAP_DOMAIN",
-	"LDAP_ORGANISATION",
+	"DOMAIN_NAME",
 	"LDAP_PORT",
 }
 
 func main()  {
-	domainLabels := strings.Split(os.Getenv("LDAP_DOMAIN"), ".");
+	domainLabels := strings.Split(os.Getenv("DOMAIN_NAME"), ".");
 	if len(domainLabels) == 0 {
-		fmt.Fprintln(os.Stderr, "'LDAP_DOMAIN'の値を設定してください。")
+		fmt.Fprintln(os.Stderr, "'DOMAIN_NAME'の値を設定してください。")
 		os.Exit(1)
 	}
 	baseDnSlice := []string{}

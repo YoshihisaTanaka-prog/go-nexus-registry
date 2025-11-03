@@ -15,7 +15,7 @@ var cryptionKey = make([]byte, 64)
 
 func InitCription() {
 	var err error
-	cryptionKey, err = base64.StdEncoding.DecodeString(os.Getenv("GO_MANAGER_KEY"))
+	cryptionKey, err = base64.StdEncoding.DecodeString(os.Getenv("NEPLUS_KEY"))
 	if err != nil {
 		customError.Exit1("鍵のデコードに失敗しました:", err)
 	}
