@@ -18,7 +18,7 @@ func initRole() {
 	for _, role := range roles {
 		id := role.ID
 		mode := role.Mode
-		txt, code :=  runLdap("Searching Group error", "ldapsearch", []string{"-b", getBaseDn(mode), fmt.Sprintf("(cn=%s)", id)})
+		txt, code, _ :=  searchRole(mode, id)
 		if code == 0 {
 			if role.Mode == "viewers" {
 				viewersId = id
@@ -40,7 +40,7 @@ func initRole() {
 
 func getBaseDn(mode string) string {
 	switch mode {
-	case "admins", "editors", "viewers", "custom":
+	case "admins", "viewers", "custom":
 		return fmt.Sprintf("ou=nexus_groups,%s", baseDn)
 	case "neplus":
 		return fmt.Sprintf("ou=neplus_groups,%s", baseDn)
@@ -67,19 +67,46 @@ func CreateNexusRole(id string, name string) (txt string, exitCode int) {
 	return createRole("custom", id, name)
 }
 
-func searchRole(mode string, id string) (txt string, exitCode int) {
-	return runLdap("Searching Group error", "ldapsearch", []string{"-b", getBaseDn(mode), fmt.Sprintf("(cn=%s)", id)})
+func getUidFromLine(line string) string {
+	if !strings.HasPrefix(line, "member: ") {
+		return ""
+	}
+
+	filteredText := strings.Split(line, ",")[0]
+
+	splitedTexts := strings.Split(filteredText, "=")
+	if len(splitedTexts) == 2 {
+		return splitedTexts[1]
+	}
+
+	return ""
 }
 
-func SearchNexusRole(id string) (txt string, exitCode int) {
+func searchRole(mode string, id string) (txt string, exitCode int, uids []string) {
+	txt, exitCode = runLdap("Searching Group error", "ldapsearch", []string{"-b", getBaseDn(mode), fmt.Sprintf("(cn=%s)", id)})
+	if exitCode != 0 {
+		return txt, exitCode, []string{}
+	}
+	uids = []string{}
+	lines := strings.Split(txt, "\n")
+	for _, line := range lines {
+		uid := getUidFromLine(line)
+		if uid != "" {
+			uids = append(uids, uid)
+		}
+	}
+	return txt, exitCode, uids
+}
+
+func SearchNexusRole(id string) (txt string, exitCode int, uids []string) {
 	return searchRole("custom", id)
 }
 
-func SearchNePlusRole(id string) (txt string, exitCode int) {
+func SearchNePlusRole(id string) (txt string, exitCode int, uids []string) {
 	return searchRole("neplus", id)
 }
 
-func SearchApisRole(id string) (txt string, exitCode int) {
+func SearchApisRole(id string) (txt string, exitCode int, uids []string) {
 	return searchRole("apis", id)
 }
 

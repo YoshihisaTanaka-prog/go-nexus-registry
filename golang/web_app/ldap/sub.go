@@ -17,6 +17,7 @@ func runLdap(errorMessage string, command string, args []string, inputs ...strin
 }
 
 func runLdapAsUser(errorMessage string, command string, dn string, password string, args []string, inputs ...string) (mean string, responseCode int) {
+	// 「-LLL」オプションを付けると、エラーをうまく判定できなくなりバグの原因になるので注意
 	localArgs := append(
 		connectionArgs,
 		"-D",
