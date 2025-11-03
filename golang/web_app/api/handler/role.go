@@ -6,14 +6,13 @@ import (
 	"os"
 	"sync"
 	"web_app/dbClient"
+	"web_app/ldap"
+	"web_app/nexus"
 )
 
 var accessMutex sync.Mutex
 
 func GetRoles(c *gin.Context) {
-	accessMutex.Lock()
-	defer accessMutex.Unlock()
-
 	roles, err := dbClient.Role.GetNexusRoles()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "get-roles: DB Error:", err)
@@ -46,8 +45,22 @@ func CreateRole(c *gin.Context) {
 		if statusCode == 409 {
 			c.JSON(409, gin.H{"message": message})
 		} else {
-			c.JSON(400, gin.H{"message": "Internal Server Error"})
+			c.JSON(500, gin.H{"message": "Internal Server Error"})
 		}
+		return
+	}
+
+	txt, responseCode := ldap.CreateNexusRole(role.ID, role.Name)
+
+	if responseCode != 0 {
+		go ldap.DeleteRole(role.ID)
+		c.JSON(responseCode, gin.H{"message": "LDAP error " + txt})
+		return
+	}
+
+	if !nexus.CreateRole(role.ID, role.Name) {
+		go dbClient.Role.DeleteRole(role.ID)
+		c.JSON(500, gin.H{"message": "Nexus error "})
 		return
 	}
 
@@ -61,8 +74,9 @@ func UpdateRole(c *gin.Context) {
 	userId := c.MustGet("userId").(string)
 
 	var body struct {
-		Id   string `json:"id"   binding:"required"`
-		Name string `json:"name" binding:"required"`
+		Id   string         `json:"id" binding:"required"`
+		Name string         `json:"name"`
+		Privileges []string `json:"privileges"`
 	}
 
 	if err := c.BindJSON(&body); err != nil {
@@ -71,17 +85,35 @@ func UpdateRole(c *gin.Context) {
 		return
 	}
 
-	role, err := dbClient.Role.UpdateNexusRole(body.Id, body.Name, userId)
-	if err != nil {
-		statusCode, message := dbClient.Role.JudgeError(err)
-		fmt.Fprintln(os.Stderr, "update-role: DB Error:", message)
-		if statusCode == 409 {
-			c.JSON(409, gin.H{"message": message})
-		} else {
-			c.JSON(400, gin.H{"message": "Internal Server Error"})
+	if body.Name == "" {
+		role, err := dbClient.Role.UpdateNexusRole(body.Id, body.Name, userId)
+		if err != nil {
+			statusCode, message := dbClient.Role.JudgeError(err)
+			fmt.Fprintln(os.Stderr, "update-role: DB Error:", message)
+			if statusCode == 409 {
+				c.JSON(409, gin.H{"message": message})
+			} else {
+				c.JSON(500, gin.H{"message": "Internal Server Error in DB"})
+			}
+			return
 		}
-		return
+		if !nexus.UpdateRoleName(role.ID, body.Name) {
+			c.JSON(500, gin.H{"message": "Internal Server Error in Nexus"})
+			return
+		}
 	}
 
-	c.JSON(200, role)
+	if len(body.Privileges) > 0 {
+		role, err := dbClient.Role.FindById(body.Id)
+		if err != nil {
+			c.JSON(500, gin.H{"message": "Internal Server Error in DB"})
+			return
+		}
+		if !nexus.UpdateRolePrivileges(role.ID, body.Privileges) {
+			c.JSON(500, gin.H{"message": "Internal Server Error in Nexus"})
+			return
+		}
+	}
+
+	c.JSON(200, gin.H{})
 }
