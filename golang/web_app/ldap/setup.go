@@ -32,20 +32,19 @@ func exit1(args ...any)  {
 	os.Exit(1)
 }
 
-func setupLdap() {
-	envVars := getEnvVars()
-	dbAdminDn := fmt.Sprintf("cn=%s,%s", envVars["LDAP_ADMIN_USERNAME"], baseDn)
+func setupLdap(apiPasswords map[string]string) {
+	envVars := getEnvVars(apiPasswords)
+	adminDn := fmt.Sprintf("cn=%s,%s", envVars["LDAP_ADMIN_USERNAME"], baseDn)
 	adminPassword := envVars["LDAP_ADMIN_PASSWORD"]
-	txt, exitCode := runLdapAsUser("OpenLDAP 設定エラー", "ldapsearch", dbAdminDn, adminPassword, []string{"-b", baseDn, fmt.Sprintf("(cn=%s)", envVars["LDAP_BIND_CN_NEXUS"])})
-	fmt.Println(txt, exitCode)
+	_, exitCode := runLdapAsUser("OpenLDAP 設定エラー", "ldapsearch", adminDn, adminPassword, []string{"-b", baseDn, fmt.Sprintf("(cn=%s)", envVars["LDAP_BIND_CN_NEXUS"])})
 	if exitCode == 0 {
-		updateSchema("/app/templates/update.ldif.template", dbAdminDn, adminPassword, envVars)
+		updateSchema("/app/templates/update.ldif.template", adminDn, adminPassword, envVars)
 	} else {
-		updateSchema("/app/templates/init.ldif.template", dbAdminDn, adminPassword, envVars)
+		updateSchema("/app/templates/init.ldif.template", adminDn, adminPassword, envVars)
 	}
 }
 
-func getEnvVars() map[string]string {
+func getEnvVars(apiPasswords map[string]string) map[string]string {
 	domainLabels := strings.Split(os.Getenv("LDAP_DOMAIN"), ".");
 	if len(domainLabels) == 0 {
 		exit1("'LDAP_DOMAIN'の値を設定してください。")
@@ -69,6 +68,7 @@ func getEnvVars() map[string]string {
 		"LDAP_ROOT_DC": rootDc,
 		"LDAP_ADMIN_PASS_HASH": generateSSHAForLdap(adminPass),
 		"LDAP_BIND_PASS_NEXUS_HASH": generateSSHAForLdap(bindPassNexus),
+		"LDAP_BIND_PASS_ADMIN_API_HASH": generateSSHAForLdap(apiPasswords["admin"]),
 	}
 
 	for _, key := range additionalEnvKeys {
