@@ -33,10 +33,10 @@ func initRoleUnit(wg *sync.WaitGroup, mode string, name string) {
 func initRole() {
 	var wg sync.WaitGroup
 	wg.Add(5)
-	go initRoleUnit(&wg, "viewers", "閲覧者")
-	go initRoleUnit(&wg, "editors", "編集者")
 	go initRoleUnit(&wg, "admins",  "Nexus管理者")
+	go initRoleUnit(&wg, "viewers", "閲覧者")
 	go initRoleUnit(&wg, "neplus",  "NePlus管理者")
+	go initRoleUnit(&wg, "neplus",  "NePlus編集者")
 	go initRoleUnit(&wg, "apis",    "admins")
 	wg.Wait()
 	fmt.Fprintln(os.Stdout, "初期データを投入しました。")
