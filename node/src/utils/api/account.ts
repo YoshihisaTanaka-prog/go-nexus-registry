@@ -45,3 +45,19 @@ export const signIn = async (email: string, password: string) => {
     onFailedSignIn(status, data)
   }
 }
+
+export const getMyProfile = async (): Promise<{ email: string, roles: string[], isAdmin: boolean, isEditor: boolean }|undefined> => {
+  try {
+    const result = await axios.get('my-profile');
+    if (result.status < 400) {
+      console.log(result.data)
+      return result.data;
+    } else {
+      alertError(result.status, result.data)
+    }
+  } catch (error) {
+    const { status, data } = convertError(error);
+    alertError(status, data)
+  }
+  return undefined;
+}
