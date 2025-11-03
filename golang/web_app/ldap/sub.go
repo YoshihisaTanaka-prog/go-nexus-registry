@@ -13,20 +13,21 @@ import (
 )
 
 func runLdap(errorMessage string, command string, args []string, inputs ...string) (mean string, responseCode int) {
-	return runLdapAsUser(errorMessage, command, connectionArgs[4], connectionArgs[6], args, inputs...)
+	return runLdapAsUser(errorMessage, command, bindDn, os.Getenv("LDAP_ADMIN_PASSWORD"), args, inputs...)
 }
 
 func runLdapAsUser(errorMessage string, command string, dn string, password string, args []string, inputs ...string) (mean string, responseCode int) {
-	localArgs := []string{
-		connectionArgs[0],
-		connectionArgs[1],
-		connectionArgs[2],
-		connectionArgs[3],
+	localArgs := append(
+		connectionArgs,
+		"-D",
 		dn,
-		connectionArgs[5],
+		"-w",
 		password,
-	}
-	localArgs = append(localArgs, args...)
+	)
+	localArgs = append(
+		localArgs,
+		args...,
+	)
 	cmd := exec.Command(command, localArgs...)
 	joinedInputs := ""
 	if len(inputs) > 0 {
@@ -40,12 +41,14 @@ func runLdapAsUser(errorMessage string, command string, dn string, password stri
 	} else {
 		fmt.Fprintln(os.Stdout, "Executing:", command, localArgs, "\n", joinedInputs)
 	}
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
+	out, err := cmd.Output()
+	outStr := string(out)
+	if err != nil {
+		fmt.Fprintln(os.Stdout, outStr)
+		fmt.Fprintln(os.Stderr, err)
 		return customError.GetLdapResult(err, errorMessage)
 	}
-	return "", 0
+	return outStr, 0
 }
 
 func getUserName(email string) string {
