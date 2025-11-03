@@ -22,6 +22,59 @@ func GetRoles(c *gin.Context) {
 	c.JSON(200, roles)
 }
 
+func GetRoleDetails(c *gin.Context) {
+	id := c.Query("id")
+	if id == "" {
+		c.JSON(400, gin.H{"message": "Query parameter \"id\" is required"})
+		return
+	}
+	role, err := dbClient.Role.FindById(id)
+	if err != nil {
+		c.JSON(404, gin.H{"message": "No Such Role id: " + id})
+		return
+	}
+
+	privileges := []string{}
+	users := []string{}
+	_, code, uids := ldap.SearchNexusRole(id)
+
+	if code == 404 {
+		go ldap.CreateNexusRole(id, role.Name)
+	} else if code == 0 {
+		fmt.Println(uids)
+		users = append(users, uids...)
+	} else {
+		c.JSON(500, gin.H{"message": "Internal Server Error in Nexus"})
+		return
+	}
+	
+	nexusResult, ok := nexus.FindRole(id)
+	if !ok {
+		c.JSON(500, gin.H{"message": "Internal Server Error in Nexus"})
+		return
+	}
+	if nexusResult == nil {
+		go nexus.CreateRole(id, role.Name)
+	} else {
+		privileges = append(privileges, (*nexusResult).Privileges...)
+	}
+	
+	responseData := struct{
+		Id           string `json:"id"`
+		Name         string `json:"name"`
+		Privileges []string `json:"privileges"`
+		Users      []string `json:"users"`
+	} {
+		Id:         id,
+		Name:       role.Name,
+		Privileges: privileges,
+		Users:      users,
+	}
+
+	fmt.Println(responseData)
+	c.JSON(200, responseData)
+}
+
 func CreateRole(c *gin.Context) {
 	accessMutex.Lock()
 	defer accessMutex.Unlock()

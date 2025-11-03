@@ -37,6 +37,7 @@ func Start() {
 		api.GET("/get-libraries", handler.GetLibraries)
 		api.POST("/update-is-published", handler.UpdateIsPublished)
 		api.GET("/get-roles", handler.GetRoles)
+		api.GET("/get-role-details", handler.GetRoleDetails)
 		api.POST("/create-role", handler.CreateRole)
 		api.PUT("/update-role", handler.UpdateRole)
 	}
