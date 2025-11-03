@@ -5,7 +5,7 @@ map $http_authorization $is_blocked {
 
 server {
   listen 80;
-  server_name localhost ${SERVER_NAME};
+  server_name localhost ${NEXUS_EXPOSED_HOST_NAME};
 
   location / {
     if ($is_blocked) {

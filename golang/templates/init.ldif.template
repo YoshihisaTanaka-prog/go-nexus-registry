@@ -1,0 +1,64 @@
+#######################################################################
+# 組織構成
+#######################################################################
+dn: ${LDAP_ROOT}
+changetype: add
+objectClass: top
+objectClass: dcObject
+objectClass: organization
+o: ${ORGANISATION_NAME}
+dc: ${LDAP_ROOT_DC}
+
+#######################################################################
+# 組織単位構成
+#######################################################################
+dn: ou=service_accounts,${LDAP_ROOT}
+changetype: add
+objectClass: organizationalUnit
+ou: service_accounts
+
+dn: ou=users,${LDAP_ROOT}
+changetype: add
+objectClass: organizationalUnit
+ou: users
+
+dn: ou=nexus_groups,${LDAP_ROOT}
+changetype: add
+objectClass: organizationalUnit
+ou: nexus_groups
+
+dn: ou=neplus_groups,${LDAP_ROOT}
+changetype: add
+objectClass: organizationalUnit
+ou: neplus_groups
+
+dn: ou=apis,${LDAP_ROOT}
+changetype: add
+objectClass: organizationalUnit
+ou: apis
+
+dn: ou=api_groups,${LDAP_ROOT}
+changetype: add
+objectClass: organizationalUnit
+ou: api_groups
+
+#######################################################################
+# Bind Service Accounts
+#######################################################################
+dn: cn=${LDAP_BIND_CN_NEXUS},ou=service_accounts,${LDAP_ROOT}
+changetype: add
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: ${LDAP_BIND_CN_NEXUS}
+description: Bind account for Nexus LDAP authentication
+userPassword: ${LDAP_BIND_PASS_NEXUS_HASH}
+
+dn: cn=_api_admin,ou=apis,${LDAP_ROOT}
+changetype: add
+objectClass: inetOrgPerson
+uid: _api_admin
+cn: _api_admin
+sn: api
+mail: admin@api.${DOMAIN_NAME}
+description: API Account as Nexus admin
+userPassword: ${LDAP_BIND_PASS_ADMIN_API_HASH}

@@ -2,18 +2,32 @@
   "cSpell.words": [
     "alphine",
     "appuser",
+    "changetype",
     "cleanstart",
+    "dbname",
+    "entgo",
     "envsubst",
     "GOARCH",
+    "gonic",
     "htmls",
     "ldapadd",
+    "ldapdelete",
+    "ldapmodify",
+    "ldapsearch",
+    "ldapwhoami",
     "ldif",
     "lloadd",
+    "mattn",
     "ORGANISATION",
+    "psql",
     "rootdn",
     "rootpw",
     "sonatype",
     "SSHA",
-    "trixie"
+    "sslmode",
+    "Tanaka",
+    "trixie",
+    "VITE",
+    "Yoshihisa"
   ]
 }

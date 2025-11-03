@@ -1,27 +1,36 @@
 services:
+  postgres:
+    image: postgres:18
+    restart: always
+    volumes:
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      - postgresql_data:/var/lib/postgresql
+    env_file: .env
+
   ldap:
     build:
       context: ./ldap
+    restart: always
     env_file: .env
     volumes:
       - ./ldap/data/lib:/var/lib/openldap/openldap-data
       - ./ldap/lloadd:/var/lib/openldap/openldap-lloadd
-      - ./ldap/templates:/customized/templates
       - ./ldap/data/customized:/customized/saved-data
 
   nexus:
-    image: sonatype/nexus3:3.80.0
+    build: ./nexus
+    restart: always
     env_file: .env
     environment:
-      #  - LDAP_BIND_DN=cn=${LDAP_BIND_CN_NEXUS},ou=service_accounts,${LDAP_BASE_DN}
-       - LDAP_BIND_PASS=${LDAP_BIND_PASS_NEXUS}
+      - LDAP_BIND_PASS=${LDAP_BIND_PASS_NEXUS}
     volumes:
-      - ./nexus-data:/nexus-data
+      - ./nexus/data:/nexus-data
     depends_on:
       - ldap
 
   nginx:
     build: ./nginx
+    restart: always
     ports:
       - "8080:80"  # 外部公開
     env_file: .env
@@ -37,8 +46,8 @@ services:
       dockerfile: ./development.Dockerfile
     env_file: .env
     environment:
-      #  - LDAP_BIND_DN=cn=${LDAP_BIND_CN_GO},ou=service_accounts,${LDAP_BASE_DN}
-       - LDAP_BIND_PASS=${LDAP_BIND_PASS_GO}
+      - IS_DEBUG=true
+      - ROOT_DIR_PATH=${PWD}/golang
     ports:
       - "8083:8080"  # 外部ユーザー向け公開ポート
     working_dir: /app
@@ -54,13 +63,21 @@ services:
     build: 
       context: ./golang
       dockerfile: ./runner.Dockerfile
+      args:
+        - TARGET_NAME=web_app
+    restart: always
     env_file: .env
+    environment:
+      - ROOT_DIR_PATH=${PWD}/golang
     ports:
       - "8082:8080" # 外部ユーザー向け公開ポート
     volumes:
+      - ./golang/public:/app/public
+      - ./golang/templates:/app/templates
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - nexus
+      - postgres
 
   node:
     image: node:22
@@ -71,7 +88,9 @@ services:
       - ./node:/app
       - ./golang/public:/app/dist
       - node_home:/root
+    command: ./build.sh
 
 volumes:
   go_home:
   node_home:
+  postgresql_data:

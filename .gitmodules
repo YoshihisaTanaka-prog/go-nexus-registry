@@ -1,0 +1,3 @@
+[submodule "golang/auth-proxy"]
+	path = golang/auth-proxy
+	url = https://github.com/YoshihisaTanaka-prog/go-auth.git

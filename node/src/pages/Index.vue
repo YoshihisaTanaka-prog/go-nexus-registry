@@ -1,11 +1,9 @@
 <script setup lang="ts">
-  import Base from '@/components/Base.vue';
+  import Base from '@/components/base/ContentsBase.vue';
 </script>
 
 <template>
-  <Base :path="''">
-    Slot
-  </Base>
+  <Base :path="''" />
 </template>
 
 <style scoped></style>
