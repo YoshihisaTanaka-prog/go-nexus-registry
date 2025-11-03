@@ -14,6 +14,8 @@ var cookieSessionKey = "_session"
 
 var publicPaths = []string{
 	"/assets/_base.js",
+	"/assets/account.js",
+	"/assets/account.css",
 	"/assets/api.js",
 	"/assets/api.css",
 	"/assets/BaseBase.js",
@@ -160,4 +162,14 @@ func EditorAuthProxy(c *gin.Context) {
 
 func AdminAuthProxy(c *gin.Context) {
 	specialAuthProxy(c, []string{groupIds.Admins})
+}
+
+func GetMyProfile(c *gin.Context) {
+	userId := c.MustGet("userId").(string)
+	roles := c.MustGet("roles").([]string)
+	c.JSON(200, gin.H{
+		"email": fmt.Sprintf("%s@%s", userId, os.Getenv("DOMAIN_NAME")),
+		"isAdmin": slices.Contains(roles, groupIds.Admins),
+		"isEditor": slices.Contains(roles, groupIds.Editors),
+	})
 }

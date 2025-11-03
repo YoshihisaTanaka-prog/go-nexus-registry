@@ -37,6 +37,7 @@ func Start() {
 	{
 		api.POST("/sign-up", handler.SignUp)
 		api.POST("/sign-in", handler.SignIn)
+		api.GET("/my-profile", handler.GetMyProfile)
 		api.POST("/apply", handler.Apply)
 		api.GET("/get-libraries", handler.EditorAuthProxy, handler.GetLibraries)
 		api.POST("/update-is-published", handler.EditorAuthProxy, handler.UpdateIsPublished)
