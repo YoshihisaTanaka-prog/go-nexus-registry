@@ -1,9 +1,9 @@
 <script setup lang="ts">
   import { computed, defineProps } from 'vue';
   import Toast from '@/components/Toast.vue';
-  import IconImage from "/icon.png";
+  import Header from './Header.vue';
   import type { SelectionObj } from './types';
-  const { path, selections, urlSuffix = '' } = defineProps<{path?: string, selections: SelectionObj, urlSuffix?: string}>();
+  const { path, email, selections, urlSuffix = '' } = defineProps<{path?: string, email?: string, selections: SelectionObj, urlSuffix?: string}>();
 
   const localSelections = computed(() => {
     const _selections = {...selections}
@@ -18,22 +18,14 @@
   const onClickItem = (path: string) => {
     location.href = (import.meta.env.MODE === 'development' ? `/htmls/${path}.html` :  `/${path}`) + urlSuffix;
   }
+  
+  function openUserModal() {
+    console.log('clicked')
+  }
 </script>
 
 <template>
-  <div id="header">
-    <div class="header-main-div">
-      <img :src="IconImage" />
-      <div class="header-sub-div">
-        <div style="font-weight: bolder;">
-          Golang+Vue <span style="color: #158654;">NePlus Manager</span>
-        </div>
-        <div style="font-size: 0.5em;">
-          <span style="font-weight: bolder; color: #f00">Unofficial</span> <span style="color: #aaa;">Nexus Manager</span>
-        </div>
-      </div>
-    </div>
-  </div>
+  <Header :email="email" @open-user-modal="openUserModal" />
   <div id="main">
     <div class="menu">
       <ul class="menu-ul">
@@ -65,6 +57,7 @@
 <style scoped>
   .header-main-div {
     display: flex;
+    position: relative;
   }
   .header-sub-div {
     display: inline-block;
