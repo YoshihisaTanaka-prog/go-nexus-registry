@@ -18,11 +18,14 @@ var roleNS = roleNameSpace{}
 
 func initRoleUnit(wg *sync.WaitGroup, mode string, name string) {
 	defer wg.Done()
+	if mode == "neplus" {
+		createLocalBase(mode, name, "__system__")
+	}
 	roles, err := psqlClient.Role.Query().Where(role.Mode(mode)).All(*ctx)
 	if err != nil {
 		customError.Exit1("DB Error: Creating", mode, "mode Role. Record:", err)
 	}
-	if (len(roles) == 0) {
+	if len(roles) == 0 {
 		_, err = createLocalBase(mode, name, "__system__")
 		if err != nil {
 			customError.Exit1("DB Error: Creating", mode, "mode Role. Record:", err)
@@ -73,8 +76,20 @@ func (roleNameSpace)GetNexusRoles() (roles []*ent.Role, err error) {
 	return psqlClient.Role.Query().Where(role.IsForNexus(true)).Order(role.ByName()).All(*ctx)
 }
 
+func (roleNameSpace)GetViewersRoles() (roles []*ent.Role, err error) {
+	return psqlClient.Role.Query().Where(role.Mode("viewers")).All(*ctx)
+}
+
 func (roleNameSpace)GetAllRoles() (roles []*ent.Role, err error) {
 	return psqlClient.Role.Query().All(*ctx)
+}
+
+func (roleNameSpace)GetNePlusRoles() (roles []*ent.Role, err error) {
+	return psqlClient.Role.Query().Where(role.Mode("neplus")).All(*ctx)
+}
+
+func (roleNameSpace)GetApiRoles() (roles []*ent.Role, err error) {
+	return psqlClient.Role.Query().Where(role.Mode("apis")).All(*ctx)
 }
 
 func (roleNameSpace)CreateNexusRole(name string, requestedBy string) (role *ent.Role, err error) {
@@ -107,10 +122,6 @@ func updateLocalBase(id string, name string, requestedBy string, isForNexus bool
 
 func (roleNameSpace)UpdateNexusRole(id string, name string, requestedBy string) (role *ent.Role, err error) {
 	return updateLocalBase(id, name, requestedBy, true)
-}
-
-func (roleNameSpace)UpdateNePlusRole(id string, name string) (role *ent.Role, err error) {
-	return updateLocalBase(id, name, "__system__", false)
 }
 
 func (roleNameSpace)DeleteRole(id string) (err error) {
