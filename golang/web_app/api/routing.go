@@ -3,23 +3,27 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	// "net/http"
 	"os"
 	"time"
 	"web_app/api/handler"
 )
 
-var pagePaths = []string{
-	"sign-up",
-	"sign-in",
-	"apply",
-	"manage",
-	"role",
+var pagePathData =  map[string][]string{
+	"all": []string{
+		"sign-up",
+		"sign-in",
+		"apply",
+	},
+	"editors": []string{
+		"manage",
+	},
+	"admins": []string{
+		"role",
+	},
 }
 
 func Start() {
-	handler.InitJwt()
-	handler.SetNpmrc()
+	handler.Init()
 
 	time.Sleep(time.Second * 1)
 	fmt.Fprintln(os.Stdout, "Webサーバを起動します。")
@@ -34,24 +38,42 @@ func Start() {
 		api.POST("/sign-up", handler.SignUp)
 		api.POST("/sign-in", handler.SignIn)
 		api.POST("/apply", handler.Apply)
-		api.GET("/get-libraries", handler.GetLibraries)
-		api.POST("/update-is-published", handler.UpdateIsPublished)
-		api.GET("/get-roles", handler.GetRoles)
-		api.GET("/get-role-details", handler.GetRoleDetails)
-		api.POST("/create-role", handler.CreateRole)
-		api.PUT("/update-role", handler.UpdateRole)
+		api.GET("/get-libraries", handler.EditorAuthProxy, handler.GetLibraries)
+		api.POST("/update-is-published", handler.EditorAuthProxy, handler.UpdateIsPublished)
+		api.GET("/get-roles", handler.AdminAuthProxy, handler.GetRoles)
+		api.GET("/get-role-details", handler.AdminAuthProxy, handler.GetRoleDetails)
+		api.POST("/create-role", handler.AdminAuthProxy, handler.CreateRole)
+		api.PUT("/update-role", handler.AdminAuthProxy, handler.UpdateRole)
 	}
 
 	// r.GET("/sse", handler.SSE)
 
-	// 必要に応じて静的ファイルのルートを設定
-	r.Static("/assets", "/app/public/assets")
-	for _, path := range pagePaths {
-		r.GET("/" + path, func(c *gin.Context) {
-			c.File("/app/public/htmls/" + path + ".html")
-		})
+	for key, paths := range pagePathData {
+		switch key {
+		case "admins":
+			for _, path := range paths{
+				r.GET("/" + path, handler.AdminAuthProxy, func(c *gin.Context) {
+					c.File("/app/public/htmls/" + path + ".html")
+				})
+			}
+		case "editors":
+			for _, path := range paths{
+				r.GET("/" + path, handler.EditorAuthProxy, func(c *gin.Context) {
+					c.File("/app/public/htmls/" + path + ".html")
+				})
+			}
+		default:
+			for _, path := range paths{
+				r.GET("/" + path, func(c *gin.Context) {
+					c.File("/app/public/htmls/" + path + ".html")
+				})
+			}
+		}
 	}
 
+	// 必要に応じて静的ファイルのルートを設定
+	r.Static("/assets", "/app/public/assets")
+	
 	// /icon.png -> icon.png を返す
 	r.GET("/icon.png", func(c *gin.Context) {
 		c.File("/app/public/icon.png")

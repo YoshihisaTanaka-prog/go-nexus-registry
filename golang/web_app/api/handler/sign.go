@@ -5,6 +5,7 @@ import (
 	"os"
 	"github.com/gin-gonic/gin"
 	"net/url"
+	"slices"
 	"strings"
 	"web_app/ldap"
 )
@@ -51,7 +52,7 @@ func SignUp(c *gin.Context) {
 	fmt.Fprintln(os.Stdout, message, code)
 
 	if code == 0 {
-		jwt, err := createJwt(message, []string{})
+		jwt, err := createJwt(message, []string{groupIds.Viewers})
 		if err == nil {
 			setCookie(c, cookieSessionKey, jwt )
 			c.JSON(200, gin.H{})
@@ -63,8 +64,6 @@ func SignUp(c *gin.Context) {
 }
 
 func SignIn(c *gin.Context) {
-	// ctx = c.Request.Context()
-
 	var body struct {
 		Email  string `json:"email" binding:"required"`
 		Password  string `json:"password" binding:"required"`
@@ -76,11 +75,11 @@ func SignIn(c *gin.Context) {
 		return
 	}
 
-	message, code := ldap.Authenticate(body.Email, body.Password)
+	message, code, groups := ldap.Authenticate(body.Email, body.Password)
 	if code == 0 {
-		jwt, err := createJwt(message, []string{})
+		jwt, err := createJwt(message, groups)
 		if err == nil {
-			setCookie(c, cookieSessionKey, jwt )
+			setCookie(c, cookieSessionKey, jwt)
 			c.JSON(200, gin.H{})
 			return
 		}
@@ -140,4 +139,25 @@ func AuthProxy(c *gin.Context) {
 			return
 		}
 	}
+}
+
+func specialAuthProxy(c *gin.Context, allowedRoleIds []string) {
+	roles := c.MustGet("roles").([]string)
+	for _, allowedRoleId := range allowedRoleIds {
+		if slices.Contains(roles, allowedRoleId) {
+			fmt.Fprintln(os.Stdout, "Authorize", allowedRoleId)
+			c.Next()
+			return
+		}
+	}
+	c.Redirect(302, "/")
+	c.Abort()
+}
+
+func EditorAuthProxy(c *gin.Context) {
+	specialAuthProxy(c, []string{groupIds.Admins, groupIds.Editors})
+}
+
+func AdminAuthProxy(c *gin.Context) {
+	specialAuthProxy(c, []string{groupIds.Admins})
 }
