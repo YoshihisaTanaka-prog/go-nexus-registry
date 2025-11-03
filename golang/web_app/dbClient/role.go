@@ -20,22 +20,24 @@ func initRoleUnit(wg *sync.WaitGroup, mode string, name string) {
 	defer wg.Done()
 	roles, err := psqlClient.Role.Query().Where(role.Mode(mode)).All(*ctx)
 	if err != nil {
-		customError.Exit1("DB Error: Creating", mode, "Record:", err)
+		customError.Exit1("DB Error: Creating", mode, "mode Role. Record:", err)
 	}
 	if (len(roles) == 0) {
 		_, err = createLocalBase(mode, name, "__system__")
-	}
-	if err != nil {
-		customError.Exit1("DB Error: Creating", mode, "Record:", err)
+		if err != nil {
+			customError.Exit1("DB Error: Creating", mode, "mode Role. Record:", err)
+		}
 	}
 }
 
 func initRole() {
 	var wg sync.WaitGroup
-	wg.Add(3)
+	wg.Add(5)
 	go initRoleUnit(&wg, "viewers", "閲覧者")
 	go initRoleUnit(&wg, "editors", "編集者")
-	go initRoleUnit(&wg, "admins",  "カスタムアプリ管理者")
+	go initRoleUnit(&wg, "admins",  "Nexus管理者")
+	go initRoleUnit(&wg, "neplus",  "NePlus管理者")
+	go initRoleUnit(&wg, "apis",    "admins")
 	wg.Wait()
 	fmt.Fprintln(os.Stdout, "初期データを投入しました。")
 }
@@ -46,7 +48,7 @@ func createLocalBase(mode string, name string, requestedBy string) (role *ent.Ro
 		return nil, err
 	}
 	localId := fmt.Sprintf("%s", id)
-	isForNexus := slices.Contains([]string{"viewers", "editors", "custom"}, mode)
+	isForNexus := slices.Contains([]string{"admins", "viewers", "custom"}, mode)
 	
 	return psqlClient.Role.Create().SetID(localId).
 		SetName(name).
@@ -56,28 +58,64 @@ func createLocalBase(mode string, name string, requestedBy string) (role *ent.Ro
 		Save(*ctx)
 }
 
+func (roleNameSpace)FindById(id string) (foundRole *ent.Role, err error) {
+	roles, err := psqlClient.Role.Query().Where(role.ID(id)).All(*ctx)
+	if err != nil {
+		return nil, err
+	}
+	if len(roles) == 0 {
+		return nil, nil
+	}
+	return roles[0], nil
+}
+
 func (roleNameSpace)GetNexusRoles() (roles []*ent.Role, err error) {
 	return psqlClient.Role.Query().Where(role.IsForNexus(true)).Order(role.ByName()).All(*ctx)
+}
+
+func (roleNameSpace)GetAllRoles() (roles []*ent.Role, err error) {
+	return psqlClient.Role.Query().All(*ctx)
 }
 
 func (roleNameSpace)CreateNexusRole(name string, requestedBy string) (role *ent.Role, err error) {
 	return createLocalBase("custom", name, requestedBy)
 }
 
-func updateLocalBase(id string, name string, requestedBy string, isForNexus bool) (role *ent.Role, err error) {
-	return psqlClient.Role.UpdateOneID(id).
+func updateLocalBase(id string, name string, requestedBy string, isForNexus bool) (newRole *ent.Role, oldName string, err error) {
+	foundRole, err := psqlClient.Role.Query().Where(role.ID(id)).All(*ctx)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Searching Role Error:", err)
+		return nil, "", err
+	}
+	if len(foundRole) > 0 {
+		if isForNexus != foundRole[0].IsForNexus {
+			customError.Exit1("DB Error: Updating Role. Record:", id, "The isForNexus column cannot be updated.")
+		}
+		oldName = foundRole[0].Name
+	}
+
+	newRole, err = psqlClient.Role.UpdateOneID(id).
 		SetName(name).
 		SetRequestedBy(requestedBy).
-		SetIsForNexus(isForNexus).
 		Save(*ctx)
+	
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Updating Role Error", err)
+		return nil, "", err
+	}
+	return newRole, oldName, err
 }
 
-func (roleNameSpace)UpdateNexusRole(id string, name string, requestedBy string) (role *ent.Role, err error) {
+func (roleNameSpace)UpdateNexusRole(id string, name string, requestedBy string) (role *ent.Role, oldName string, err error) {
 	return updateLocalBase(id, name, requestedBy, true)
 }
 
-func (roleNameSpace)UpdateAddonRole(id string, name string) (role *ent.Role, err error) {
+func (roleNameSpace)UpdateNePlusRole(id string, name string) (role *ent.Role, oldName string, err error) {
 	return updateLocalBase(id, name, "__system__", false)
+}
+
+func (roleNameSpace)DeleteRole(id string) (err error) {
+	return psqlClient.Role.DeleteOneID(id).Exec(*ctx)
 }
 
 func (roleNameSpace)JudgeError(err error) (statusCode int, message string) {
