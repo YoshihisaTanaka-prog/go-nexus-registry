@@ -41,7 +41,6 @@ func GetRoleDetails(c *gin.Context) {
 	if code == 404 {
 		go ldap.CreateNexusRole(id, role.Name)
 	} else if code == 0 {
-		fmt.Println(uids)
 		users = append(users, uids...)
 	} else {
 		c.JSON(500, gin.H{"message": "Internal Server Error in Nexus"})
@@ -62,16 +61,16 @@ func GetRoleDetails(c *gin.Context) {
 	responseData := struct{
 		Id           string `json:"id"`
 		Name         string `json:"name"`
+		Mode         string `json:"mode"`
 		Privileges []string `json:"privileges"`
 		Users      []string `json:"users"`
 	} {
 		Id:         id,
 		Name:       role.Name,
+		Mode:       role.Mode,
 		Privileges: privileges,
 		Users:      users,
 	}
-
-	fmt.Println(responseData)
 	c.JSON(200, responseData)
 }
 
