@@ -42,6 +42,17 @@ func setupLdap(apiPasswords map[string]string) {
 	} else {
 		updateSchema("/app/templates/init.ldif.template", adminDn, adminPassword, envVars)
 	}
+
+	nePlusAdminEmail := fmt.Sprintf("%s@%s", os.Getenv("NEPLUS_ADMIN_USERNAME"), os.Getenv("DOMAIN_NAME"))
+	if _, code := SearchUser(nePlusAdminEmail); code != 0 {
+		AddUser(nePlusAdminEmail, os.Getenv("NEPLUS_ADMIN_PASSWORD"))
+	}
+	if os.Getenv("NEPLUS_ADMIN_USERNAME") != os.Getenv("NEXUS_ADMIN_USERNAME") {
+		nexusAdminEmail := fmt.Sprintf("%s@%s", os.Getenv("NEXUS_ADMIN_USERNAME"), os.Getenv("DOMAIN_NAME"))
+		if _, code := SearchUser(nexusAdminEmail); code != 0 {
+			AddUser(nexusAdminEmail, os.Getenv("NEXUS_ADMIN_PASSWORD"))
+		}
+	}
 }
 
 func getEnvVars(apiPasswords map[string]string) map[string]string {

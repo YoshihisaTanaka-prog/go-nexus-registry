@@ -16,14 +16,15 @@ func initRole() {
 		customError.Exit1("Initializing LDAP Role Error", err)
 	}
 
+	userIds := SearchAllUser()
+
+	fmt.Println(userIds)
+
 	for _, role := range roles {
 		id := role.ID
 		mode := role.Mode
 		txt, code, _ :=  searchRole(mode, id)
 		if code == 0 {
-			if role.Mode == "viewers" {
-				viewersId = id
-			}
 			foundNum := len(strings.Split(txt, "\ndn:")) - 1
 			if foundNum == 0 {
 				txt, code = createRole(mode, id, role.Name)
@@ -35,10 +36,20 @@ func initRole() {
 					AssignApi(id, "admin")
 				}
 				if role.Name == "NePlus管理者" && role.Mode == "neplus" {
-					AddUser(fmt.Sprintf("%s@%s", os.Getenv("NEPLUS_ADMIN_USERNAME"), os.Getenv("DOMAIN_NAME")), os.Getenv("NEPLUS_ADMIN_PASSWORD"))
 					AssignUser(id, os.Getenv("NEPLUS_ADMIN_USERNAME"))
 				}
+				if role.Mode == "admins" {
+					AssignUser(id, os.Getenv("NEXUS_ADMIN_USERNAME"))
+				}
 			}
+			if role.Mode == "viewers" {
+				viewersId = id
+				for _, userId := range userIds {
+					AssignUser(id, userId)
+				}
+			}
+		} else {
+			customError.Exit1("Searching Role in LDAP Error:", txt)
 		}
 	}
 }
