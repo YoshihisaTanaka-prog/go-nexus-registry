@@ -48,7 +48,7 @@ func SignUp(c *gin.Context) {
 	}
 
 	message, code := ldap.AddUser(body.Email, body.Password)
-	fmt.Println(message, code)
+	fmt.Fprintln(os.Stdout, message, code)
 
 	if code == 0 {
 		jwt, err := createJwt(message, []string{})
