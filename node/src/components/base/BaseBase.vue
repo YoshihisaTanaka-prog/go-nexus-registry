@@ -1,15 +1,19 @@
 <script setup lang="ts">
-  import { defineProps } from 'vue';
+  import { computed, defineProps } from 'vue';
   import Toast from '@/components/Toast.vue';
   import IconImage from "/icon.png";
   import type { SelectionObj } from './types';
   const { path, selections, urlSuffix = '' } = defineProps<{path?: string, selections: SelectionObj, urlSuffix?: string}>();
 
-  if ( path ) {
-    if (Object.keys(selections).includes(path) && selections[path]) {
-      selections[path].className = "menu-button selected-menu-button"
+  const localSelections = computed(() => {
+    const _selections = {...selections}
+    if ( path ) {
+      if (Object.keys(_selections).includes(path) && _selections[path]) {
+        _selections[path].className = "menu-button selected-menu-button"
+      }
     }
-  }
+    return _selections
+  })
 
   const onClickItem = (path: string) => {
     location.href = (import.meta.env.MODE === 'development' ? `/htmls/${path}.html` :  `/${path}`) + urlSuffix;
@@ -34,7 +38,7 @@
     <div class="menu">
       <ul class="menu-ul">
         <li
-          v-for="[key, value] in Object.entries(selections)"
+          v-for="[key, value] in Object.entries(localSelections)"
           :key="key"
           :class="value.className"
           @click="()=>{if (path !== key) {onClickItem(key)}}"
