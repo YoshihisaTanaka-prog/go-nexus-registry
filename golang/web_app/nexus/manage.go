@@ -228,7 +228,6 @@ func unpublish(library *ent.SavedLibrary) (ok bool) {
 	}
 
 	deleteUrl := fmt.Sprintf("%s/service/rest/v1/components/%s", nexusConfig.URL, items[0].Id)
-	fmt.Println(deleteUrl)
 
 	deleteReq, err := http.NewRequest("DELETE", deleteUrl, nil)
 	if err != nil {
