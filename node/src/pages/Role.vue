@@ -3,12 +3,12 @@
   import Base from '@/components/base/ContentsBase.vue';
   import RoleUnit from './Role/RoleUnit.vue';
   import CreateRole from './Role/CreateRole.vue';
-  import { getRoles, createRole, updateRole, type Role } from '@/utils/api/role';
+  import { getRoles, createRole, updateRoleName, type Role } from '@/utils/api/role';
 
   const roles = ref<Role[]>([]);
 
-  function _updateRole(id: string, name: string, callback:() => void) {
-    void updateRole(roles, id, name, callback);
+  function _updateRoleName(id: string, name: string, callback:() => void) {
+    void updateRoleName(roles, id, name, callback);
   }
 
   function _createRole(name: string, callback:() => void) {
@@ -31,7 +31,7 @@
         </p>
       </div>
       <h3 style="text-align: center;">ロール一覧</h3>
-      <RoleUnit v-for="role in roles" :key="role.id" :role="role" @save="_updateRole" />
+      <RoleUnit v-for="role in roles" :key="role.id" :role="role" @save="_updateRoleName" />
     </div>
     <CreateRole v-if="isCreating" @close="() => {isCreating = false}" @create="_createRole" />
   </Base>

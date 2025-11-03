@@ -44,7 +44,7 @@ export async function createRole(currentRoleRef: Ref<Role[]>, name: string, onSu
   }
 }
 
-export async function updateRole(currentRoleRef: Ref<Role[]>, id: string, name: string, callback:() => void): Promise<void> {
+export async function updateRoleName(currentRoleRef: Ref<Role[]>, id: string, name: string, callback:() => void): Promise<void> {
   const keptRoles = [...currentRoleRef.value];
   const targetRole = keptRoles.find(r => r.id == id);
   try {
@@ -52,9 +52,17 @@ export async function updateRole(currentRoleRef: Ref<Role[]>, id: string, name: 
       callback();
       return;
     }
-    const result = await axios.put('update-role', {id, name});
-    const newRole = result.data as Role;
-    targetRole!.name = newRole.name;
+    await axios.put('update-role', {id, name});
+    targetRole!.name = name;
+    keptRoles.sort((a, b) => {
+      if (a.name > b.name) {
+        return 1;
+      }
+      if (a.name < b.name) {
+        return -1;
+      }
+      return 0;
+    });
   } catch (error) {
     const { status, data } = convertError(error);
     alertError(status, data)
