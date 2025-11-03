@@ -26,22 +26,29 @@ var envKeys = []string{
 	"NEPLUS_COOKIE_SECRET",
 	"NEPLUS_HOST_NAME",
 	"NEPLUS_KEY",
+	"NEXUS_ADMIN_PASSWORD",
+	"NEXUS_ADMIN_USERNAME",
 	"NEXUS_EXPOSED_HOST_NAME",
 	"POSTGRES_PASSWORD",
 	"POSTGRES_USER",
 }
 
-var apiPasswords = map[string]string{
-	"admin": rand.Text(),
-}
 
 func main() {
 	if isEnvKeysEmpty() {
 		customError.Exit1("以上の環境変数が指定されていないので終了します。")
 	}
 
+	if os.Getenv("NEPLUS_ADMIN_USERNAME") == os.Getenv("NEXUS_ADMIN_USERNAME") && os.Getenv("NEPLUS_ADMIN_PASSWORD") != os.Getenv("NEXUS_ADMIN_PASSWORD") {
+		customError.Exit1("管理者権限の環境変数エラー:\nNexusとNePlusの管理者アカウント名は同一ですが、パスワードが異なります。\n")
+	}
+
 	cryption.InitCription()
-	
+
+	apiPasswords := map[string]string{
+		"admin": rand.Text(),
+	}
+
 	ctx := context.Background()
 	dbClient.InitDb(&ctx)
 	ldap.InitLdap(apiPasswords)
