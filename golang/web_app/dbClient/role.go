@@ -81,17 +81,16 @@ func (roleNameSpace)CreateNexusRole(name string, requestedBy string) (role *ent.
 	return createLocalBase("custom", name, requestedBy)
 }
 
-func updateLocalBase(id string, name string, requestedBy string, isForNexus bool) (newRole *ent.Role, oldName string, err error) {
+func updateLocalBase(id string, name string, requestedBy string, isForNexus bool) (newRole *ent.Role, err error) {
 	foundRole, err := psqlClient.Role.Query().Where(role.ID(id)).All(*ctx)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Searching Role Error:", err)
-		return nil, "", err
+		return nil, err
 	}
 	if len(foundRole) > 0 {
 		if isForNexus != foundRole[0].IsForNexus {
 			customError.Exit1("DB Error: Updating Role. Record:", id, "The isForNexus column cannot be updated.")
 		}
-		oldName = foundRole[0].Name
 	}
 
 	newRole, err = psqlClient.Role.UpdateOneID(id).
@@ -101,16 +100,16 @@ func updateLocalBase(id string, name string, requestedBy string, isForNexus bool
 	
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Updating Role Error", err)
-		return nil, "", err
+		return nil, err
 	}
-	return newRole, oldName, err
+	return newRole, err
 }
 
-func (roleNameSpace)UpdateNexusRole(id string, name string, requestedBy string) (role *ent.Role, oldName string, err error) {
+func (roleNameSpace)UpdateNexusRole(id string, name string, requestedBy string) (role *ent.Role, err error) {
 	return updateLocalBase(id, name, requestedBy, true)
 }
 
-func (roleNameSpace)UpdateNePlusRole(id string, name string) (role *ent.Role, oldName string, err error) {
+func (roleNameSpace)UpdateNePlusRole(id string, name string) (role *ent.Role, err error) {
 	return updateLocalBase(id, name, "__system__", false)
 }
 
