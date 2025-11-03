@@ -2,6 +2,7 @@ package ldap
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"web_app/customError"
 	"web_app/dbClient"
@@ -32,6 +33,10 @@ func initRole() {
 				}
 				if role.Name == "admins" && role.Mode == "apis" {
 					AssignApi(id, "admin")
+				}
+				if role.Name == "NePlus管理者" && role.Mode == "neplus" {
+					AddUser(fmt.Sprintf("%s@%s", os.Getenv("NEPLUS_ADMIN_USERNAME"), os.Getenv("DOMAIN_NAME")), os.Getenv("NEPLUS_ADMIN_PASSWORD"))
+					AssignUser(id, os.Getenv("NEPLUS_ADMIN_USERNAME"))
 				}
 			}
 		}
