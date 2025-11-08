@@ -49,7 +49,7 @@
         if (keys.length == 1 && path !== undefined) {
           const key = keys[0];
           if (path != key) {
-            location.href = `/${key}`
+            location.href = import.meta.env.MODE === 'development' ? `/htmls/${key}.html` :  `/${key}`;
           }
         }
       }
