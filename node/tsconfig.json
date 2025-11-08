@@ -8,6 +8,7 @@
       "path": "./tsconfig.app.json"
     }
   ],
+  "exclude": ["tests/*"],
   "compilerOptions": {
     "types": ["vite/client"]
   },
