@@ -18,14 +18,10 @@
   const onClickItem = (path: string) => {
     location.href = (import.meta.env.MODE === 'development' ? `/htmls/${path}.html` :  `/${path}`) + urlSuffix;
   }
-  
-  function openUserModal() {
-    console.log('clicked')
-  }
 </script>
 
 <template>
-  <Header :email="email" @open-user-modal="openUserModal" />
+  <Header :email="email" />
   <div id="main">
     <div class="menu">
       <ul class="menu-ul">

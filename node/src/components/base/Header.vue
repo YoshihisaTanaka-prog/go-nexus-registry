@@ -3,10 +3,7 @@
   import User from './User.vue';
   import IconImage from "/icon.png";
 
-  const { email } = defineProps<{email?: string}>()
-  const emits = defineEmits<{
-    openUserModal: []
-  }>();
+  const { email } = defineProps<{email?: string}>();
 </script>
 
 <template>
@@ -21,7 +18,7 @@
           <span style="font-weight: bolder; color: #f00">Unofficial</span> <span style="color: #aaa;">Nexus Manager</span>
         </div>
       </div>
-      <User :email="email" @open-user-modal="() => { emits('openUserModal') }" />
+      <User :email="email" />
     </div>
   </div>
 </template>
