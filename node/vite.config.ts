@@ -18,7 +18,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     coverage: {
-      reporter: ['text', 'html']
+      provider: 'v8', // デフォルトは 'v8'
+      reporter: ['text', 'html', 'lcov'], // 出力形式
+      reportsDirectory: './coverage' // 保存先
     }
   },
   resolve: {
